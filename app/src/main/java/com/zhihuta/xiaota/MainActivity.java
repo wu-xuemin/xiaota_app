@@ -114,6 +114,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
         FragmentTransaction transaction = manager.beginTransaction();
         //先隐藏所有的Fragment
         hideFragments(transaction);
+
+        Button addDianxianQinCeButton = (Button) findViewById(R.id.button5);///
+        Button showDianxianQinCeButton = (Button) findViewById(R.id.button6);///
+        Button addLujinMoxingButton = (Button) findViewById(R.id.button4);///
+        Button showLujingMoxingButton = (Button) findViewById(R.id.button7);///
+        Button calculateDianXianLengthButton = (Button) findViewById(R.id.button8);///
+        Button showDianXianLengthButton = (Button) findViewById(R.id.button9);///
         switch (i) {
             //当选中点击的是微信的Tab时
             case 0:
@@ -127,7 +134,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
                     //如果微信对应的Fragment已经实例化，则直接显示出来
                     transaction.show(mFragWeinxin);
                 }
-//                Intent intent
+                addDianxianQinCeButton.setVisibility(View.VISIBLE);
+                showDianxianQinCeButton.setVisibility(View.VISIBLE);
+                addLujinMoxingButton.setVisibility(View.GONE);
+                showLujingMoxingButton.setVisibility(View.GONE);
+                calculateDianXianLengthButton.setVisibility(View.GONE);
+                showDianXianLengthButton.setVisibility(View.GONE);
+
                 break;
             case 1:
                 mFrdImg.setImageResource(R.mipmap.tab_find_frd_pressed);
@@ -137,6 +150,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
                 } else {
                     transaction.show(mFragFrd);
                 }
+                addDianxianQinCeButton.setVisibility(View.GONE);
+                showDianxianQinCeButton.setVisibility(View.GONE);
+                addLujinMoxingButton.setVisibility(View.VISIBLE);
+                showLujingMoxingButton.setVisibility(View.VISIBLE);
+                calculateDianXianLengthButton.setVisibility(View.GONE);
+                showDianXianLengthButton.setVisibility(View.GONE);
                 break;
             case 2:
                 mAddressImg.setImageResource(R.mipmap.tab_address_pressed);
@@ -146,6 +165,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
                 } else {
                     transaction.show(mFragAddress);
                 }
+                addDianxianQinCeButton.setVisibility(View.GONE);
+                showDianxianQinCeButton.setVisibility(View.GONE);
+                addLujinMoxingButton.setVisibility(View.GONE);
+                showLujingMoxingButton.setVisibility(View.GONE);
+                calculateDianXianLengthButton.setVisibility(View.VISIBLE);
+                showDianXianLengthButton.setVisibility(View.VISIBLE);
+
                 break;
             case 3:
                 mSettingImg.setImageResource(R.mipmap.tab_settings_pressed);
@@ -155,6 +181,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
                 } else {
                     transaction.show(mFragSetting);
                 }
+
+                addDianxianQinCeButton.setVisibility(View.GONE);
+                showDianxianQinCeButton.setVisibility(View.GONE);
+                addLujinMoxingButton.setVisibility(View.GONE);
+                showLujingMoxingButton.setVisibility(View.GONE);
+                calculateDianXianLengthButton.setVisibility(View.GONE);
+                showDianXianLengthButton.setVisibility(View.GONE);
                 break;
         }
         //不要忘记提交事务

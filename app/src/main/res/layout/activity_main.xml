@@ -34,6 +34,34 @@
                 android:layout_height="130dp"
                 android:text="浏览电线清册"
                 android:textSize="30sp" />
+
+            <Button
+                android:id="@+id/button7"
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:text="建立铁塔路径模型"
+                android:textSize="30sp" />
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:text="预览铁塔路径模型"
+                android:textSize="30sp" />
+
+            <Button
+                android:id="@+id/button8"
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:text="计算电线长度"
+                android:textSize="30sp" />
+
+            <Button
+                android:id="@+id/button9"
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:text="预览电线长度"
+                android:textSize="30sp" />
         </LinearLayout>
     </FrameLayout>
 

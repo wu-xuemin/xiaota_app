@@ -9,8 +9,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#189D80"
         android:text="智慧小塔"
-        android:textColor="#ffffff"
+        android:textColor="#0A0B0B"
         android:textSize="20sp"
         android:textStyle="bold" />
 
