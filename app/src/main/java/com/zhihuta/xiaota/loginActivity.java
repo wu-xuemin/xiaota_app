@@ -112,6 +112,10 @@ public class loginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.bt_loginactivity_login:
                 String name = mEtLoginactivityUsername.getText().toString().trim();
                 String password = mEtLoginactivityPassword.getText().toString().trim();
+
+                /// test
+                name = "a";
+                password = "b";
                 if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(password)) {
                     ArrayList<User> data = mDBOpenHelper.getAllData();
                     boolean match = false;

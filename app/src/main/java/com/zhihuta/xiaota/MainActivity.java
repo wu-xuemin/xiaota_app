@@ -5,10 +5,12 @@ package com.zhihuta.xiaota;
 //import android.support.v4.app.FragmentActivity;
 //import android.support.v4.app.FragmentManager;
 //import android.support.v4.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
@@ -35,6 +37,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
     private Fragment mFragFrd;
     private Fragment mFragAddress;
     private Fragment mFragSetting;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,19 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
         mFrdImg = (ImageButton) findViewById(R.id.id_tab_frd_img);
         mAddressImg = (ImageButton) findViewById(R.id.id_tab_address_img);
         mSettingImg = (ImageButton) findViewById(R.id.id_tab_setting_img);
+
+        Button addDianxianQinCeButton = (Button) findViewById(R.id.button5);///
+        addDianxianQinCeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //新建一个Intent(当前Activity, SecondActivity)=====显示Intent
+                Intent intent = new Intent(MainActivity.this, AddDxQingCeActivity.class);
+
+                //启动Intent
+                startActivity(intent);
+            }
+        });
+
     }
 
     //处理Tab的点击事件
@@ -111,6 +127,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
                     //如果微信对应的Fragment已经实例化，则直接显示出来
                     transaction.show(mFragWeinxin);
                 }
+//                Intent intent
                 break;
             case 1:
                 mFrdImg.setImageResource(R.mipmap.tab_find_frd_pressed);
