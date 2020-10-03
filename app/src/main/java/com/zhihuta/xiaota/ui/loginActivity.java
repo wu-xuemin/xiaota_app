@@ -1,4 +1,4 @@
-package com.zhihuta.xiaota;
+package com.zhihuta.xiaota.ui;
 /**
  * 纯粹实现登录注册功能，其它功能都被注释掉了
  * 起作用的代码（连带着packag、import算上） 共 73 行
@@ -17,6 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.zhihuta.xiaota.DBOpenHelper;
+import com.zhihuta.xiaota.R;
+import com.zhihuta.xiaota.User;
 
 import java.util.ArrayList;
 /**

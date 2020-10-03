@@ -1,4 +1,4 @@
-package com.zhihuta.xiaota;
+package com.zhihuta.xiaota.ui;
 //package com.cbt.tabusingfragment;
 
 //import android.support.v4.app.Fragment;
@@ -18,6 +18,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.zhihuta.xiaota.FrdFragment;
+import com.zhihuta.xiaota.R;
+import com.zhihuta.xiaota.SettingFragment;
+import com.zhihuta.xiaota.WeixinFragment;
 
 public class MainActivity extends FragmentActivity implements OnClickListener {
     //声明四个Tab的布局文件

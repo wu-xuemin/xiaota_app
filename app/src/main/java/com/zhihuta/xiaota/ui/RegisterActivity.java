@@ -1,4 +1,4 @@
-package com.zhihuta.xiaota;
+package com.zhihuta.xiaota.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,10 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.zhihuta.xiaota.Code;
+import com.zhihuta.xiaota.DBOpenHelper;
+import com.zhihuta.xiaota.R;
 /**
  * Created by littlecurl 2018/6/24
  */

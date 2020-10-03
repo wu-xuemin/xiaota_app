@@ -1,4 +1,4 @@
-package com.zhihuta.xiaota;
+package com.zhihuta.xiaota.ui;
 
 import android.os.Bundle;
 //import android.support.annotation.Nullable;
@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.zhihuta.xiaota.R;
 
 /**
  * Created by caobotao on 16/1/4.
