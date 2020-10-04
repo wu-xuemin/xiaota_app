@@ -43,7 +43,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
     private Fragment mFragAddress;
     private Fragment mFragSetting;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +80,29 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
             public void onClick(View v) {
                 //新建一个Intent(当前Activity, SecondActivity)=====显示Intent
                 Intent intent = new Intent(MainActivity.this, AddDxQingCeActivity.class);
+
+                //启动Intent
+                startActivity(intent);
+            }
+        });
+        Button showDianxianQinCeButton = (Button) findViewById(R.id.button6);///
+        showDianxianQinCeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //新建一个Intent(当前Activity, SecondActivity)=====显示Intent
+                Intent intent = new Intent(MainActivity.this, ShowDxQingCeActivity.class);
+
+                //启动Intent
+                startActivity(intent);
+            }
+        });
+
+        Button addTietaLujingMoxingButton = (Button) findViewById(R.id.button7);///
+        addTietaLujingMoxingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //新建一个Intent(当前Activity, SecondActivity)=====显示Intent
+                Intent intent = new Intent(MainActivity.this, AddTietaLujingMoxingActivity.class);
 
                 //启动Intent
                 startActivity(intent);
