@@ -21,15 +21,17 @@
             <Button
                 android:id="@+id/button2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="130dp"
                 android:layout_gravity="center"
-                android:text="手动添加" />
+                android:text="手动添加"
+                android:textSize="30sp" />
 
             <Button
                 android:id="@+id/button3"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="从表格导入" />
+                android:layout_height="130dp"
+                android:text="从表格导入"
+                android:textSize="30sp" />
         </LinearLayout>
 
     </LinearLayout>
