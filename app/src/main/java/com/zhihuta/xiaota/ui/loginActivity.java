@@ -25,13 +25,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.zhihuta.xiaota.R;
-import com.zhihuta.xiaota.User;
-import com.zhihuta.xiaota.ui.XiaotaApp;
-import com.zhihuta.xiaota.ui.URL;
+import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -128,7 +128,9 @@ public class LoginActivity extends AppCompatActivity {
         }
         else {
             String loginUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.USER_LOGIN;
-            mNetwork.fetchLoginData(loginUrl, mPostValue, mLoginHandler);
+            ///test
+//            mNetwork.fetchLoginData(loginUrl, mPostValue, mLoginHandler);
+            onLoginSuccess(null);
         }
 
     }
@@ -172,7 +174,21 @@ public class LoginActivity extends AppCompatActivity {
             match = true;
             if (match) {
                 Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, MainActivity.class);
+//                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = new Intent(this, DianxianQingCe.class);
+
+                ArrayList<DianxianQingCeData> mDianxianQingCeList;
+                DianxianQingCeData dianxianQingCeData1 = new DianxianQingCeData();
+                dianxianQingCeData1.setId(1);
+                dianxianQingCeData1.setDxNumber("dx_111");
+                dianxianQingCeData1.setDxModel("型号112");
+                dianxianQingCeData1.setStartPoint("杭州A22");
+                dianxianQingCeData1.setEndPoint("上海B66");
+                mDianxianQingCeList = new ArrayList<>();
+                mDianxianQingCeList.add(dianxianQingCeData1);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("mDianxianQingCeList", (Serializable) mDianxianQingCeList);
+                intent.putExtras(bundle);
                 startActivity(intent);
                 finish();//销毁此Activity
             } else {
