@@ -51,6 +51,9 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
     private LinearLayout mLayoutQingCe;
     private LinearLayout mLayoutOrder;
 
+
+    private QingceAdapter mQingceAdapter;
+    private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +92,12 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         mDianxianQingCeList = (ArrayList<DianxianQingCeData>) bundle.getSerializable("mDianxianQingCeList");
+
+        if(mDianxianQingCeList !=null) {
+            Toast.makeText(this, "得到 电线清单 size:" + mDianxianQingCeList.size(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "电线清单 为空！！！" , Toast.LENGTH_SHORT).show();
+        }
         //列表
         RecyclerView mQingceRV = (RecyclerView) findViewById(R.id.rv_qingce);
         LinearLayoutManager manager = new LinearLayoutManager(this);
@@ -100,6 +109,7 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
 
         mLayoutQingCe = (LinearLayout)findViewById(R.id.layout_dianxian_qingce_id);
         mLayoutOrder = (LinearLayout)findViewById(R.id.layout_order_id);
+
     }
 
     //处理Tab的点击事件
@@ -155,9 +165,7 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
                 }
                 mLayoutQingCe.setVisibility(View.VISIBLE);
                 mLayoutOrder.setVisibility(View.GONE);
-//                ToastUtils.showShort("按下电线清单");
-                Log.d("TAG", " 按下电线清单");
-                Toast.makeText(this, "按下电线清单", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "按下电线清单", Toast.LENGTH_SHORT).show();
                 break;
             case 1:
 
@@ -173,9 +181,7 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
                 } else {
                     transaction.show(mFragFrd);
                 }
-//                ToastUtils.showShort("按下订单中心");
-                Log.d("TAG", " 按下订单中心");
-                Toast.makeText(this, "按下订单中心", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "按下订单中心", Toast.LENGTH_SHORT).show();
                 break;
             case 2:
                 mAddressImg.setImageResource(R.mipmap.tab_address_pressed);
@@ -185,9 +191,7 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
                 } else {
                     transaction.show(mFragAddress);
                 }
-//                ToastUtils.showShort("按下路径模型");
-                Log.d("TAG", " 按下路径模型");
-                Toast.makeText(this, "按下路径模型", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "按下路径模型", Toast.LENGTH_SHORT).show();
                 break;
             case 3:
                 mSettingImg.setImageResource(R.mipmap.tab_settings_pressed);
@@ -197,15 +201,7 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
                 } else {
                     transaction.show(mFragSetting);
                 }
-//                ToastUtils.showShort("按下路径计算");
-                Log.d("TAG", " 按下路径计算");
-                Toast.makeText(this, "按下路径计算", Toast.LENGTH_SHORT).show();
-//                addDianxianQinCeButton.setVisibility(View.GONE);
-//                showDianxianQinCeButton.setVisibility(View.GONE);
-//                addLujinMoxingButton.setVisibility(View.GONE);
-//                showLujingMoxingButton.setVisibility(View.GONE);
-//                calculateDianXianLengthButton.setVisibility(View.GONE);
-//                showDianXianLengthButton.setVisibility(View.GONE);
+//                Toast.makeText(this, "按下路径计算", Toast.LENGTH_SHORT).show();
                 break;
         }
         //不要忘记提交事务
@@ -235,12 +231,6 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
         mAddressImg.setImageResource(R.mipmap.tab_address_normal);
         mSettingImg.setImageResource(R.mipmap.tab_settings_normal);
     }
-
-//    private InstallActualAdapter mInstallActualAdapter;
-//private ArrayList<InstallPlanData> mInstallPlanActualList = new ArrayList<>();
-    private QingceAdapter mQingceAdapter;
-    private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
-    private ArrayList<DianxianQingCeData> mDxQingceList = new ArrayList<>();
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

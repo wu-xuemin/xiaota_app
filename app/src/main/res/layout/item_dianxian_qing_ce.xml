@@ -23,4 +23,11 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="终点" />
+
+    <TextView
+        android:id="@+id/xinghaoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="型号" />
 </LinearLayout>
