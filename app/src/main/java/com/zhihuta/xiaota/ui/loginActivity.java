@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.blankj.utilcode.util.ToastUtils;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.bean.basic.OrderData;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.net.Network;
@@ -33,6 +34,7 @@ import com.zhihuta.xiaota.util.ShowMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 
 public class LoginActivity extends AppCompatActivity {
@@ -178,16 +180,57 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, DianxianQingCe.class);
 
                 ArrayList<DianxianQingCeData> mDianxianQingCeList;
+                ArrayList<OrderData> mOrderList;
+
                 DianxianQingCeData dianxianQingCeData1 = new DianxianQingCeData();
                 dianxianQingCeData1.setId(1);
-                dianxianQingCeData1.setDxNumber("dx_111");
-                dianxianQingCeData1.setDxModel("型号112");
-                dianxianQingCeData1.setStartPoint("杭州A22");
-                dianxianQingCeData1.setEndPoint("上海B66");
+                dianxianQingCeData1.setDxNumber("dx_001");
+                dianxianQingCeData1.setDxModel("型号001");
+                dianxianQingCeData1.setStartPoint("杭州A001");
+                dianxianQingCeData1.setEndPoint("上海B001");
+
+                DianxianQingCeData dianxianQingCeData2 = new DianxianQingCeData();
+                dianxianQingCeData2.setId(2);
+                dianxianQingCeData2.setDxNumber("dx_002");
+                dianxianQingCeData2.setDxModel("型号002");
+                dianxianQingCeData2.setStartPoint("杭州A002");
+                dianxianQingCeData2.setEndPoint("上海B002");
+
+                DianxianQingCeData dianxianQingCeData3 = new DianxianQingCeData();
+                dianxianQingCeData3.setId(3);
+                dianxianQingCeData3.setDxNumber("dx_003");
+                dianxianQingCeData3.setDxModel("型号003");
+                dianxianQingCeData3.setStartPoint("杭州A003");
+                dianxianQingCeData3.setEndPoint("上海B003");
+
                 mDianxianQingCeList = new ArrayList<>();
                 mDianxianQingCeList.add(dianxianQingCeData1);
+                mDianxianQingCeList.add(dianxianQingCeData2);
+                mDianxianQingCeList.add(dianxianQingCeData3);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("mDianxianQingCeList", (Serializable) mDianxianQingCeList);
+                intent.putExtras(bundle);
+
+                OrderData mOrderData1 = new OrderData();
+                mOrderData1.setId(1);
+                mOrderData1.setOrderNumber("订单_001");
+                mOrderData1.setCreatedDate(new Date());
+                mOrderData1.setOrderCreater("魏武");
+                mOrderData1.setOrderStatus("正常");
+                OrderData mOrderData2 = new OrderData();
+                mOrderData2.setId(2);
+                mOrderData2.setOrderNumber("订单_002");
+                mOrderData2.setCreatedDate(new Date());
+                mOrderData2.setOrderCreater("小王");
+                mOrderData2.setOrderStatus("正常");
+
+
+
+
+                mOrderList = new ArrayList<>();
+                mOrderList.add(mOrderData1);
+                mOrderList.add(mOrderData2);
+                bundle.putSerializable("mOrderList", (Serializable) mOrderList);
                 intent.putExtras(bundle);
                 startActivity(intent);
                 finish();//销毁此Activity

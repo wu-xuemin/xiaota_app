@@ -4,30 +4,30 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/dianxianBianhaotextView"
+        android:id="@+id/orderNumbertextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="电线编号" />
+        android:text="订单号" />
 
     <TextView
-        android:id="@+id/qidianTextView"
+        android:id="@+id/orderCreatedDateTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="起点" />
+        android:text="创建日期" />
 
     <TextView
-        android:id="@+id/zhongdiantextView"
+        android:id="@+id/orderCreaterTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="终点" />
+        android:text="提交人" />
 
     <TextView
-        android:id="@+id/xinghaoTextView"
+        android:id="@+id/orderStatusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="型号" />
+        android:text="状态" />
 </LinearLayout>

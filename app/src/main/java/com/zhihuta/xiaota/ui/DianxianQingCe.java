@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -23,8 +22,10 @@ import com.zhihuta.xiaota.FrdFragment;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
 import com.zhihuta.xiaota.WeixinFragment;
+import com.zhihuta.xiaota.adapter.OrderAdapter;
 import com.zhihuta.xiaota.adapter.QingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.bean.basic.OrderData;
 
 import java.util.ArrayList;
 
@@ -50,10 +51,13 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
 
     private LinearLayout mLayoutQingCe;
     private LinearLayout mLayoutOrder;
+//    private LinearLayout mLayoutOrder;
 
 
     private QingceAdapter mQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
+    private OrderAdapter mOrderAdapter;
+    private ArrayList<OrderData> mOrderList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,7 +102,7 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
         } else {
             Toast.makeText(this, "电线清单 为空！！！" , Toast.LENGTH_SHORT).show();
         }
-        //列表
+        //电线列表
         RecyclerView mQingceRV = (RecyclerView) findViewById(R.id.rv_qingce);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -107,8 +111,29 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
         mQingceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mQingceRV.setAdapter(mQingceAdapter);
 
+
+        //获取传递过来的信息
+        Intent intent2 = getIntent();
+        Bundle bundle2 = intent.getExtras();
+        mOrderList = (ArrayList<OrderData>) bundle.getSerializable("mOrderList");
+
+        if(mOrderList !=null) {
+            Toast.makeText(this, "       得到 订单列表 size:" + mOrderList.size(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "   订单列表为空！！！" , Toast.LENGTH_SHORT).show();
+        }
+        //订单列表
+        RecyclerView mOrderRV = (RecyclerView) findViewById(R.id.rv_order);
+        LinearLayoutManager manager2 = new LinearLayoutManager(this);
+        manager2.setOrientation(LinearLayoutManager.VERTICAL);
+        mOrderRV.setLayoutManager(manager2);
+        mOrderAdapter = new OrderAdapter(mOrderList);
+        mOrderRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        mOrderRV.setAdapter(mOrderAdapter);
+
         mLayoutQingCe = (LinearLayout)findViewById(R.id.layout_dianxian_qingce_id);
         mLayoutOrder = (LinearLayout)findViewById(R.id.layout_order_id);
+
 
     }
 

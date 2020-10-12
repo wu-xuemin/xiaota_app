@@ -48,6 +48,7 @@ public class QingceAdapter extends RecyclerView.Adapter {
             itemView.dianxianBianhaoTv.setText(mDianxianQingCeAdapter.get(position).getDxNumber());
             itemView.dianxianBianhaoTv.setSelected(true);//用于滚动显示
             itemView.qidianTv.setText(mDianxianQingCeAdapter.get(position).getStartPoint());
+            itemView.qidianTv.setSelected(true);//用于滚动显示
             itemView.zhongdianTv.setText(mDianxianQingCeAdapter.get(position).getEndPoint());
             itemView.modelTv.setText(mDianxianQingCeAdapter.get(position).getDxModel());
 //            itemView.headCountDoneTv.setText(""+mInstallPlanAdapter.get(position).getHeadCountDone());
