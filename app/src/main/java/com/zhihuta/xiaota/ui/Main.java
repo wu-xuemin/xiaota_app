@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -30,7 +31,7 @@ import com.zhihuta.xiaota.bean.basic.OrderData;
 import java.util.ArrayList;
 
 //public class DianxianQingCe extends AppCompatActivity {
-public class DianxianQingCe extends FragmentActivity implements View.OnClickListener {
+public class Main extends FragmentActivity implements View.OnClickListener {
     //声明四个Tab的布局文件
     private LinearLayout mTabWeixin;
     private LinearLayout mTabFrd;
@@ -53,6 +54,8 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
     private LinearLayout mLayoutOrder;
 //    private LinearLayout mLayoutOrder;
 
+    // 电线 "手动添加" 按钮
+    private Button addDxByHandBt;
 
     private QingceAdapter mQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
@@ -91,6 +94,18 @@ public class DianxianQingCe extends FragmentActivity implements View.OnClickList
         mFrdImg = (ImageButton) findViewById(R.id.id_tab_frd_img);
         mAddressImg = (ImageButton) findViewById(R.id.id_tab_address_img);
         mSettingImg = (ImageButton) findViewById(R.id.id_tab_setting_img);
+
+        addDxByHandBt = (Button) findViewById(R.id.button_add_dx_by_hand);
+        addDxByHandBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //新建一个Intent(当前Activity, SecondActivity)=====显示Intent
+                Intent intent = new Intent(Main.this, AddDxQingCeByHandActivity.class);
+
+                //启动Intent
+                startActivity(intent);
+            }
+        });
 
         //获取传递过来的信息
         Intent intent = getIntent();
