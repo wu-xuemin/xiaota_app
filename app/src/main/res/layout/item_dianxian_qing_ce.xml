@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="30dp">
+    android:layout_height="30dp"
+    android:gravity="center_horizontal|fill_horizontal">
 
     <TextView
         android:id="@+id/dianxianBianhaotextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
         android:layout_weight="1"
         android:text="电线编号" />
 
@@ -14,6 +16,7 @@
         android:id="@+id/qidianTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
         android:layout_weight="1"
         android:text="起点" />
 
@@ -21,6 +24,7 @@
         android:id="@+id/zhongdiantextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
         android:layout_weight="1"
         android:text="终点" />
 
@@ -28,6 +32,7 @@
         android:id="@+id/xinghaoTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
         android:layout_weight="1"
         android:text="型号" />
 </LinearLayout>
