@@ -18,14 +18,15 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.blankj.utilcode.util.ToastUtils;
 import com.zhihuta.xiaota.FrdFragment;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
 import com.zhihuta.xiaota.WeixinFragment;
+import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.adapter.OrderAdapter;
-import com.zhihuta.xiaota.adapter.QingceAdapter;
+import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.OrderData;
 
 import java.util.ArrayList;
@@ -52,21 +53,25 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     private LinearLayout mLayoutQingCe;
     private LinearLayout mLayoutOrder;
-//    private LinearLayout mLayoutOrder;
+    private LinearLayout mLayoutLujing;
 
     // 电线 "手动添加" 按钮
     private Button addDxByHandBt;
 
-    private QingceAdapter mQingceAdapter;
+    private DianXianQingceAdapter mQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
+
     private OrderAdapter mOrderAdapter;
     private ArrayList<OrderData> mOrderList = new ArrayList<>();
+
+    private LujingAdapter mLujingAdapter;
+    private ArrayList<LujingData> mLujingList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        setContentView(R.layout.activity_dianxian_qing_ce);
+        setContentView(R.layout.activity_main);
         initViews();//初始化控件
         initEvents();//初始化事件
         selectTab(0);//默认选中第一个Tab
@@ -118,18 +123,18 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             Toast.makeText(this, "电线清单 为空！！！" , Toast.LENGTH_SHORT).show();
         }
         //电线列表
-        RecyclerView mQingceRV = (RecyclerView) findViewById(R.id.rv_qingce);
+        RecyclerView mQingceRV = (RecyclerView) findViewById(R.id.rv_dianxian);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mQingceRV.setLayoutManager(manager);
-        mQingceAdapter = new QingceAdapter(mDianxianQingCeList);
+        mQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList);
         mQingceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mQingceRV.setAdapter(mQingceAdapter);
 
 
-        //获取传递过来的信息
-        Intent intent2 = getIntent();
-        Bundle bundle2 = intent.getExtras();
+        //获取传递过来的 订单信息
+//        Intent intent2 = getIntent();
+//        Bundle bundle2 = intent.getExtras();
         mOrderList = (ArrayList<OrderData>) bundle.getSerializable("mOrderList");
 
         if(mOrderList !=null) {
@@ -146,9 +151,28 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         mOrderRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mOrderRV.setAdapter(mOrderAdapter);
 
+        //获取传递过来的路径信息
+//        Intent intent2 = getIntent();
+//        Bundle bundle2 = intent.getExtras();
+        mLujingList = (ArrayList<LujingData>) bundle.getSerializable("mLujingList");
+
+        if(mLujingList !=null) {
+            Toast.makeText(this, "       得到 路径列表 size:" + mLujingList.size(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "   路径列表为空！！！" , Toast.LENGTH_SHORT).show();
+        }
+        //路径列表
+        RecyclerView mLujingRV = (RecyclerView) findViewById(R.id.rv_lujing);
+        LinearLayoutManager manager3 = new LinearLayoutManager(this);
+        manager3.setOrientation(LinearLayoutManager.VERTICAL);
+        mLujingRV.setLayoutManager(manager3);
+        mLujingAdapter = new LujingAdapter(mLujingList);
+        mLujingRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        mLujingRV.setAdapter(mLujingAdapter);
+
         mLayoutQingCe = (LinearLayout)findViewById(R.id.layout_dianxian_qingce_id);
         mLayoutOrder = (LinearLayout)findViewById(R.id.layout_order_id);
-
+        mLayoutLujing = (LinearLayout)findViewById(R.id.layout_lujing);
 
     }
 
@@ -205,12 +229,13 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 }
                 mLayoutQingCe.setVisibility(View.VISIBLE);
                 mLayoutOrder.setVisibility(View.GONE);
-//                Toast.makeText(this, "按下电线清单", Toast.LENGTH_SHORT).show();
+                mLayoutLujing.setVisibility(View.GONE);
                 break;
             case 1:
 
                 mLayoutQingCe.setVisibility(View.GONE);
                 mLayoutOrder.setVisibility(View.VISIBLE);
+                mLayoutLujing.setVisibility(View.GONE);
                 mFrdImg.setImageResource(R.mipmap.tab_find_frd_pressed);
 
                 if (mFragFrd == null) {
@@ -224,6 +249,9 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 //                Toast.makeText(this, "按下订单中心", Toast.LENGTH_SHORT).show();
                 break;
             case 2:
+                mLayoutQingCe.setVisibility(View.GONE);
+                mLayoutOrder.setVisibility(View.GONE);
+                mLayoutLujing.setVisibility(View.VISIBLE);
                 mAddressImg.setImageResource(R.mipmap.tab_address_pressed);
                 if (mFragAddress == null) {
                     mFragAddress = new AddressFragment();

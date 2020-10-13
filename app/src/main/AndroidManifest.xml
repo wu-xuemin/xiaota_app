@@ -34,7 +34,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.OrderActivity"></activity>
         <activity android:name=".ui.Main" />
 
         <service

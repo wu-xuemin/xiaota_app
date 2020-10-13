@@ -14,18 +14,18 @@ import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 
 import java.util.ArrayList;
 
-public class QingceAdapter extends RecyclerView.Adapter {
+public class DianXianQingceAdapter extends RecyclerView.Adapter {
 
     private static String TAG = "QingceAdapter";
 //    private ArrayList<InstallPlanData> mInstallPlanAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeAdapter;
-    public QingceAdapter(ArrayList<DianxianQingCeData> list) {
+    public DianXianQingceAdapter(ArrayList<DianxianQingCeData> list) {
         mDianxianQingCeAdapter = list;
     }
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dianxian_qing_ce,parent,false);
-        return new QingceAdapter.ItemView(view);
+        return new DianXianQingceAdapter.ItemView(view);
 
     }
 //    @Override
@@ -39,7 +39,7 @@ public class QingceAdapter extends RecyclerView.Adapter {
     @Override
 //    public void onBindViewHolder(RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        final QingceAdapter.ItemView itemView = (QingceAdapter.ItemView) holder;
+        final DianXianQingceAdapter.ItemView itemView = (DianXianQingceAdapter.ItemView) holder;
         //itemView.setIsRecyclable(false);//禁止复用
         if (mDianxianQingCeAdapter!=null && !mDianxianQingCeAdapter.isEmpty() && position < mDianxianQingCeAdapter.size()) {
             itemView.dianxianBianhaoTv.setText(mDianxianQingCeAdapter.get(position).getDxNumber());

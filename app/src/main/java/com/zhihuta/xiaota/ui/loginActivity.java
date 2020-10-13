@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.blankj.utilcode.util.ToastUtils;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.OrderData;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
@@ -181,6 +182,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 ArrayList<DianxianQingCeData> mDianxianQingCeList;
                 ArrayList<OrderData> mOrderList;
+                ArrayList<LujingData> mLujingList;
 
                 DianxianQingCeData dianxianQingCeData1 = new DianxianQingCeData();
                 dianxianQingCeData1.setId(1);
@@ -224,13 +226,33 @@ public class LoginActivity extends AppCompatActivity {
                 mOrderData2.setOrderCreater("小王");
                 mOrderData2.setOrderStatus("正常");
 
-
-
-
                 mOrderList = new ArrayList<>();
                 mOrderList.add(mOrderData1);
                 mOrderList.add(mOrderData2);
                 bundle.putSerializable("mOrderList", (Serializable) mOrderList);
+
+                LujingData mLujingData1 = new LujingData();
+                mLujingData1.setId(1);
+                mLujingData1.setLujingName("路径_abc1");
+                mLujingData1.setLujingCreatedDate(new Date());
+                mLujingData1.setLujingCreater("路小凡");
+                mLujingData1.setLujingCaozuo("cccc");
+
+                LujingData mLujingData2 = new LujingData();
+                mLujingData2.setId(1);
+                mLujingData2.setLujingName("路径_bbb2");
+                mLujingData2.setLujingCreatedDate(new Date());
+                mLujingData2.setLujingCreater("路小凡222");
+                mLujingData2.setLujingCaozuo("cccc222");
+
+
+                mLujingList = new ArrayList<>();
+                mLujingList.add(mLujingData1);
+                mLujingList.add(mLujingData2);
+//                bundle.putSerializable("mLujingList", (Serializable) mLujingList);
+
+//                Bundle bundle = new Bundle();
+                bundle.putSerializable("mLujingList", (Serializable) mLujingList);
                 intent.putExtras(bundle);
                 startActivity(intent);
                 finish();//销毁此Activity
