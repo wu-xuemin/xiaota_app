@@ -10,7 +10,6 @@
         android:id="@+id/layout_lujing_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="vertical">
 
         <include layout="@layout/top" />
@@ -66,7 +65,7 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fillViewport="true">
+            android:fillViewport="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
