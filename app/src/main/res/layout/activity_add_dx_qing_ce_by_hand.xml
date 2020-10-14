@@ -111,7 +111,72 @@
                     android:hint="输入电线型号" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            tools:layout_weight="1">
 
+            <TextView
+                android:id="@+id/textView_dianxianXinshuShuru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="电线芯数" />
+
+            <Spinner
+                android:id="@+id/spinner_xinshu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            tools:layout_weight="1">
+            <TextView
+                android:id="@+id/textView_dianxianJieMianShuru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="电线截面" />
+
+            <Spinner
+                android:id="@+id/spinner_jiemian"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            tools:layout_weight="1">
+
+            <TextView
+                android:id="@+id/textView_dianxianCankaoChangdu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="长度(参考)" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="输入长度(米)" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -123,8 +188,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="保存路径" />
+
         </LinearLayout>
 
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
