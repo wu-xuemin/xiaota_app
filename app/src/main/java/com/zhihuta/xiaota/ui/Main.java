@@ -57,6 +57,8 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     // 电线 "手动添加" 按钮
     private Button addDxByHandBt;
+    // 电线 "从文件导入" 按钮
+    private Button addDxFromFileBt;
 
     private DianXianQingceAdapter mQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
@@ -111,6 +113,17 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 startActivity(intent);
             }
         });
+
+        addDxFromFileBt = (Button) findViewById(R.id.button_add_dx_from_file);
+        addDxFromFileBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Main.this, AddDxQingCeFromFileActivity.class);
+
+                startActivity(intent);
+            }
+        });
+
 
         //获取传递过来的信息
         Intent intent = getIntent();

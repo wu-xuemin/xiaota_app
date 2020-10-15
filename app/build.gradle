@@ -41,7 +41,7 @@ android {
         applicationId "com.zhihuta.xiaota"
 //        minSdkVersion 15  Fragment只有在android5 sdk 21 之后才有。
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 28
         versionCode 33
         versionName "0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -80,6 +80,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+//    implementation files('libs\\jxl.jar')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
