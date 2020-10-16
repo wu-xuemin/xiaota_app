@@ -91,7 +91,8 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
 //                        InputStream inputStream = ContentResolver.get(uri) //openInputStream
 //                        // 执行文件读取操作
                         Toast.makeText(this, "文件路径："+ uri.getPath().toString(), Toast.LENGTH_SHORT).show();
-
+//uri.getEncodedPath()
+//                        uri:  content://com.android.externalstorage.documents/document/primary%3ADownload%2Fdx.xlsx
                         readExcel(uri.getPath());
                     }
             }
@@ -134,8 +135,7 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
     }
     private void readExcel(String fileName) {
         try {
-//            File file = new File(Environment.getExternalStorageDirectory().getPath());
-//            File file2 = new File(Environment.getExternalStorageDirectory().getPath() + "/document/primary:Download/dx.xlsx");
+            // todo: 这里是hardcode了。
             File file3 = new File(Environment.getExternalStorageDirectory().getPath() + "/Download/dx.xlsx");
 
             if(! file3.exists()){
@@ -166,17 +166,63 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
                         Sheet sheet = workbook.getSheetAt(0);
                         int rowsCount = sheet.getPhysicalNumberOfRows();
                         FormulaEvaluator formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
-                        for (int r = 0; r < rowsCount; r++) {
+//                        for (int r = 0; r < rowsCount; r++) {
+//                            Row row = sheet.getRow(r);
+//                            CellValue v0 = formulaEvaluator.evaluate(row.getCell(0));
+//                            CellValue v1 = formulaEvaluator.evaluate(row.getCell(1));
+//                            if(v0 != null){
+//                                Log.i("Excel", "readExcel: " + v0.getStringValue() +"坐标：" + v0.get  );
+//                            }
+//                            if(v1 != null){
+//                                Log.i("Excel", "readExcel: "  + v1.getStringValue());
+//                            }
+//                        }
+                        //解析每行， 第0、1两行是标题，从第2行
+                        for (int r = 2; r < rowsCount; r++) {
                             Row row = sheet.getRow(r);
+                            //第一列 电缆编号
                             CellValue v0 = formulaEvaluator.evaluate(row.getCell(0));
-                            CellValue v1 = formulaEvaluator.evaluate(row.getCell(1));
-                            if(v0 != null){
-                                Log.i("Excel", "readExcel: " + v0.getStringValue()  );
+                            if (v0 != null) {
+                                Log.i("Excel", "=====电缆编号: " + v0.getStringValue()  );
                             }
-                            if(v1 != null){
-                                Log.i("Excel", "readExcel: "  + v1.getStringValue());
+                            //第2列 起点
+                            CellValue v1 = formulaEvaluator.evaluate(row.getCell(1));
+                            if (v0 != null) {
+                                Log.i("Excel", "起点: " + v1.getStringValue()  );
+                            }
+                            //第3列 终点
+                            CellValue v2 = formulaEvaluator.evaluate(row.getCell(2));
+                            if (v0 != null) {
+                                Log.i("Excel", "终点: " + v2.getStringValue()  );
+                            }
+                            //第4列 型号
+                            CellValue v3 = formulaEvaluator.evaluate(row.getCell(3));
+                            if (v0 != null) {
+                                Log.i("Excel", "型号: " + v2.getStringValue()  );
+                            }
+                            //第5列 芯数x截面
+                            CellValue v4 = formulaEvaluator.evaluate(row.getCell(4));
+                            if (v0 != null) {
+                                Log.i("Excel", "芯数x截面: " + v4.getStringValue()  );
+                            }
+                            //第6列 长度
+                            CellValue v5 = formulaEvaluator.evaluate(row.getCell(5));
+                            if (v0 != null) {
+                                Log.i("Excel", "长度: " + v5.getStringValue()  );
+                            }
+
+                            //第6列 钢管冗余
+                            CellValue v6 = formulaEvaluator.evaluate(row.getCell(6));
+                            if (v0 != null) {
+                                Log.i("Excel", "钢管冗余: " + v6.getStringValue()  );
+                            }
+                            //第6列 软管冗余
+                            CellValue v7 = formulaEvaluator.evaluate(row.getCell(7));
+                            if (v0 != null) {
+                                Log.i("Excel", "软管冗余: " + v6.getStringValue()  );
                             }
                         }
+
                         workbook.close();
                     }
                 }

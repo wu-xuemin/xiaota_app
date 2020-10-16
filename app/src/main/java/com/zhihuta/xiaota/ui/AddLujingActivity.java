@@ -8,12 +8,12 @@ import android.view.MenuItem;
 
 import com.zhihuta.xiaota.R;
 
-public class AddTietaLujingMoxingActivity extends AppCompatActivity {
+public class AddLujingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_tieta_lujing_moxing);
+        setContentView(R.layout.activity_add_new_lujing);
         //返回前页按钮
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

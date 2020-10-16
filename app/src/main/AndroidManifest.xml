@@ -45,8 +45,8 @@
             android:name=".ui.ShowDxQingCeActivity"
             android:label="浏览电线设计清册" />
         <activity
-            android:name=".ui.AddTietaLujingMoxingActivity"
-            android:label="建立铁塔路径模型" />
+            android:name=".ui.AddLujingActivity"
+            android:label="建立新路径" />
         <activity
             android:name=".ui.AddDxQingCeFromFileActivity"
             android:label="从文件表格导入" />

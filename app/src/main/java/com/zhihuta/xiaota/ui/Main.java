@@ -59,6 +59,8 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private Button addDxByHandBt;
     // 电线 "从文件导入" 按钮
     private Button addDxFromFileBt;
+    // 建全新路径 按钮
+    private Button addTotalNewLujingBt;
 
     private DianXianQingceAdapter mQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
@@ -123,7 +125,16 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 startActivity(intent);
             }
         });
+        /// 全新路径和基于已有路径 来新建路径，两个是否可以用同个acitivity？？
+        addTotalNewLujingBt = (Button) findViewById(R.id.button_add_new_lujing);
+        addTotalNewLujingBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Main.this, AddLujingActivity.class);
 
+                startActivity(intent);
+            }
+        });
 
         //获取传递过来的信息
         Intent intent = getIntent();
