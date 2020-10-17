@@ -51,8 +51,9 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private Fragment mFragJisuan;
 
     private LinearLayout mLayoutQingCe;
-    private LinearLayout mLayoutOrder;
+//    private LinearLayout mLayoutOrder;
     private LinearLayout mLayoutLujing;
+    private LinearLayout mLayoutCompute;
 
     // 电线 "手动添加" 按钮
     private Button addDxByHandBt;
@@ -64,8 +65,8 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private DianXianQingceAdapter mQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
 
-    private OrderAdapter mOrderAdapter;
-    private ArrayList<OrderData> mOrderList = new ArrayList<>();
+//    private OrderAdapter mOrderAdapter;
+//    private ArrayList<OrderData> mOrderList = new ArrayList<>();
 
     private LujingAdapter mLujingAdapter;
     private ArrayList<LujingData> mLujingList = new ArrayList<>();
@@ -158,21 +159,21 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         //获取传递过来的 订单信息
 //        Intent intent2 = getIntent();
 //        Bundle bundle2 = intent.getExtras();
-        mOrderList = (ArrayList<OrderData>) bundle.getSerializable("mOrderList");
-
-        if(mOrderList !=null) {
-            Toast.makeText(this, "       得到 订单列表 size:" + mOrderList.size(), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "   订单列表为空！！！" , Toast.LENGTH_SHORT).show();
-        }
+//        mOrderList = (ArrayList<OrderData>) bundle.getSerializable("mOrderList");
+//
+//        if(mOrderList !=null) {
+//            Toast.makeText(this, "       得到 订单列表 size:" + mOrderList.size(), Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(this, "   订单列表为空！！！" , Toast.LENGTH_SHORT).show();
+//        }
         //订单列表
-        RecyclerView mOrderRV = (RecyclerView) findViewById(R.id.rv_order);
-        LinearLayoutManager manager2 = new LinearLayoutManager(this);
-        manager2.setOrientation(LinearLayoutManager.VERTICAL);
-        mOrderRV.setLayoutManager(manager2);
-        mOrderAdapter = new OrderAdapter(mOrderList);
-        mOrderRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        mOrderRV.setAdapter(mOrderAdapter);
+//        RecyclerView mOrderRV = (RecyclerView) findViewById(R.id.rv_order);
+//        LinearLayoutManager manager2 = new LinearLayoutManager(this);
+//        manager2.setOrientation(LinearLayoutManager.VERTICAL);
+//        mOrderRV.setLayoutManager(manager2);
+//        mOrderAdapter = new OrderAdapter(mOrderList);
+//        mOrderRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+//        mOrderRV.setAdapter(mOrderAdapter);
 
         //获取传递过来的路径信息
 //        Intent intent2 = getIntent();
@@ -194,8 +195,10 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         mLujingRV.setAdapter(mLujingAdapter);
 
         mLayoutQingCe = (LinearLayout)findViewById(R.id.layout_dianxian_qingce_id);
-        mLayoutOrder = (LinearLayout)findViewById(R.id.layout_order_id);
+//        mLayoutOrder = (LinearLayout)findViewById(R.id.layout_order_id);
         mLayoutLujing = (LinearLayout)findViewById(R.id.layout_lujing);
+
+        mLayoutCompute = (LinearLayout)findViewById(R.id.layout_compute);
 
     }
 
@@ -251,8 +254,9 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     transaction.show(mFragDxQingce);
                 }
                 mLayoutQingCe.setVisibility(View.VISIBLE);
-                mLayoutOrder.setVisibility(View.GONE);
+//                mLayoutOrder.setVisibility(View.GONE);
                 mLayoutLujing.setVisibility(View.GONE);
+                mLayoutCompute.setVisibility(View.GONE);
                 break;
 //            case 1:
 //
@@ -273,8 +277,8 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 //                break;
             case 1:
                 mLayoutQingCe.setVisibility(View.GONE);
-                mLayoutOrder.setVisibility(View.GONE);
                 mLayoutLujing.setVisibility(View.VISIBLE);
+                mLayoutCompute.setVisibility(View.GONE);
                 mLujingMoxingImg.setImageResource(R.mipmap.tab_lujing_moxing_pressed);
                 if (mFragLujingMoxing == null) {
                     mFragLujingMoxing = new AddressFragment();
@@ -285,6 +289,9 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 //                Toast.makeText(this, "按下路径模型", Toast.LENGTH_SHORT).show();
                 break;
             case 2:
+                mLayoutQingCe.setVisibility(View.GONE);
+                mLayoutLujing.setVisibility(View.GONE);
+                mLayoutCompute.setVisibility(View.VISIBLE);
                 mJisuanImg.setImageResource(R.mipmap.tab_compute_pressed);
                 if (mFragJisuan == null) {
                     mFragJisuan = new SettingFragment();

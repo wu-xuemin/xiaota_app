@@ -143,59 +143,13 @@
         <!--        <include layout="@layout/bottom" />-->
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/layout_order_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
 
-        <include layout="@layout/top" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textView9"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="订单中心-目前还在同个activity" />
-
-        </LinearLayout>
-
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fillViewport="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:weightSum="1">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_order"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-        <!--        <include layout="@layout/bottom" />-->
-        <!--        <include layout="@layout/bottom2" />-->
-    </LinearLayout>
 
     <include
         layout="@layout/layout_lujing" />
 
+    <include
+        layout="@layout/layout_compute" />
 
     <include
         layout="@layout/bottom"
