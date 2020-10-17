@@ -22,38 +22,42 @@ import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
 import com.zhihuta.xiaota.WeixinFragment;
 import com.zhihuta.xiaota.adapter.LujingAdapter;
-import com.zhihuta.xiaota.adapter.OrderAdapter;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
-import com.zhihuta.xiaota.bean.basic.OrderData;
 
 import java.util.ArrayList;
 
 //public class DianxianQingCe extends AppCompatActivity {
 public class Main extends FragmentActivity implements View.OnClickListener {
-    //声明四个Tab的布局文件
+    //声明3个Tab的布局文件
     private LinearLayout mTabDxQingce;
 //    private LinearLayout mTabFrd;
     private LinearLayout mTabLujingMoxing;
     private LinearLayout mTabJisuan;
 
-    //声明四个Tab的ImageButton
+    //声明3个Tab的ImageButton
     private ImageButton mQingceImg;
-//    private ImageButton mFrdImg;
     private ImageButton mLujingMoxingImg;
     private ImageButton mJisuanImg;
 
-    //声明四个Tab分别对应的Fragment
+    //声明3个Tab分别对应的Fragment
     private Fragment mFragDxQingce;
-//    private Fragment mFragFrd;
     private Fragment mFragLujingMoxing;
     private Fragment mFragJisuan;
 
     private LinearLayout mLayoutQingCe;
-//    private LinearLayout mLayoutOrder;
     private LinearLayout mLayoutLujing;
     private LinearLayout mLayoutCompute;
+
+    // 计算路径的电线长度
+    private LinearLayout mLayoutComputeDx;
+    // 计算两点的间距长度
+    private LinearLayout mLayoutComputeDistance;
+    // "计算路径的电线长度" 的按钮
+    private Button mComputeDxBt;
+    // "计算两点间距" 的按钮
+    private Button mComputeDistanceBt;
 
     // 电线 "手动添加" 按钮
     private Button addDxByHandBt;
@@ -61,6 +65,9 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private Button addDxFromFileBt;
     // 建全新路径 按钮
     private Button addTotalNewLujingBt;
+
+
+    private Button mComputeScanBt;
 
     private DianXianQingceAdapter mQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
@@ -84,23 +91,20 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     }
 
     private void initEvents() {
-        //初始化四个Tab的点击事件
+        //初始化3个Tab的点击事件
         mTabDxQingce.setOnClickListener(this);
-//        mTabFrd.setOnClickListener(this);
         mTabLujingMoxing.setOnClickListener(this);
         mTabJisuan.setOnClickListener(this);
     }
 
     private void initViews() {
-        //初始化四个Tab的布局文件
+        //初始化3个Tab的布局文件
         mTabDxQingce = (LinearLayout) findViewById(R.id.id_tab_weixin);
-//        mTabFrd = (LinearLayout) findViewById(R.id.id_tab_frd);
         mTabLujingMoxing = (LinearLayout) findViewById(R.id.id_tab_lujing_moxing);
         mTabJisuan = (LinearLayout) findViewById(R.id.id_tab_setting);
 
-        //初始化四个ImageButton
+        //初始化3个ImageButton
         mQingceImg = (ImageButton) findViewById(R.id.id_tab_cx_qingce_img);
-//        mFrdImg = (ImageButton) findViewById(R.id.id_tab_frd_img);
         mLujingMoxingImg = (ImageButton) findViewById(R.id.id_tab_lujing_moxing_img);
         mJisuanImg = (ImageButton) findViewById(R.id.id_tab_setting_img);
 
@@ -108,11 +112,25 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         addDxByHandBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //新建一个Intent(当前Activity, SecondActivity)=====显示Intent
                 Intent intent = new Intent(Main.this, AddDxQingCeByHandActivity.class);
-
-                //启动Intent
                 startActivity(intent);
+            }
+        });
+
+        mComputeDxBt = (Button) findViewById(R.id.button_compute_dx);
+        mComputeDxBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mLayoutComputeDx.setVisibility(View.VISIBLE);
+                mLayoutComputeDistance.setVisibility(View.GONE);
+            }
+        });
+        mComputeDistanceBt = (Button) findViewById(R.id.button_compute_liangdian);
+        mComputeDistanceBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mLayoutComputeDistance.setVisibility(View.VISIBLE);
+                mLayoutComputeDx.setVisibility(View.GONE);
             }
         });
 
@@ -199,13 +217,25 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         mLayoutLujing = (LinearLayout)findViewById(R.id.layout_lujing);
 
         mLayoutCompute = (LinearLayout)findViewById(R.id.layout_compute);
+        mLayoutComputeDx = (LinearLayout)findViewById(R.id.layout_compute_dianxian);
+        mLayoutComputeDistance = (LinearLayout)findViewById(R.id.layout_compute_dis);
 
+        initViewsCompute();
     }
+    private void initViewsCompute() {
+        mComputeScanBt = (Button) findViewById(R.id.button_compute_scan);
+        mComputeScanBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+
+            }
+        });
+    }
     //处理Tab的点击事件
     @Override
     public void onClick(View v) {
-        //先将四个ImageButton置为灰色
+        //先将3个ImageButton置为灰色
         resetImgs();
         switch (v.getId()) {
             case R.id.id_tab_weixin:
@@ -258,23 +288,6 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 mLayoutLujing.setVisibility(View.GONE);
                 mLayoutCompute.setVisibility(View.GONE);
                 break;
-//            case 1:
-//
-//                mLayoutQingCe.setVisibility(View.GONE);
-//                mLayoutOrder.setVisibility(View.VISIBLE);
-//                mLayoutLujing.setVisibility(View.GONE);
-//                mFrdImg.setImageResource(R.mipmap.tab_find_frd_pressed);
-//
-//                if (mFragFrd == null) {
-//                    mFragFrd = new FrdFragment();
-////                    transaction.add(R.id.layout_dianxian_qingce_id, mFragFrd);
-//                    transaction.add(R.id.layout_order_id, mFragFrd);
-//
-//                } else {
-//                    transaction.show(mFragFrd);
-//                }
-////                Toast.makeText(this, "按下订单中心", Toast.LENGTH_SHORT).show();
-//                break;
             case 1:
                 mLayoutQingCe.setVisibility(View.GONE);
                 mLayoutLujing.setVisibility(View.VISIBLE);
@@ -306,7 +319,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         transaction.commit();
     }
 
-    //将四个的Fragment隐藏
+    //将3个的Fragment隐藏
     private void hideFragments(FragmentTransaction transaction) {
         if (mFragDxQingce != null) {
             transaction.hide(mFragDxQingce);
@@ -322,7 +335,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         }
     }
 
-    //将四个ImageButton置为灰色
+    //将3个ImageButton置为灰色
     private void resetImgs() {
         mQingceImg.setImageResource(R.mipmap.tab_dx_qingce_normal);
 //        mFrdImg.setImageResource(R.mipmap.tab_find_frd_normal);
