@@ -16,22 +16,22 @@
         android:orientation="vertical">
 
         <ImageButton
-            android:id="@+id/id_tab_weixin_img"
+            android:id="@+id/id_tab_cx_qingce_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#00000000"
             android:clickable="false"
-            android:src="@mipmap/tab_weixin_pressed" />
+            android:src="@mipmap/tab_dx_qingce_pressed" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="电线设计清册"
+            android:text="电线清册"
             android:textColor="#ffffff" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/id_tab_frd"
+        android:id="@+id/id_tab_lujing_moxing"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -39,30 +39,7 @@
         android:orientation="vertical">
 
         <ImageButton
-            android:id="@+id/id_tab_frd_img"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00000000"
-            android:clickable="false"
-            android:src="@mipmap/tab_find_frd_normal" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="订单中心"
-            android:textColor="#ffffff" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/id_tab_address"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <ImageButton
-            android:id="@+id/id_tab_address_img"
+            android:id="@+id/id_tab_lujing_moxing_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#00000000"
@@ -90,12 +67,12 @@
             android:layout_height="wrap_content"
             android:background="#00000000"
             android:clickable="false"
-            android:src="@mipmap/tab_settings_normal" />
+            android:src="@mipmap/tab_compute_normal" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="路径计算"
+            android:text="计算中心"
             android:textColor="#ffffff" />
     </LinearLayout>
 

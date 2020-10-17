@@ -18,7 +18,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.zhihuta.xiaota.FrdFragment;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
 import com.zhihuta.xiaota.WeixinFragment;
@@ -34,22 +33,22 @@ import java.util.ArrayList;
 //public class DianxianQingCe extends AppCompatActivity {
 public class Main extends FragmentActivity implements View.OnClickListener {
     //声明四个Tab的布局文件
-    private LinearLayout mTabWeixin;
-    private LinearLayout mTabFrd;
-    private LinearLayout mTabAddress;
-    private LinearLayout mTabSetting;
+    private LinearLayout mTabDxQingce;
+//    private LinearLayout mTabFrd;
+    private LinearLayout mTabLujingMoxing;
+    private LinearLayout mTabJisuan;
 
     //声明四个Tab的ImageButton
-    private ImageButton mWeixinImg;
-    private ImageButton mFrdImg;
-    private ImageButton mAddressImg;
-    private ImageButton mSettingImg;
+    private ImageButton mQingceImg;
+//    private ImageButton mFrdImg;
+    private ImageButton mLujingMoxingImg;
+    private ImageButton mJisuanImg;
 
     //声明四个Tab分别对应的Fragment
-    private Fragment mFragWeinxin;
-    private Fragment mFragFrd;
-    private Fragment mFragAddress;
-    private Fragment mFragSetting;
+    private Fragment mFragDxQingce;
+//    private Fragment mFragFrd;
+    private Fragment mFragLujingMoxing;
+    private Fragment mFragJisuan;
 
     private LinearLayout mLayoutQingCe;
     private LinearLayout mLayoutOrder;
@@ -85,24 +84,24 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     private void initEvents() {
         //初始化四个Tab的点击事件
-        mTabWeixin.setOnClickListener(this);
-        mTabFrd.setOnClickListener(this);
-        mTabAddress.setOnClickListener(this);
-        mTabSetting.setOnClickListener(this);
+        mTabDxQingce.setOnClickListener(this);
+//        mTabFrd.setOnClickListener(this);
+        mTabLujingMoxing.setOnClickListener(this);
+        mTabJisuan.setOnClickListener(this);
     }
 
     private void initViews() {
         //初始化四个Tab的布局文件
-        mTabWeixin = (LinearLayout) findViewById(R.id.id_tab_weixin);
-        mTabFrd = (LinearLayout) findViewById(R.id.id_tab_frd);
-        mTabAddress = (LinearLayout) findViewById(R.id.id_tab_address);
-        mTabSetting = (LinearLayout) findViewById(R.id.id_tab_setting);
+        mTabDxQingce = (LinearLayout) findViewById(R.id.id_tab_weixin);
+//        mTabFrd = (LinearLayout) findViewById(R.id.id_tab_frd);
+        mTabLujingMoxing = (LinearLayout) findViewById(R.id.id_tab_lujing_moxing);
+        mTabJisuan = (LinearLayout) findViewById(R.id.id_tab_setting);
 
         //初始化四个ImageButton
-        mWeixinImg = (ImageButton) findViewById(R.id.id_tab_weixin_img);
-        mFrdImg = (ImageButton) findViewById(R.id.id_tab_frd_img);
-        mAddressImg = (ImageButton) findViewById(R.id.id_tab_address_img);
-        mSettingImg = (ImageButton) findViewById(R.id.id_tab_setting_img);
+        mQingceImg = (ImageButton) findViewById(R.id.id_tab_cx_qingce_img);
+//        mFrdImg = (ImageButton) findViewById(R.id.id_tab_frd_img);
+        mLujingMoxingImg = (ImageButton) findViewById(R.id.id_tab_lujing_moxing_img);
+        mJisuanImg = (ImageButton) findViewById(R.id.id_tab_setting_img);
 
         addDxByHandBt = (Button) findViewById(R.id.button_add_dx_by_hand);
         addDxByHandBt.setOnClickListener(new View.OnClickListener() {
@@ -209,14 +208,14 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             case R.id.id_tab_weixin:
                 selectTab(0);//当点击Tab就选中该的Tab
                 break;
-            case R.id.id_tab_frd:
+//            case R.id.id_tab_frd:
+//                selectTab(1);
+//                break;
+            case R.id.id_tab_lujing_moxing:
                 selectTab(1);
                 break;
-            case R.id.id_tab_address:
-                selectTab(2);
-                break;
             case R.id.id_tab_setting:
-                selectTab(3);
+                selectTab(2);
                 break;
         }
 
@@ -241,57 +240,57 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             //当选中点击的是微信的Tab时
             case 0:
                 //设置微信的ImageButton为绿色
-                mWeixinImg.setImageResource(R.mipmap.tab_weixin_pressed);
+                mQingceImg.setImageResource(R.mipmap.tab_dx_qingce_pressed);
                 //如果微信对应的Fragment没有实例化，则进行实例化，并显示出来
-                if (mFragWeinxin == null) {
-                    mFragWeinxin = new WeixinFragment();
+                if (mFragDxQingce == null) {
+                    mFragDxQingce = new WeixinFragment();
 //                    transaction.add(R.id.layout_dianxian_qingce_id, mFragWeinxin);
-                    transaction.add(R.id.layout_dianxian_qingce_id, mFragWeinxin);
+                    transaction.add(R.id.layout_dianxian_qingce_id, mFragDxQingce);
                 } else {
                     //如果微信对应的Fragment已经实例化，则直接显示出来
-                    transaction.show(mFragWeinxin);
+                    transaction.show(mFragDxQingce);
                 }
                 mLayoutQingCe.setVisibility(View.VISIBLE);
                 mLayoutOrder.setVisibility(View.GONE);
                 mLayoutLujing.setVisibility(View.GONE);
                 break;
+//            case 1:
+//
+//                mLayoutQingCe.setVisibility(View.GONE);
+//                mLayoutOrder.setVisibility(View.VISIBLE);
+//                mLayoutLujing.setVisibility(View.GONE);
+//                mFrdImg.setImageResource(R.mipmap.tab_find_frd_pressed);
+//
+//                if (mFragFrd == null) {
+//                    mFragFrd = new FrdFragment();
+////                    transaction.add(R.id.layout_dianxian_qingce_id, mFragFrd);
+//                    transaction.add(R.id.layout_order_id, mFragFrd);
+//
+//                } else {
+//                    transaction.show(mFragFrd);
+//                }
+////                Toast.makeText(this, "按下订单中心", Toast.LENGTH_SHORT).show();
+//                break;
             case 1:
-
-                mLayoutQingCe.setVisibility(View.GONE);
-                mLayoutOrder.setVisibility(View.VISIBLE);
-                mLayoutLujing.setVisibility(View.GONE);
-                mFrdImg.setImageResource(R.mipmap.tab_find_frd_pressed);
-
-                if (mFragFrd == null) {
-                    mFragFrd = new FrdFragment();
-//                    transaction.add(R.id.layout_dianxian_qingce_id, mFragFrd);
-                    transaction.add(R.id.layout_order_id, mFragFrd);
-
-                } else {
-                    transaction.show(mFragFrd);
-                }
-//                Toast.makeText(this, "按下订单中心", Toast.LENGTH_SHORT).show();
-                break;
-            case 2:
                 mLayoutQingCe.setVisibility(View.GONE);
                 mLayoutOrder.setVisibility(View.GONE);
                 mLayoutLujing.setVisibility(View.VISIBLE);
-                mAddressImg.setImageResource(R.mipmap.tab_address_pressed);
-                if (mFragAddress == null) {
-                    mFragAddress = new AddressFragment();
-                    transaction.add(R.id.layout_dianxian_qingce_id, mFragAddress);
+                mLujingMoxingImg.setImageResource(R.mipmap.tab_lujing_moxing_pressed);
+                if (mFragLujingMoxing == null) {
+                    mFragLujingMoxing = new AddressFragment();
+                    transaction.add(R.id.layout_dianxian_qingce_id, mFragLujingMoxing);
                 } else {
-                    transaction.show(mFragAddress);
+                    transaction.show(mFragLujingMoxing);
                 }
 //                Toast.makeText(this, "按下路径模型", Toast.LENGTH_SHORT).show();
                 break;
-            case 3:
-                mSettingImg.setImageResource(R.mipmap.tab_settings_pressed);
-                if (mFragSetting == null) {
-                    mFragSetting = new SettingFragment();
-                    transaction.add(R.id.layout_dianxian_qingce_id, mFragSetting);
+            case 2:
+                mJisuanImg.setImageResource(R.mipmap.tab_compute_pressed);
+                if (mFragJisuan == null) {
+                    mFragJisuan = new SettingFragment();
+                    transaction.add(R.id.layout_dianxian_qingce_id, mFragJisuan);
                 } else {
-                    transaction.show(mFragSetting);
+                    transaction.show(mFragJisuan);
                 }
 //                Toast.makeText(this, "按下路径计算", Toast.LENGTH_SHORT).show();
                 break;
@@ -302,26 +301,26 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     //将四个的Fragment隐藏
     private void hideFragments(FragmentTransaction transaction) {
-        if (mFragWeinxin != null) {
-            transaction.hide(mFragWeinxin);
+        if (mFragDxQingce != null) {
+            transaction.hide(mFragDxQingce);
         }
-        if (mFragFrd != null) {
-            transaction.hide(mFragFrd);
+//        if (mFragFrd != null) {
+//            transaction.hide(mFragFrd);
+//        }
+        if (mFragLujingMoxing != null) {
+            transaction.hide(mFragLujingMoxing);
         }
-        if (mFragAddress != null) {
-            transaction.hide(mFragAddress);
-        }
-        if (mFragSetting != null) {
-            transaction.hide(mFragSetting);
+        if (mFragJisuan != null) {
+            transaction.hide(mFragJisuan);
         }
     }
 
     //将四个ImageButton置为灰色
     private void resetImgs() {
-        mWeixinImg.setImageResource(R.mipmap.tab_weixin_normal);
-        mFrdImg.setImageResource(R.mipmap.tab_find_frd_normal);
-        mAddressImg.setImageResource(R.mipmap.tab_address_normal);
-        mSettingImg.setImageResource(R.mipmap.tab_settings_normal);
+        mQingceImg.setImageResource(R.mipmap.tab_dx_qingce_normal);
+//        mFrdImg.setImageResource(R.mipmap.tab_find_frd_normal);
+        mLujingMoxingImg.setImageResource(R.mipmap.tab_address_normal);
+        mJisuanImg.setImageResource(R.mipmap.tab_compute_normal);
     }
 
     @Override
