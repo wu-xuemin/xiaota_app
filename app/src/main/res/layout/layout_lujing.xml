@@ -19,6 +19,12 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <Button
+                android:id="@+id/button_scan_lujing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="扫描" />
+
             <SearchView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -50,7 +56,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="基于已有路径建新路径" />
+                    android:text="重置" />
             </LinearLayout>
 
         </LinearLayout>
@@ -63,28 +69,28 @@
                 android:id="@+id/textView_lujingList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="4"
                 android:text="路径" />
 
             <TextView
                 android:id="@+id/textView_lujing_CreaterList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="3"
                 android:text="创建人" />
 
             <TextView
                 android:id="@+id/textView_lujing_riqiList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="4"
                 android:text="日期" />
 
             <TextView
                 android:id="@+id/textView_lujingCaozuoList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="9"
                 android:text="操作" />
         </LinearLayout>
 

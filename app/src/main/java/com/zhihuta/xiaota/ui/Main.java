@@ -48,7 +48,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     private LinearLayout mLayoutQingCe;
     private LinearLayout mLayoutLujing;
-    private LinearLayout mLayoutCompute;
+    private LinearLayout mLayoutCompute; //计算页面， 包含 计算路径的电线长度、计算两点间距 两部分。
 
     // 计算路径的电线长度
     private LinearLayout mLayoutComputeDx;
@@ -77,6 +77,10 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     private LujingAdapter mLujingAdapter;
     private ArrayList<LujingData> mLujingList = new ArrayList<>();
+
+
+    private LujingAdapter mLujingShaixuanAdapter;
+    private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -211,6 +215,21 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         mLujingAdapter = new LujingAdapter(mLujingList);
         mLujingRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mLujingRV.setAdapter(mLujingAdapter);
+
+        mLujingShaixuanList = (ArrayList<LujingData>) bundle.getSerializable("mLujingShaixuanList");
+        if(mLujingShaixuanList !=null) {
+            Toast.makeText(this, "    得到    筛选的 路径列表 size:" + mLujingShaixuanList.size(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "   路径列表为空！！！" , Toast.LENGTH_SHORT).show();
+        }
+        //计算路径，扫描筛选得到的路径列表
+        RecyclerView mLujingShaixuanRV = (RecyclerView) findViewById(R.id.rv_lujing_compute);
+        LinearLayoutManager manager4 = new LinearLayoutManager(this);
+        manager4.setOrientation(LinearLayoutManager.VERTICAL);
+        mLujingShaixuanRV.setLayoutManager(manager4);
+        mLujingShaixuanAdapter = new LujingAdapter(mLujingShaixuanList);
+        mLujingShaixuanRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        mLujingShaixuanRV.setAdapter(mLujingShaixuanAdapter);
 
         mLayoutQingCe = (LinearLayout)findViewById(R.id.layout_dianxian_qingce_id);
 //        mLayoutOrder = (LinearLayout)findViewById(R.id.layout_order_id);

@@ -34,6 +34,8 @@ import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -180,9 +182,11 @@ public class LoginActivity extends AppCompatActivity {
 //                Intent intent = new Intent(this, MainActivity.class);
                 Intent intent = new Intent(this, Main.class);
 
+//                SimpleDateFormat sf3=new SimpleDateFormat("yy/MM/dd");
                 ArrayList<DianxianQingCeData> mDianxianQingCeList;
                 ArrayList<OrderData> mOrderList;
                 ArrayList<LujingData> mLujingList;
+                ArrayList<LujingData> mLujingShaixuanList;
 
                 DianxianQingCeData dianxianQingCeData1 = new DianxianQingCeData();
                 dianxianQingCeData1.setId(1);
@@ -320,25 +324,63 @@ public class LoginActivity extends AppCompatActivity {
                 LujingData mLujingData1 = new LujingData();
                 mLujingData1.setId(1);
                 mLujingData1.setLujingName("路径_abc1");
-                mLujingData1.setLujingCreatedDate(new Date());
+//                String sDate = sf3.format(new Date());
+//                try {
+                    mLujingData1.setLujingCreatedDate(new Date());
+//                } catch (ParseException e) {
+//                    e.printStackTrace();
+//                }
                 mLujingData1.setLujingCreater("路小凡");
                 mLujingData1.setLujingCaozuo("cccc");
 
                 LujingData mLujingData2 = new LujingData();
-                mLujingData2.setId(1);
+                mLujingData2.setId(2);
                 mLujingData2.setLujingName("路径_bbb2");
                 mLujingData2.setLujingCreatedDate(new Date());
-                mLujingData2.setLujingCreater("路小凡222");
-                mLujingData2.setLujingCaozuo("cccc222");
+                mLujingData2.setLujingCreater("张三");
 
+                LujingData mLujingData3 = new LujingData();
+                mLujingData3.setId(3);
+                mLujingData3.setLujingName("上海南京1");
+                mLujingData3.setLujingCreatedDate(new Date());
+                mLujingData3.setLujingCreater("张三丰");
+                LujingData mLujingData4 = new LujingData();
+                mLujingData4.setId(4);
+                mLujingData4.setLujingName("北京南京12");
+                mLujingData4.setLujingCreatedDate(new Date());
+                mLujingData4.setLujingCreater("小王");
+                LujingData mLujingData5 = new LujingData();
+                mLujingData5.setId(5);
+                mLujingData5.setLujingName("杭州太原88");
+                mLujingData5.setLujingCreatedDate(new Date());
+                mLujingData5.setLujingCreater("张小明");
+                LujingData mLujingData6 = new LujingData();
+                mLujingData6.setId(5);
+                mLujingData6.setLujingName("沿海888A");
+                mLujingData6.setLujingCreatedDate(new Date());
+                mLujingData6.setLujingCreater("杨晓阳");
+                LujingData mLujingData7 = new LujingData();
+                mLujingData7.setId(5);
+                mLujingData7.setLujingName("秦岭淮河790");
+                mLujingData7.setLujingCreatedDate(new Date());
+                mLujingData7.setLujingCreater("秦始皇");
 
                 mLujingList = new ArrayList<>();
                 mLujingList.add(mLujingData1);
                 mLujingList.add(mLujingData2);
-//                bundle.putSerializable("mLujingList", (Serializable) mLujingList);
-
-//                Bundle bundle = new Bundle();
+                mLujingList.add(mLujingData3);
+                mLujingList.add(mLujingData4);
+                mLujingList.add(mLujingData5);
+                mLujingList.add(mLujingData5);
+                mLujingList.add(mLujingData6);
+                mLujingList.add(mLujingData7);
                 bundle.putSerializable("mLujingList", (Serializable) mLujingList);
+                intent.putExtras(bundle);
+
+                mLujingShaixuanList = new ArrayList<>();
+                mLujingShaixuanList.add(mLujingData1);
+                mLujingShaixuanList.add(mLujingData2);
+                bundle.putSerializable("mLujingShaixuanList", (Serializable) mLujingShaixuanList);
                 intent.putExtras(bundle);
                 startActivity(intent);
                 finish();//销毁此Activity

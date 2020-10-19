@@ -11,12 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.LujingData;
-import com.zhihuta.xiaota.bean.basic.OrderData;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class LujingAdapter extends RecyclerView.Adapter {
-
+    private SimpleDateFormat sf3 = new SimpleDateFormat("yy/MM/dd");
     private static String TAG = "LujingAdapter";
     private ArrayList<LujingData> mLujingAdapter;
     public LujingAdapter(ArrayList<LujingData> list) {
@@ -39,9 +39,10 @@ public class LujingAdapter extends RecyclerView.Adapter {
         if (mLujingAdapter!=null && !mLujingAdapter.isEmpty() && position < mLujingAdapter.size()) {
             itemView.lujingNameTv.setText(mLujingAdapter.get(position).getLujingName());
             itemView.lujingNameTv.setSelected(true);//用于滚动显示
-            itemView.lujingCreatedDateTv.setText(mLujingAdapter.get(position).getLujingCreatedDate().toString());
+
+            itemView.lujingCreatedDateTv.setText(sf3.format(mLujingAdapter.get(position).getLujingCreatedDate()));
+
             itemView.lujingCreaterTv.setText(mLujingAdapter.get(position).getLujingCreater());
-            itemView.lujingCaozuoTv.setText(mLujingAdapter.get(position).getLujingCaozuo());
         }else {
             Log.d(TAG, "onBindViewHolder: 没有获取到 路径 list数据");
         }
@@ -65,14 +66,12 @@ public class LujingAdapter extends RecyclerView.Adapter {
         TextView lujingNameTv;
         TextView lujingCreatedDateTv;
         TextView lujingCreaterTv;
-        TextView lujingCaozuoTv;
 
         ItemView(View itemView) {
             super(itemView);
             lujingNameTv = itemView.findViewById(R.id.lujingMingChenTextView);
             lujingCreatedDateTv = itemView.findViewById(R.id.lujingCreateDateTextView);
             lujingCreaterTv = itemView.findViewById(R.id.lujingCreaterTextView);
-            lujingCaozuoTv = itemView.findViewById(R.id.lujingCaozuoTextView);
         }
     }
 }
