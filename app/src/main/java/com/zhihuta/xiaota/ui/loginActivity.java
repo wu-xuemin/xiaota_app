@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.blankj.utilcode.util.ToastUtils;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.OrderData;
 import com.zhihuta.xiaota.common.URL;
@@ -187,6 +188,7 @@ public class LoginActivity extends AppCompatActivity {
                 ArrayList<OrderData> mOrderList;
                 ArrayList<LujingData> mLujingList;
                 ArrayList<LujingData> mLujingShaixuanList;
+
 
                 DianxianQingCeData dianxianQingCeData1 = new DianxianQingCeData();
                 dianxianQingCeData1.setId(1);
@@ -382,6 +384,15 @@ public class LoginActivity extends AppCompatActivity {
                 mLujingShaixuanList.add(mLujingData2);
                 bundle.putSerializable("mLujingShaixuanList", (Serializable) mLujingShaixuanList);
                 intent.putExtras(bundle);
+
+
+
+                mLujingShaixuanList = new ArrayList<>();
+                mLujingShaixuanList.add(mLujingData1);
+                mLujingShaixuanList.add(mLujingData2);
+                bundle.putSerializable("mLujingShaixuanList", (Serializable) mLujingShaixuanList);
+                intent.putExtras(bundle);
+
                 startActivity(intent);
                 finish();//销毁此Activity
             } else {

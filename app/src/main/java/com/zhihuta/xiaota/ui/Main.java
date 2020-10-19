@@ -21,11 +21,14 @@ import android.widget.Toast;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
 import com.zhihuta.xiaota.WeixinFragment;
+import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 //public class DianxianQingCe extends AppCompatActivity {
@@ -81,6 +84,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     private LujingAdapter mLujingShaixuanAdapter;
     private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,8 +156,24 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         addTotalNewLujingBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Main.this, AddLujingActivity.class);
+                Intent intent = new Intent(Main.this, AddNewLujingActivity.class);
 
+                ArrayList<DistanceData> mDistanceList;
+                DistanceData mDistanceData1 = new DistanceData();
+                mDistanceData1.setId(1);
+                mDistanceData1.setDistanceName("间距杭州上海211");
+                mDistanceData1.setDistanceNumber("JJ_098111");
+                DistanceData mDistanceData2 = new DistanceData();
+                mDistanceData2.setId(2);
+                mDistanceData2.setDistanceName("间距杭州上海222");
+                mDistanceData2.setDistanceNumber("JJ_098222");
+                mDistanceList = new ArrayList<>();
+                mDistanceList.add(mDistanceData1);
+                mDistanceList.add(mDistanceData2);
+                mDistanceList.add(mDistanceData2);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("mDistanceList", (Serializable) mDistanceList);
+                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
@@ -224,6 +244,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         }
         //计算路径，扫描筛选得到的路径列表
         RecyclerView mLujingShaixuanRV = (RecyclerView) findViewById(R.id.rv_lujing_compute);
+//        RecyclerView mDistanceRV = (RecyclerView) findViewById(R.id.rv_distance);  /// ====
         LinearLayoutManager manager4 = new LinearLayoutManager(this);
         manager4.setOrientation(LinearLayoutManager.VERTICAL);
         mLujingShaixuanRV.setLayoutManager(manager4);
@@ -251,6 +272,8 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             }
         });
     }
+
+
     //处理Tab的点击事件
     @Override
     public void onClick(View v) {

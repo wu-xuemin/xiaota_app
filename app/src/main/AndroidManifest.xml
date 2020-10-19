@@ -45,7 +45,7 @@
             android:name=".ui.ShowDxQingCeActivity"
             android:label="浏览电线设计清册" />
         <activity
-            android:name=".ui.AddLujingActivity"
+            android:name=".ui.AddNewLujingActivity"
             android:label="建立新路径" />
         <activity
             android:name=".ui.AddDxQingCeFromFileActivity"
