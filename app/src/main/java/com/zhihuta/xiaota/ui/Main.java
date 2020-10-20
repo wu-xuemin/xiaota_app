@@ -197,29 +197,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         mQingceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mQingceRV.setAdapter(mQingceAdapter);
 
-
-        //获取传递过来的 订单信息
-//        Intent intent2 = getIntent();
-//        Bundle bundle2 = intent.getExtras();
-//        mOrderList = (ArrayList<OrderData>) bundle.getSerializable("mOrderList");
-//
-//        if(mOrderList !=null) {
-//            Toast.makeText(this, "       得到 订单列表 size:" + mOrderList.size(), Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(this, "   订单列表为空！！！" , Toast.LENGTH_SHORT).show();
-//        }
-        //订单列表
-//        RecyclerView mOrderRV = (RecyclerView) findViewById(R.id.rv_order);
-//        LinearLayoutManager manager2 = new LinearLayoutManager(this);
-//        manager2.setOrientation(LinearLayoutManager.VERTICAL);
-//        mOrderRV.setLayoutManager(manager2);
-//        mOrderAdapter = new OrderAdapter(mOrderList);
-//        mOrderRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-//        mOrderRV.setAdapter(mOrderAdapter);
-
         //获取传递过来的路径信息
-//        Intent intent2 = getIntent();
-//        Bundle bundle2 = intent.getExtras();
         mLujingList = (ArrayList<LujingData>) bundle.getSerializable("mLujingList");
 
         if(mLujingList !=null) {
@@ -232,9 +210,13 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         LinearLayoutManager manager3 = new LinearLayoutManager(this);
         manager3.setOrientation(LinearLayoutManager.VERTICAL);
         mLujingRV.setLayoutManager(manager3);
-        mLujingAdapter = new LujingAdapter(mLujingList);
+//        mLujingAdapter = new LujingAdapter(mLujingList);
+        mLujingAdapter = new LujingAdapter(mLujingList,this);
         mLujingRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mLujingRV.setAdapter(mLujingAdapter);
+        // 设置item及item中控件的点击事件
+        mLujingAdapter.setOnItemClickListener(MyItemClickListener);
+
 
         mLujingShaixuanList = (ArrayList<LujingData>) bundle.getSerializable("mLujingShaixuanList");
         if(mLujingShaixuanList !=null) {
@@ -248,7 +230,8 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         LinearLayoutManager manager4 = new LinearLayoutManager(this);
         manager4.setOrientation(LinearLayoutManager.VERTICAL);
         mLujingShaixuanRV.setLayoutManager(manager4);
-        mLujingShaixuanAdapter = new LujingAdapter(mLujingShaixuanList);
+//        mLujingShaixuanAdapter = new LujingAdapter(mLujingShaixuanList);
+        mLujingShaixuanAdapter = new LujingAdapter(mLujingShaixuanList,this);
         mLujingShaixuanRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mLujingShaixuanRV.setAdapter(mLujingShaixuanAdapter);
 
@@ -272,6 +255,40 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             }
         });
     }
+
+
+
+    /**
+     * item＋item里的控件点击监听事件
+     */
+    private LujingAdapter.OnItemClickListener MyItemClickListener = new LujingAdapter.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(View v, LujingAdapter.ViewName viewName, int position) {
+            //viewName可区分item及item内部控件
+            switch (v.getId()){
+                case R.id.button_modify_lujing:
+                    Toast.makeText(Main.this,"你点击了 修改路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.button_create_lujing_base_exist:
+                    Toast.makeText(Main.this,"你点击了 新建路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.button_delete_lujing:
+                    Toast.makeText(Main.this,"你点击了 删除路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    Toast.makeText(Main.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+
+        @Override
+        public void onItemLongClick(View v) {
+
+        }
+    };
+
+
 
 
     //处理Tab的点击事件
@@ -347,6 +364,9 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 mLayoutQingCe.setVisibility(View.GONE);
                 mLayoutLujing.setVisibility(View.GONE);
                 mLayoutCompute.setVisibility(View.VISIBLE);
+
+                // 在计算tab 默认看到的是计算路径电线长度，隐藏两点间距的
+                mLayoutComputeDistance.setVisibility(View.GONE);
                 mJisuanImg.setImageResource(R.mipmap.tab_compute_pressed);
                 if (mFragJisuan == null) {
                     mFragJisuan = new SettingFragment();

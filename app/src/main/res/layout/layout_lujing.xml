@@ -33,6 +33,14 @@
             </SearchView>
 
         </LinearLayout>
+        <!--横线-->
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_below="@+id/tv"
+            android:layout_alignLeft="@+id/tv"
+            android:layout_alignRight="@+id/tv"
+            android:background="#008577" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,7 +66,14 @@
                     android:layout_weight="1"
                     android:text="重置" />
             </LinearLayout>
-
+            <!--横线-->
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_below="@+id/tv"
+                android:layout_alignLeft="@+id/tv"
+                android:layout_alignRight="@+id/tv"
+                android:background="#008577" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -93,7 +108,14 @@
                 android:layout_weight="9"
                 android:text="操作" />
         </LinearLayout>
-
+        <!--横线-->
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_below="@+id/tv"
+            android:layout_alignLeft="@+id/tv"
+            android:layout_alignRight="@+id/tv"
+            android:background="#008577" />
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -2,7 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-
+    <!--横线-->
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_below="@+id/tv"
+        android:layout_alignLeft="@+id/tv"
+        android:layout_alignRight="@+id/tv"
+        android:background="#008577" />
     <TextView
         android:id="@+id/lujingMingChenTextView_compute"
         android:layout_width="wrap_content"
