@@ -9,12 +9,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class AddNewLujingActivity extends AppCompatActivity {
@@ -22,6 +25,8 @@ public class AddNewLujingActivity extends AppCompatActivity {
     private DistanceAdapter mDistanceAdapter;
     private ArrayList<DistanceData> mDistanceList = new ArrayList<>();
 
+    private Button mButtonScanToAddXianduan;
+    private static final int SCAN_QRCODE_START = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +63,16 @@ public class AddNewLujingActivity extends AppCompatActivity {
         mDistanceAdapter = new DistanceAdapter(mDistanceList);
         mDistanceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mDistanceRV.setAdapter(mDistanceAdapter);
+
+        mButtonScanToAddXianduan = (Button) findViewById(R.id.button_scan_to_add_xianduan);
+        mButtonScanToAddXianduan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AddNewLujingActivity.this, ZxingScanActivity.class);
+//                startActivity(intent);
+                startActivityForResult(intent,SCAN_QRCODE_START);
+            }
+        });
     }
 
     @Override
@@ -70,4 +85,22 @@ public class AddNewLujingActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case SCAN_QRCODE_START:
+                if (resultCode == RESULT_OK)
+                {
+                    // 取出Intent里的扫码结果
+                    String mQrMessage = data.getStringExtra("scanGotMessage");
+                    Toast.makeText(this, " 扫码获得的结果信息：" + mQrMessage , Toast.LENGTH_LONG).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
 }

@@ -21,7 +21,7 @@ public class XiaotaApp extends Application {
     /**
      * Shared preferences file name, where we store persistent values.
      */
-    static final String SHARED_PREFS_FILENAME = "SinSim";
+    static final String SHARED_PREFS_FILENAME = "小塔";
 
     public static final int LOGIN_REQUEST_CODE = 20000;
     public static final int LOGIN_RESULT_SUCCESS_CODE = 20001;
