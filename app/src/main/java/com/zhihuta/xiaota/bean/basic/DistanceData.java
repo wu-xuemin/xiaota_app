@@ -7,7 +7,15 @@ public class DistanceData implements Serializable {
     private int id;
     private String DistanceName; // 间距名称
     private String DistanceNumber; //间距 编号
+    private String DistanceValue; // 距离值
 
+    public String getDistanceValue() {
+        return DistanceValue;
+    }
+
+    public void setDistanceValue(String distanceValue) {
+        DistanceValue = distanceValue;
+    }
 
     public int getId() {
         return id;

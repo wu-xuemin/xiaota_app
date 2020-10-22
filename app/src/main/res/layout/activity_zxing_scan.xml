@@ -10,6 +10,7 @@
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent"-->
 <!--        />-->
+
     <cn.bingoogolapple.qrcode.zxing.ZXingView
         android:id="@+id/zxingview"
         android:layout_width="match_parent"
@@ -40,18 +41,57 @@
         app:qrcv_tipTextColor="@android:color/white"
         app:qrcv_tipTextSize="12sp"
         app:qrcv_toolbarHeight="100dp"
-        app:qrcv_topOffset="10dp"/>
-    <TextView
-        android:id="@+id/cancel_scan"
-        android:layout_width="wrap_content"
+        app:qrcv_topOffset="10dp">
+
+    </cn.bingoogolapple.qrcode.zxing.ZXingView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="100dp"
-        android:gravity="center"
-        android:padding="20dp"
-        android:text="退出"
-        android:textColor="#000000"
-        android:textSize="25sp" />
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView_display_scan_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="100dp"
+                android:gravity="center"
+                android:padding="20dp"
+                android:paddingTop="10dp"
+                android:text="扫描结果："
+                android:textColor="#FF0000"
+                android:textSize="25sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_scan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            tools:layout_alignParentBottom="true">
+
+            <Button
+                android:id="@+id/button_continue_scan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="继续扫码" />
+
+            <Button
+                android:id="@+id/button_finish_scan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="结束扫码" />
+        </LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

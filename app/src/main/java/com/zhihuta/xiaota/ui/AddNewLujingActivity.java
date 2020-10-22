@@ -19,6 +19,7 @@ import com.zhihuta.xiaota.bean.basic.DistanceData;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AddNewLujingActivity extends AppCompatActivity {
 
@@ -93,9 +94,13 @@ public class AddNewLujingActivity extends AppCompatActivity {
             case SCAN_QRCODE_START:
                 if (resultCode == RESULT_OK)
                 {
+                    ArrayList<DistanceData> mDistanceList;
                     // 取出Intent里的扫码结果
-                    String mQrMessage = data.getStringExtra("scanGotMessage");
-                    Toast.makeText(this, " 扫码获得的结果信息：" + mQrMessage , Toast.LENGTH_LONG).show();
+//                    List<DistanceData> list = (List<DistanceData>) getIntent().getSerializableExtra("mScanResultDistanceList");
+                    List<DistanceData> list = (List<DistanceData>) data.getSerializableExtra("mScanResultDistanceList");
+                    for(int i =0; i<list.size(); i++ ) {
+                        Toast.makeText(this, " 扫码获得的结果信息1：" + list.get(i).getDistanceName(), Toast.LENGTH_LONG).show();
+                    }
                 }
                 break;
             default:
