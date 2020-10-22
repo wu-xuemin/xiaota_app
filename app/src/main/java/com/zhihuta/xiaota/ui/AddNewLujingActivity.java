@@ -15,10 +15,8 @@ import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
-import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +28,7 @@ public class AddNewLujingActivity extends AppCompatActivity {
     private Button mButtonScanToAddXianduan; // 扫码去添加线段
     private Button mButtonRelateDx; // 去关联电缆电线
     private static final int SCAN_QRCODE_START = 1;
-    private static final int RELATE_DX = 2;
+    private static final int RELATEd_DX = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,13 +72,13 @@ public class AddNewLujingActivity extends AppCompatActivity {
         mButtonRelateDx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AddNewLujingActivity.this, RelateDxActivity.class);
+                Intent intent = new Intent(AddNewLujingActivity.this, RelatedDxActivity.class);
 
 
 //                Bundle bundle = new Bundle();
 //                bundle.putSerializable("mDianxianList", (Serializable) mDianxianList);
 //                intent.putExtras(bundle);
-                startActivityForResult(intent,RELATE_DX);
+                startActivityForResult(intent, RELATEd_DX);
             }
         });
     }

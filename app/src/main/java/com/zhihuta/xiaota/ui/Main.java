@@ -93,7 +93,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
         initViews();//初始化控件
         initEvents();//初始化事件
-        selectTab(0);//默认选中第一个Tab
+        selectTab(1);//默认选中第2个Tab
 
 
     }

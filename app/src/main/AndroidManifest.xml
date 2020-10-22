@@ -33,8 +33,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.RelateDxActivity"
-            android:label="已选电线" ></activity>
+        <activity android:name=".ui.RelateNewDxActivity"
+            android:label="候选电线"></activity>
+        <activity
+            android:name=".ui.RelatedDxActivity"
+            android:label="已选电线" />
         <activity android:name=".ui.ZxingScanActivity" /> <!-- <activity android:name=".ui.QrActivity" /> -->
         <activity android:name=".ui.Main" />
 

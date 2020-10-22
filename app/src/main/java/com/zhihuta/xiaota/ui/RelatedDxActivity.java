@@ -6,27 +6,31 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
-import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 
 import java.util.ArrayList;
 
-public class RelateDxActivity extends AppCompatActivity {
+public class RelatedDxActivity extends AppCompatActivity {
 
     private ArrayList<DianxianQingCeData> mDianxianList;
 
     private DianXianQingceAdapter mDianXianQingceAdapter;
+    private Button mAddNewDx;
+    private static final int RELATE_NEW_DX = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_relate_dx);
+        setContentView(R.layout.activity_related_dx);
         //返回前页按钮
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -79,6 +83,15 @@ public class RelateDxActivity extends AppCompatActivity {
         mDianxianList.add(mDxData1);
         mDianxianList.add(mDxData1);
         mDianxianList.add(mDxData1);
+
+        mAddNewDx = (Button) findViewById(R.id.button_to_add_new_Dx);
+        mAddNewDx.setOnClickListener(new View.OnClickListener() {
+                                         @Override
+                                         public void onClick(View view) {
+                                             Intent intent = new Intent(RelatedDxActivity.this, RelateNewDxActivity.class);
+                                             startActivityForResult(intent,RELATE_NEW_DX);
+                                         }
+                                     });
     }
     private void showDxList(){
         //电线列表
