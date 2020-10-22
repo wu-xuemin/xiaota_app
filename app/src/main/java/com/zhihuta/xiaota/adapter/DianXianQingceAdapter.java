@@ -48,6 +48,11 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter {
             itemView.qidianTv.setSelected(true);//用于滚动显示
             itemView.zhongdianTv.setText(mDianxianQingCeAdapter.get(position).getEndPoint());
             itemView.modelTv.setText(mDianxianQingCeAdapter.get(position).getDxModel());
+            itemView.xinshuJiemianTv.setText(mDianxianQingCeAdapter.get(position).getDxXinshuJieMian());
+            itemView.dxLengthTv.setText(mDianxianQingCeAdapter.get(position).getDxLength());
+            itemView.steelRedundancyTv.setText(mDianxianQingCeAdapter.get(position).getSteelRedundancy());
+//            itemView.hoseRedundancyTv.setText(mDianxianQingCeAdapter.get(position).getHoseRedundancy());
+
 //            itemView.headCountDoneTv.setText(""+mInstallPlanAdapter.get(position).getHeadCountDone());
 //            itemView.cmdInfoTv.setText(""+mInstallPlanAdapter.get(position).getCmtSend());
 //            itemView.cmdInfoTv.setSelected(true);//用于滚动显示
@@ -75,6 +80,10 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter {
         TextView qidianTv;
         TextView zhongdianTv;
         TextView modelTv;
+        TextView xinshuJiemianTv;
+        TextView dxLengthTv;
+        TextView steelRedundancyTv;
+        TextView hoseRedundancyTv;
 
         ItemView(View itemView) {
             super(itemView);
@@ -83,6 +92,10 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter {
             qidianTv = itemView.findViewById(R.id.qidianTextView);
             zhongdianTv = itemView.findViewById(R.id.zhongdiantextView);
             modelTv = itemView.findViewById(R.id.xinghaoTextView);
+            xinshuJiemianTv = itemView.findViewById(R.id.textViewXinshuJiemian);
+            dxLengthTv = itemView.findViewById(R.id.textViewDxLength);
+            steelRedundancyTv = itemView.findViewById(R.id.textViewSteelHoseRedundancy);
+//            hoseRedundancyTv = itemView.findViewById(R.id.textViewHoseRedundancy);
         }
     }
 }

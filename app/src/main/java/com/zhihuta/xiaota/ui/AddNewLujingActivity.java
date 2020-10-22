@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
+import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 
 import java.io.Serializable;
@@ -26,8 +27,10 @@ public class AddNewLujingActivity extends AppCompatActivity {
     private DistanceAdapter mDistanceAdapter;
     private ArrayList<DistanceData> mDistanceList = new ArrayList<>();
 
-    private Button mButtonScanToAddXianduan;
+    private Button mButtonScanToAddXianduan; // 扫码去添加线段
+    private Button mButtonRelateDx; // 去关联电缆电线
     private static final int SCAN_QRCODE_START = 1;
+    private static final int RELATE_DX = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,15 +59,7 @@ public class AddNewLujingActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, " 间距 列表为空！！！" , Toast.LENGTH_SHORT).show();
         }
-        //间距列表
-        RecyclerView mDistanceRV = (RecyclerView) findViewById(R.id.rv_distance);
-        LinearLayoutManager manager5 = new LinearLayoutManager(this);
-        manager5.setOrientation(LinearLayoutManager.VERTICAL);
-        mDistanceRV.setLayoutManager(manager5);
-        mDistanceAdapter = new DistanceAdapter(mDistanceList);
-        mDistanceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        mDistanceRV.setAdapter(mDistanceAdapter);
-
+        showDistanceList();
         mButtonScanToAddXianduan = (Button) findViewById(R.id.button_scan_to_add_xianduan);
         mButtonScanToAddXianduan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,8 +69,33 @@ public class AddNewLujingActivity extends AppCompatActivity {
                 startActivityForResult(intent,SCAN_QRCODE_START);
             }
         });
+
+        mButtonRelateDx = (Button) findViewById(R.id.button_relate_dx);
+        mButtonRelateDx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AddNewLujingActivity.this, RelateDxActivity.class);
+
+
+//                Bundle bundle = new Bundle();
+//                bundle.putSerializable("mDianxianList", (Serializable) mDianxianList);
+//                intent.putExtras(bundle);
+                startActivityForResult(intent,RELATE_DX);
+            }
+        });
     }
 
+    private void showDistanceList(){
+        //间距列表
+        RecyclerView mDistanceRV = (RecyclerView) findViewById(R.id.rv_distance);
+        LinearLayoutManager manager5 = new LinearLayoutManager(this);
+        manager5.setOrientation(LinearLayoutManager.VERTICAL);
+        mDistanceRV.setLayoutManager(manager5);
+        mDistanceAdapter = new DistanceAdapter(mDistanceList);
+        mDistanceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        mDistanceRV.setAdapter(mDistanceAdapter);
+
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -94,12 +114,14 @@ public class AddNewLujingActivity extends AppCompatActivity {
             case SCAN_QRCODE_START:
                 if (resultCode == RESULT_OK)
                 {
-                    ArrayList<DistanceData> mDistanceList;
                     // 取出Intent里的扫码结果
 //                    List<DistanceData> list = (List<DistanceData>) getIntent().getSerializableExtra("mScanResultDistanceList");
                     List<DistanceData> list = (List<DistanceData>) data.getSerializableExtra("mScanResultDistanceList");
                     for(int i =0; i<list.size(); i++ ) {
                         Toast.makeText(this, " 扫码获得的结果信息1：" + list.get(i).getDistanceName(), Toast.LENGTH_LONG).show();
+                        //把扫码新加的各个间距加入间距列表
+                        mDistanceList.add(list.get(i));
+                        showDistanceList();
                     }
                 }
                 break;

@@ -7,7 +7,43 @@ public class DianxianQingCeData implements Serializable {
     private String DxNumber;
     private String StartPoint;
     private String EndPoint;
-    private String DxModel;
+    private String DxModel; // 型号
+    private String DxXinshuJieMian; // 芯数X截面
+    private String DxLength; //电线长度
+    private String SteelRedundancy;  //钢冗
+    private String HoseRedundancy;  //皮冗
+
+    public String getDxXinshuJieMian() {
+        return DxXinshuJieMian;
+    }
+
+    public void setDxXinshuJieMian(String dxXinshuJieMian) {
+        DxXinshuJieMian = dxXinshuJieMian;
+    }
+
+    public String getDxLength() {
+        return DxLength;
+    }
+
+    public void setDxLength(String dxLength) {
+        DxLength = dxLength;
+    }
+
+    public String getSteelRedundancy() {
+        return SteelRedundancy;
+    }
+
+    public void setSteelRedundancy(String steelRedundancy) {
+        SteelRedundancy = steelRedundancy;
+    }
+
+    public String getHoseRedundancy() {
+        return HoseRedundancy;
+    }
+
+    public void setHoseRedundancy(String hoseRedundancy) {
+        HoseRedundancy = hoseRedundancy;
+    }
 
     public int getId() {
         return id;
