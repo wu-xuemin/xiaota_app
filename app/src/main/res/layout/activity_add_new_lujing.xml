@@ -166,7 +166,7 @@
                 android:text="关联电线" />
 
             <Button
-                android:id="@+id/button_finish_lj"
+                android:id="@+id/button_create_lj"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

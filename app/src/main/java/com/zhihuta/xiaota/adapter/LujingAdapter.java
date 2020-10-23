@@ -22,10 +22,10 @@ import java.util.List;
 public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.LujingViewHolder> implements View.OnClickListener {
     private SimpleDateFormat sf3 = new SimpleDateFormat("yy/MM/dd");
     private static String TAG = "LujingAdapter";
-    private ArrayList<LujingData> mLujingAdapter;
-    public LujingAdapter(ArrayList<LujingData> list) {
-        mLujingAdapter = list;
-    }
+//    private ArrayList<LujingData> mLujingAdapter;
+//    public LujingAdapter(ArrayList<LujingData> list) {
+//        mLujingAdapter = list;
+//    }
 
     private List<LujingData> list;//数据源
     private Context context;//上下文

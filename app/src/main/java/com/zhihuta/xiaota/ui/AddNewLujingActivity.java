@@ -27,6 +27,7 @@ public class AddNewLujingActivity extends AppCompatActivity {
 
     private Button mButtonScanToAddXianduan; // 扫码去添加线段
     private Button mButtonRelateDx; // 去关联电缆电线
+    private Button mButtonOkToCreateLujing; // 去关联电缆电线
     private static final int SCAN_QRCODE_START = 1;
     private static final int RELATEd_DX = 2;
     @Override
@@ -79,6 +80,15 @@ public class AddNewLujingActivity extends AppCompatActivity {
 //                bundle.putSerializable("mDianxianList", (Serializable) mDianxianList);
 //                intent.putExtras(bundle);
                 startActivityForResult(intent, RELATEd_DX);
+            }
+        });
+
+        mButtonOkToCreateLujing = (Button) findViewById(R.id.button_create_lj);
+        mButtonOkToCreateLujing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddNewLujingActivity.this.finish();
+ //                startActivityForResult(intent, RELATEd_DX);
             }
         });
     }

@@ -203,7 +203,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mQingceRV.setLayoutManager(manager);
-        mQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList);
+        mQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList,this);
         mQingceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mQingceRV.setAdapter(mQingceAdapter);
 

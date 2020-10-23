@@ -190,7 +190,7 @@
                 android:text="加新电线" />
 
             <Button
-                android:id="@+id/button_OK_to_add_dx"
+                android:id="@+id/button_OK_to_relate_dx"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
