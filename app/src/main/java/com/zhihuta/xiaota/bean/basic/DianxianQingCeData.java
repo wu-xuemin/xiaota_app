@@ -24,6 +24,16 @@ public class DianxianQingCeData implements Serializable {
         return flag;
     }
 
+    private String isChecked;  //是否勾选
+    public String getIsChecked() {
+        return isChecked;
+    }
+
+    public void setIsChecked(String isChecked) {
+        this.isChecked = isChecked;
+    }
+
+
     public void setFlag(String flag) {
         this.flag = flag;
     }

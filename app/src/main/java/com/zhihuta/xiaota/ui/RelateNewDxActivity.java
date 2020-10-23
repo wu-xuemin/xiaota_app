@@ -12,12 +12,15 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.common.Constant;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class RelateNewDxActivity extends AppCompatActivity {
@@ -26,6 +29,9 @@ public class RelateNewDxActivity extends AppCompatActivity {
     private Button mOkTobeSelectBt;
 
     private DianXianQingceAdapter mDianXianQingceAdapter;
+    private ArrayList<Boolean> checkedList = new ArrayList<>(); //用于记录哪些被选中了
+    // 选中的电线，传回去
+    private ArrayList<DianxianQingCeData> mCheckedDxList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,13 +76,32 @@ public class RelateNewDxActivity extends AppCompatActivity {
 
             mDianxianTobeSelectList.add(mDxData1);
             Log.d("newDx", "mDxData1 getDxNumber:" + mDxData1.getDxNumber());
+
+            /**
+             * 备选的电线，初始状态都是未选
+             */
+            checkedList.add(false);
         }
         mOkTobeSelectBt = (Button) findViewById(R.id.button_OK_to_add_dxTobeSelect22 );
         mOkTobeSelectBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RelateNewDxActivity.this, RelatedDxActivity.class);
+
+                for(int k=0; k< checkedList.size(); k++){
+                    if(checkedList.get(k)){
+                        //该电线由待选 改为 已选
+                        mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_RELATED_DX);
+                        mCheckedDxList.add(mDianxianTobeSelectList.get(k));
+                    }
+
+                }
+                Intent intent = getIntent();
+                intent.setClass(RelateNewDxActivity.this, RelatedDxActivity.class);
+                intent.putExtra("mCheckedDxList", (Serializable) mCheckedDxList);
+
+                RelateNewDxActivity.this.setResult(RESULT_OK, intent);
                 RelateNewDxActivity.this.finish();
+
             }
         });
     }
@@ -89,5 +114,34 @@ public class RelateNewDxActivity extends AppCompatActivity {
         mDianXianQingceAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList,this);
         mDxRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mDxRV.setAdapter(mDianXianQingceAdapter);
+        // 设置item及item中控件的点击事件
+        mDianXianQingceAdapter.setOnItemClickListener(MyItemClickListener);
     }
+
+    /**
+     * 备选电线item 里的控件点击监听事件
+     */
+    private DianXianQingceAdapter.OnItemClickListener MyItemClickListener = new DianXianQingceAdapter.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(View v, DianXianQingceAdapter.ViewName viewName, int position) {
+            //viewName可区分item及item内部控件
+            switch (v.getId()){
+
+                case R.id.checkBox_dx_to_be_select:
+                    Toast.makeText(RelateNewDxActivity.this,"你点击了 备选电线的 checkbox" + (position+1),Toast.LENGTH_SHORT).show();
+                    //对原先的值取反，比如原先是未选中则改为选中。
+                    checkedList.set(position,  !checkedList.get(position) );
+                    break;
+                default:
+                    Toast.makeText(RelateNewDxActivity.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+
+        @Override
+        public void onItemLongClick(View v) {
+
+        }
+    };
 }

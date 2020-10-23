@@ -17,9 +17,11 @@ import android.widget.Toast;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.common.Constant;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RelatedDxActivity extends AppCompatActivity {
 
@@ -119,12 +121,10 @@ public class RelatedDxActivity extends AppCompatActivity {
             //viewName可区分item及item内部控件
             switch (v.getId()){
                 case R.id.buttonDxDelete:
-                    Toast.makeText(RelatedDxActivity.this,"你点击了 已选电线的 删除 按钮" + (position+1),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RelatedDxActivity.this," 已选电线的 删除:" + (position+1),Toast.LENGTH_SHORT).show();
+                    mDianxianList.remove(position);
                     break;
 
-                case R.id.checkBox_dx_to_be_select:
-                    Toast.makeText(RelatedDxActivity.this,"你点击了 已选电线的 checkbox" + (position+1),Toast.LENGTH_SHORT).show();
-                    break;
                 default:
                     Toast.makeText(RelatedDxActivity.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();
                     break;
@@ -136,5 +136,27 @@ public class RelatedDxActivity extends AppCompatActivity {
 
         }
     };
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case RELATE_NEW_DX:
+                if (resultCode == RESULT_OK)
+                {
+                    // 取出Intent里的选择电线的结果
+                    List<DianxianQingCeData> list = (List<DianxianQingCeData>) data.getSerializableExtra("mCheckedDxList");
+                    for(int i =0; i<list.size(); i++ ) {
+                        Toast.makeText(this, " 选中了电线：" + list.get(i).getDxNumber(), Toast.LENGTH_LONG).show();
+                        //把扫码新加的各个间距加入间距列表
+                        mDianxianList.add(list.get(i));
+                        showDxList();
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
 }
