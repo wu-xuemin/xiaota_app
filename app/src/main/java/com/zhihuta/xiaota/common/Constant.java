@@ -9,4 +9,6 @@ public class Constant {
      */
     public static String FLAG_TOBE_SELECT_DX = "候选电线";
     public static String FLAG_RELATED_DX = "已选电线";
+    public static String FLAG_QINGCE_DX = "清册中的电线"; // 这个和 候选电线 是一样的，只是显示在清册中。
+
 }

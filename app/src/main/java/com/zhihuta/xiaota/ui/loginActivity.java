@@ -29,6 +29,7 @@ import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.OrderData;
+import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.net.Network;
@@ -190,117 +191,20 @@ public class LoginActivity extends AppCompatActivity {
                 ArrayList<LujingData> mLujingShaixuanList;
 
 
-                DianxianQingCeData dianxianQingCeData1 = new DianxianQingCeData();
-                dianxianQingCeData1.setId(1);
-                dianxianQingCeData1.setDxNumber("dx_001");
-                dianxianQingCeData1.setDxModel("型号001");
-                dianxianQingCeData1.setStartPoint("杭州A001");
-                dianxianQingCeData1.setEndPoint("上海B001");
-
-                DianxianQingCeData dianxianQingCeData2 = new DianxianQingCeData();
-                dianxianQingCeData2.setId(2);
-                dianxianQingCeData2.setDxNumber("dx_002");
-                dianxianQingCeData2.setDxModel("型号002");
-                dianxianQingCeData2.setStartPoint("杭州A002");
-                dianxianQingCeData2.setEndPoint("上海B002");
-
-                DianxianQingCeData dianxianQingCeData3 = new DianxianQingCeData();
-                dianxianQingCeData3.setId(3);
-                dianxianQingCeData3.setDxNumber("dx_003");
-                dianxianQingCeData3.setDxModel("型号003");
-                dianxianQingCeData3.setStartPoint("杭州A003");
-                dianxianQingCeData3.setEndPoint("上海B003");
-
-
-                DianxianQingCeData dianxianQingCeData4 = new DianxianQingCeData();
-                dianxianQingCeData4.setId(4);
-                dianxianQingCeData4.setDxNumber("dx_004");
-                dianxianQingCeData4.setDxModel("型号004");
-                dianxianQingCeData4.setStartPoint("杭州A004");
-                dianxianQingCeData4.setEndPoint("上海B004");
-
-                DianxianQingCeData dianxianQingCeData5 = new DianxianQingCeData();
-                dianxianQingCeData5.setId(5);
-                dianxianQingCeData5.setDxNumber("dx_005");
-                dianxianQingCeData5.setDxModel("型号005");
-                dianxianQingCeData5.setStartPoint("杭州A005");
-                dianxianQingCeData5.setEndPoint("上海B005");
-
-                DianxianQingCeData dianxianQingCeData6 = new DianxianQingCeData();
-                dianxianQingCeData6.setId(6);
-                dianxianQingCeData6.setDxNumber("dx_006");
-                dianxianQingCeData6.setDxModel("型号006");
-                dianxianQingCeData6.setStartPoint("杭州A006");
-                dianxianQingCeData6.setEndPoint("上海B006");
-
-                DianxianQingCeData dianxianQingCeData7 = new DianxianQingCeData();
-                dianxianQingCeData7.setId(7);
-                dianxianQingCeData7.setDxNumber("dx_007");
-                dianxianQingCeData7.setDxModel("型号007");
-                dianxianQingCeData7.setStartPoint("杭州A007");
-                dianxianQingCeData7.setEndPoint("上海B007777");
-
-                DianxianQingCeData dianxianQingCeData8 = new DianxianQingCeData();
-                dianxianQingCeData8.setId(8);
-                dianxianQingCeData8.setDxNumber("dx_008");
-                dianxianQingCeData8.setDxModel("型号008");
-                dianxianQingCeData8.setStartPoint("杭州A008");
-                dianxianQingCeData8.setEndPoint("上海B008");
-
-                DianxianQingCeData dianxianQingCeData9 = new DianxianQingCeData();
-                dianxianQingCeData9.setId(9);
-                dianxianQingCeData9.setDxNumber("dx_009");
-                dianxianQingCeData9.setDxModel("型号009");
-                dianxianQingCeData9.setStartPoint("杭州A009");
-                dianxianQingCeData9.setEndPoint("上海B009999");
-
-                DianxianQingCeData dianxianQingCeData10 = new DianxianQingCeData();
-                dianxianQingCeData10.setId(10);
-                dianxianQingCeData10.setDxNumber("dx_0010");
-                dianxianQingCeData10.setDxModel("型号0010");
-                dianxianQingCeData10.setStartPoint("杭州A0010");
-                dianxianQingCeData10.setEndPoint("上海B0010");
-                DianxianQingCeData dianxianQingCeData11 = new DianxianQingCeData();
-                dianxianQingCeData11.setId(11);
-                dianxianQingCeData11.setDxNumber("dx_0011");
-                dianxianQingCeData11.setDxModel("型号0011");
-                dianxianQingCeData11.setStartPoint("杭州A0011");
-                dianxianQingCeData11.setEndPoint("上海B0011");
-                DianxianQingCeData dianxianQingCeData12 = new DianxianQingCeData();
-                dianxianQingCeData12.setId(12);
-                dianxianQingCeData12.setDxNumber("dx_0012");
-                dianxianQingCeData12.setDxModel("型号0012");
-                dianxianQingCeData12.setStartPoint("杭州A0012");
-                dianxianQingCeData12.setEndPoint("上海B0012");
-                DianxianQingCeData dianxianQingCeData13= new DianxianQingCeData();
-                dianxianQingCeData13.setId(13);
-                dianxianQingCeData13.setDxNumber("dx_0013");
-                dianxianQingCeData13.setDxModel("型号0013");
-                dianxianQingCeData13.setStartPoint("杭州A0013");
-                dianxianQingCeData13.setEndPoint("上海B0013");
-                DianxianQingCeData dianxianQingCeData14 = new DianxianQingCeData();
-                dianxianQingCeData14.setId(14);
-                dianxianQingCeData14.setDxNumber("dx_0014");
-                dianxianQingCeData14.setDxModel("型号0014");
-                dianxianQingCeData14.setStartPoint("杭州A0014");
-                dianxianQingCeData14.setEndPoint("上海B0014");
-
-
                 mDianxianQingCeList = new ArrayList<>();
-                mDianxianQingCeList.add(dianxianQingCeData1);
-                mDianxianQingCeList.add(dianxianQingCeData2);
-                mDianxianQingCeList.add(dianxianQingCeData3);
-                mDianxianQingCeList.add(dianxianQingCeData4);
-                mDianxianQingCeList.add(dianxianQingCeData5);
-                mDianxianQingCeList.add(dianxianQingCeData6);
-                mDianxianQingCeList.add(dianxianQingCeData7);
-                mDianxianQingCeList.add(dianxianQingCeData8);
-                mDianxianQingCeList.add(dianxianQingCeData9);
-                mDianxianQingCeList.add(dianxianQingCeData10);
-                mDianxianQingCeList.add(dianxianQingCeData11);
-                mDianxianQingCeList.add(dianxianQingCeData12);
-                mDianxianQingCeList.add(dianxianQingCeData13);
-                mDianxianQingCeList.add(dianxianQingCeData14);
+                for(int k=1;k<16; k++) {
+                    DianxianQingCeData dianxianQingCeData1 = new DianxianQingCeData();
+                    dianxianQingCeData1.setId(1);
+                    dianxianQingCeData1.setDxNumber("dx_0000" + k);
+                    dianxianQingCeData1.setDxModel("型号00" + k);
+                    dianxianQingCeData1.setStartPoint("杭州A00" + k);
+                    dianxianQingCeData1.setEndPoint("上海B001"  + k);
+                    dianxianQingCeData1.setSteelRedundancy("20M");
+                    dianxianQingCeData1.setHoseRedundancy("6M");
+                    dianxianQingCeData1.setFlag(Constant.FLAG_QINGCE_DX);
+
+                    mDianxianQingCeList.add(dianxianQingCeData1);
+                }
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("mDianxianQingCeList", (Serializable) mDianxianQingCeList);
                 intent.putExtras(bundle);

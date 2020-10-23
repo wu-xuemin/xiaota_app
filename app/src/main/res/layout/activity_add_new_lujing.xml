@@ -25,7 +25,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/textView_newLujingName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -40,9 +40,9 @@
                 android:layout_weight="2">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputEditText_lujingName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="新路径的名称" />
+                    android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 

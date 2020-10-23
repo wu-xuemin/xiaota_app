@@ -66,7 +66,7 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
         /**
          * 不同的数据，显示不同的内容，比如在备选电线列表里，不需要显示删除按钮
          */
-        if(dataList.get(position).getFlag().equals(Constant.FLAG_RELATED_DX)) {
+        if(dataList.get(position).getFlag().equals(Constant.FLAG_RELATED_DX) || dataList.get(position).getFlag().equals(Constant.FLAG_QINGCE_DX)) {
             itemView.deleteBt.setVisibility(View.VISIBLE);
             itemView.dxTobeSelectCheckBox.setVisibility(View.GONE);
         } else if(dataList.get(position).getFlag().equals(Constant.FLAG_TOBE_SELECT_DX)) {

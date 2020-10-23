@@ -85,6 +85,9 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private LujingAdapter mLujingShaixuanAdapter;
     private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
 
+    private static final int REQUST_CODE_ADD_NEW_LUJING = 1;
+
+    private static final int REQUEST_CODE_SCAN_QRCODE_START = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,33 +161,21 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             public void onClick(View v) {
                 Intent intent = new Intent(Main.this, AddNewLujingActivity.class);
 
-                ArrayList<DistanceData> mDistanceList;
-                DistanceData mDistanceData1 = new DistanceData();
-                mDistanceData1.setId(1);
-                mDistanceData1.setDistanceName("间距杭州上海211");
-                mDistanceData1.setDistanceNumber("JJ_0981");
-                DistanceData mDistanceData2 = new DistanceData();
-                mDistanceData2.setId(2);
-                mDistanceData2.setDistanceName("间距杭州上海222");
-                mDistanceData2.setDistanceNumber("JJ_0982");
-                mDistanceList = new ArrayList<>();
-                mDistanceList.add(mDistanceData1);
-                mDistanceList.add(mDistanceData2);
-                mDistanceList.add(mDistanceData2);
-                mDistanceList.add(mDistanceData2);
-                mDistanceList.add(mDistanceData2);
-                mDistanceList.add(mDistanceData2);
-                mDistanceList.add(mDistanceData2);
-                mDistanceList.add(mDistanceData2);
-                mDistanceList.add(mDistanceData2);
-                mDistanceList.add(mDistanceData2);
-                mDistanceList.add(mDistanceData2);
-                mDistanceList.add(mDistanceData2);
-                mDistanceList.add(mDistanceData1);
+                ArrayList<DistanceData> mDistanceList = new ArrayList<>();
+                for(int d=0;d<5; d++) {
+                    DistanceData mDistanceData1 = new DistanceData();
+                    mDistanceData1.setId(d);
+                    mDistanceData1.setDistanceName("间距杭州上海" +d);
+                    mDistanceData1.setDistanceNumber("JJ_000" +d);
+
+                    mDistanceList.add(mDistanceData1);
+
+                }
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("mDistanceList", (Serializable) mDistanceList);
                 intent.putExtras(bundle);
-                startActivity(intent);
+//                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE_SCAN_QRCODE_START);
             }
         });
 
@@ -424,5 +415,26 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             default:
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case REQUST_CODE_ADD_NEW_LUJING:
+                if (resultCode == RESULT_OK)
+                {
+                    // 取出Intent里的新路径信息
+                    LujingData lujingData = (LujingData) data.getSerializableExtra("mNewLujing");
+
+                    Toast.makeText(this, " 新路径名称：" + lujingData.getLujingName(), Toast.LENGTH_LONG).show();
+
+                    mLujingList.add(lujingData);
+                    mLujingAdapter.notifyDataSetChanged();
+                }
+                break;
+            default:
+                break;
+        }
     }
 }

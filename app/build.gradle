@@ -57,7 +57,7 @@ android {
         variant ->
             variant.outputs.all {
                 //在这里修改apk文件名
-                outputFileName = "Sinsim-${variant.name}-v${variant.versionName}.apk"
+                outputFileName = "XiaoTa-${variant.name}-v${variant.versionName}.apk"
             }
     }
     packagingOptions {

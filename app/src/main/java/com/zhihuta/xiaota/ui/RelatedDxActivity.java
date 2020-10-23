@@ -123,6 +123,7 @@ public class RelatedDxActivity extends AppCompatActivity {
                 case R.id.buttonDxDelete:
                     Toast.makeText(RelatedDxActivity.this," 已选电线的 删除:" + (position+1),Toast.LENGTH_SHORT).show();
                     mDianxianList.remove(position);
+                    mDianXianQingceAdapter.notifyDataSetChanged(); //刷新列表
                     break;
 
                 default:
