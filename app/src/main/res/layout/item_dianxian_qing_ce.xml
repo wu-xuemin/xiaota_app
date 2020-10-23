@@ -58,9 +58,15 @@
         android:text="钢软冗余" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/buttonDxDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="删除" />
+
+    <CheckBox
+        android:id="@+id/checkBox_dx_to_be_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="2" />
 </LinearLayout>

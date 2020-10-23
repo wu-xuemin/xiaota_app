@@ -13,6 +13,21 @@ public class DianxianQingCeData implements Serializable {
     private String SteelRedundancy;  //钢冗
     private String HoseRedundancy;  //皮冗
 
+    /**
+     * 用于标记不同的场合
+     * 不同的场合 显示不同的图标/按钮等
+     * "ToBeSelectDx"   -- 候选电线界面 （在 新增路径-关联电线） -- 要显示  checkBox
+     * "RelatedDx"      -- 已选电线界面 （在 新增路径-关联电线） -- 要显示 删除按钮
+     */
+    private String flag; ///
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
+    }
+
     public String getDxXinshuJieMian() {
         return DxXinshuJieMian;
     }

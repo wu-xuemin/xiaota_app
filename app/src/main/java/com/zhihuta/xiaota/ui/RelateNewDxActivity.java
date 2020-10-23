@@ -15,6 +15,7 @@ import android.widget.Button;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.common.Constant;
 
 import java.util.ArrayList;
 
@@ -58,6 +59,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
         mDxData1.setDxLength("3100km");
         mDxData1.setDxXinshuJieMian("4X180");
         mDxData1.setSteelRedundancy("110/15M");
+        mDxData1.setFlag(Constant.FLAG_TOBE_SELECT_DX);
 //        mDxData1.setHoseRedundancy("5M");
 
         mDianxianTobeSelectList = new ArrayList<>();

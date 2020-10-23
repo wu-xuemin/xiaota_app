@@ -4,6 +4,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.common.Constant;
 
 import java.util.ArrayList;
 
@@ -56,6 +59,15 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter {
 //            itemView.headCountDoneTv.setText(""+mInstallPlanAdapter.get(position).getHeadCountDone());
 //            itemView.cmdInfoTv.setText(""+mInstallPlanAdapter.get(position).getCmtSend());
 //            itemView.cmdInfoTv.setSelected(true);//用于滚动显示
+
+            if(mDianxianQingCeAdapter.get(position).getFlag().equals(Constant.FLAG_RELATED_DX)) {
+                itemView.deleteBt.setVisibility(View.VISIBLE);
+                itemView.dxTobeSelectCheckBox.setVisibility(View.GONE);
+            } else if(mDianxianQingCeAdapter.get(position).getFlag().equals(Constant.FLAG_TOBE_SELECT_DX)) {
+                itemView.deleteBt.setVisibility(View.GONE);
+                itemView.dxTobeSelectCheckBox.setVisibility(View.VISIBLE);
+            }
+
         }else {
             Log.d(TAG, "onBindViewHolder: 没有获取到list数据");
         }
@@ -85,6 +97,8 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter {
         TextView steelRedundancyTv;
         TextView hoseRedundancyTv;
 
+        Button deleteBt;
+        CheckBox dxTobeSelectCheckBox;
         ItemView(View itemView) {
             super(itemView);
 //            installPlanLayout = itemView.findViewById(R.id.item_install_actual_layout);
@@ -96,6 +110,9 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter {
             dxLengthTv = itemView.findViewById(R.id.textViewDxLength);
             steelRedundancyTv = itemView.findViewById(R.id.textViewSteelHoseRedundancy);
 //            hoseRedundancyTv = itemView.findViewById(R.id.textViewHoseRedundancy);
+            deleteBt = itemView.findViewById(R.id.buttonDxDelete);
+            dxTobeSelectCheckBox = itemView.findViewById(R.id.checkBox_dx_to_be_select);
+
         }
     }
 }

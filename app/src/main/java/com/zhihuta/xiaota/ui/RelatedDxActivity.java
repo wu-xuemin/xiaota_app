@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.common.Constant;
 
 import java.util.ArrayList;
 
@@ -67,6 +68,7 @@ public class RelatedDxActivity extends AppCompatActivity {
         mDxData1.setDxXinshuJieMian("3X185");
         mDxData1.setSteelRedundancy("10/5M");
 //        mDxData1.setHoseRedundancy("5M");
+        mDxData1.setFlag(Constant.FLAG_RELATED_DX);
 
         mDianxianList = new ArrayList<>();
         mDianxianList.add(mDxData1);
