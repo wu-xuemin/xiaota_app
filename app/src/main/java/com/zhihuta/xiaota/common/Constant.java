@@ -11,4 +11,6 @@ public class Constant {
     public static String FLAG_RELATED_DX = "已选电线";
     public static String FLAG_QINGCE_DX = "清册中的电线"; // 这个和 候选电线 是一样的，只是显示在清册中。
 
+    public static final int REQUEST_CODE_ADD_NEW_LUJING = 1;            //路径中心，添加 全新 新路径
+    public static final int REQUEST_CODE_SCAN_TO_SHAIXUAN_LUJING = 2;    //路径中心，扫码筛选路径
 }

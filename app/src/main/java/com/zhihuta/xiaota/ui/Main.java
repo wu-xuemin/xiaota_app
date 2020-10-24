@@ -21,15 +21,16 @@ import android.widget.Toast;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
 import com.zhihuta.xiaota.WeixinFragment;
-import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
+import com.zhihuta.xiaota.common.Constant;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 //public class DianxianQingCe extends AppCompatActivity {
 public class Main extends FragmentActivity implements View.OnClickListener {
@@ -70,7 +71,8 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private Button addTotalNewLujingBt;
 
 
-    private Button mComputeScanBt;
+    private Button mComputeScanBt; //计算中心主界面的扫码按钮
+    private Button mLujingScanBt; //路径主界面的扫码按钮，用于 筛选出需要查看或者编辑的路径, 扫的越多码筛选出的路径越精确.
 
     private DianXianQingceAdapter mQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
@@ -85,9 +87,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private LujingAdapter mLujingShaixuanAdapter;
     private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
 
-    private static final int REQUST_CODE_ADD_NEW_LUJING = 1;
-
-    private static final int REQUEST_CODE_SCAN_QRCODE_START = 1;
+    private ArrayList<DistanceData> mDistanceForShaixuanList = new ArrayList<>(); //从扫码筛选获取的间距列表
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -175,7 +175,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 bundle.putSerializable("mDistanceList", (Serializable) mDistanceList);
                 intent.putExtras(bundle);
 //                startActivity(intent);
-                startActivityForResult(intent, REQUEST_CODE_SCAN_QRCODE_START);
+                startActivityForResult(intent, Constant.REQUEST_CODE_ADD_NEW_LUJING);
             }
         });
 
@@ -245,6 +245,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         mLayoutComputeDistance = (LinearLayout)findViewById(R.id.layout_compute_dis);
 
         initViewsCompute();
+        initViewsLujing();
     }
     private void initViewsCompute() {
         mComputeScanBt = (Button) findViewById(R.id.button_compute_scan);
@@ -255,6 +256,19 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
             }
         });
+    }
+
+    private void initViewsLujing() {
+            mLujingScanBt = (Button) findViewById(R.id.button_scan_lujing);
+            mLujingScanBt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Main.this, ZxingScanActivity.class);
+                    startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_SHAIXUAN_LUJING);
+
+                }
+            });
+
     }
 
 
@@ -273,9 +287,12 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     break;
                 case R.id.button_create_lujing_base_exist:
                     Toast.makeText(Main.this,"你点击了 新建路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
+
                     break;
                 case R.id.button_delete_lujing:
                     Toast.makeText(Main.this,"你点击了 删除路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    mLujingList.remove(position);
+                    mLujingAdapter.notifyDataSetChanged();
                     break;
                 default:
                     Toast.makeText(Main.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();
@@ -421,7 +438,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
-            case REQUST_CODE_ADD_NEW_LUJING:
+            case Constant.REQUEST_CODE_ADD_NEW_LUJING:
                 if (resultCode == RESULT_OK)
                 {
                     // 取出Intent里的新路径信息
@@ -431,6 +448,21 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
                     mLujingList.add(lujingData);
                     mLujingAdapter.notifyDataSetChanged();
+                }
+                break;
+
+            case Constant.REQUEST_CODE_SCAN_TO_SHAIXUAN_LUJING:
+                if (resultCode == RESULT_OK)
+                {
+                    // 取出Intent里的  间距信息
+                    List<DistanceData> list = (List<DistanceData>) data.getSerializableExtra("mScanResultDistanceList");
+                    for(int i =0; i<list.size(); i++ ) {
+                        Toast.makeText(this, " 扫码获得的间距信息1：" + list.get(i).getDistanceName(), Toast.LENGTH_LONG).show();
+                        //把扫码新加的各个间距加入间距列表
+                        mDistanceForShaixuanList.add(list.get(i));
+                        //todo 根据这些间距 筛选
+//                        mDistanceAdapter.notifyDataSetChanged();
+                    }
                 }
                 break;
             default:
