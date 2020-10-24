@@ -1,5 +1,7 @@
 package com.zhihuta.xiaota.ui;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -8,7 +10,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -272,8 +276,12 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(Main.this, ZxingScanActivity.class);
-                    startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_SHAIXUAN_LUJING);
-
+//运行时权限
+                    if (ContextCompat.checkSelfPermission(Main.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},1);
+                    }else {
+                        startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_SHAIXUAN_LUJING);
+                    }
                 }
             });
 

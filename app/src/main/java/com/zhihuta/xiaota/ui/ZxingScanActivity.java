@@ -1,9 +1,11 @@
 package com.zhihuta.xiaota.ui;
-
+//红米8A android版本9 xiaota也没有提示要摄像头权限
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -58,7 +60,6 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
 
         mQRCodeView = (ZXingView) findViewById(R.id.zxingview);
         mQRCodeView.setDelegate(this);
