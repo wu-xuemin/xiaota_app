@@ -21,6 +21,7 @@ import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
+import com.zhihuta.xiaota.common.Constant;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -96,10 +97,8 @@ public class AddNewLujingActivity extends AppCompatActivity {
         mButtonOkToCreateLujing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
- //                startActivityForResult(intent, RELATEd_DX);
                 TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
-                if(lujingNameTv.getText().toString().equals("")){
+                if(lujingNameTv.isEnabled() && lujingNameTv.getText().toString().equals("")){
 //                    Toast.makeText(AddNewLujingActivity.this, " 路径名称不能为空：", Toast.LENGTH_LONG).show();
                     Log.d("", "路径名称不能为空");
                     return;
@@ -123,6 +122,15 @@ public class AddNewLujingActivity extends AppCompatActivity {
                 AddNewLujingActivity.this.finish();
             }
         });
+
+        if(intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_MODIFY_LUJING)){
+            // 如果是修改路径，那路径名称不变, 标题设为 编辑路径
+            TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
+            LujingData lujingDataToBeModified = (LujingData) intent.getExtras().getSerializable("tobeModifiedLujing");
+            lujingNameTv.setText( lujingDataToBeModified.getLujingName());
+            lujingNameTv.setEnabled(false);
+            this.setTitle("编辑路径");
+        }
     }
 
     private void showDistanceList(){
