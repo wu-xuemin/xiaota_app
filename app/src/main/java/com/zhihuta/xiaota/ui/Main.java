@@ -287,8 +287,6 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     }
 
-
-
     /**
      * item＋item里的控件点击监听事件
      */

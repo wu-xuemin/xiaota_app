@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -150,10 +149,13 @@ public class AddNewLujingActivity extends AppCompatActivity {
         LinearLayoutManager manager5 = new LinearLayoutManager(this);
         manager5.setOrientation(LinearLayoutManager.VERTICAL);
         mDistanceRV.setLayoutManager(manager5);
-        mDistanceAdapter = new DistanceAdapter(mDistanceList);
+        mDistanceAdapter = new DistanceAdapter(mDistanceList, this);
         mDistanceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mDistanceRV.setAdapter(mDistanceAdapter);
 
+
+        // 设置item及item中控件的点击事件
+        mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -201,5 +203,39 @@ public class AddNewLujingActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    /**
+     * item＋item里的控件点击监听事件
+     */
+    private DistanceAdapter.OnItemClickListener MyItemClickListener = new DistanceAdapter.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(View v, DistanceAdapter.ViewName viewName, int position) {
+            //viewName可区分item及item内部控件
+            switch (v.getId()) {
+                case R.id.button_distance_up:
+                    Toast.makeText(AddNewLujingActivity.this,"你点击了 Up 按钮"+(position+1),Toast.LENGTH_SHORT).show();
+//                    gotoAddNewLujing(Constant.REQUEST_CODE_MODIFY_LUJING, mLujingList.get(position));
+                    break;
+                case R.id.button_distance_down:
+//                    gotoAddNewLujing(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST,null);
+                    Toast.makeText(AddNewLujingActivity.this,"你点击了 Down 按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.button_distance_delete:
+                    Toast.makeText(AddNewLujingActivity.this, "你点击了 删除 jj 按钮" + (position + 1), Toast.LENGTH_SHORT).show();
+                    //TODO 警告之后再删除??
+                    mDistanceList.remove(position);
+                    mDistanceAdapter.notifyDataSetChanged();
+                    break;
+                default:
+                    Toast.makeText(AddNewLujingActivity.this, "你点击了item按钮" + (position + 1), Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+        @Override
+        public void onItemLongClick(View v) {
+
+        }
+    };
 
 }
