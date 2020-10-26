@@ -105,6 +105,9 @@ dependencies {
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
 
     implementation 'com.google.code.gson:gson:2.8.2'
+
+//    implementation 'com.alibaba:fastjson:1.2.22.android'
+
     implementation 'com.squareup.okhttp3:okhttp:3.9.1'
     implementation 'com.orhanobut:logger:1.13'
     implementation 'com.blankj:utilcode:1.9.8'
@@ -124,4 +127,7 @@ dependencies {
     compile ('me.dm7.barcodescanner:zxing:1.9.8'){//compile 可以替换为implementation
         exclude group:"com.google.zxing"
     }
+    compile 'com.alibaba:fastjson:1.2.6'
+    implementation 'com.alibaba:fastjson:1.1.70.android'
+    implementation 'com.alibaba:fastjson:1.2.55'
 }

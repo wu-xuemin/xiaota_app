@@ -124,7 +124,8 @@ public class XiaotaApp extends Application {
 //        this.ip = "192.168.1.139:8080";
 //        this.ip = "10.0.2.2:8080";
 //模拟器
-        this.ip = "10.0.2.2:8004";
+//        this.ip = "10.0.2.2:8004";
+        this.ip = "172.20.10.3:8083";
         String appUserIdStr = readValue(PersistentValueType.USER_ID, "0");
         if ("".equals(appUserIdStr)){
             this.appUserId =0;

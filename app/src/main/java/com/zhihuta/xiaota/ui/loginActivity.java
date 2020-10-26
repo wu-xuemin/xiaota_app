@@ -26,7 +26,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.blankj.utilcode.util.ToastUtils;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
-import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.OrderData;
 import com.zhihuta.xiaota.common.Constant;
@@ -36,8 +35,6 @@ import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -195,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
                 for(int k=1;k<16; k++) {
                     DianxianQingCeData dianxianQingCeData1 = new DianxianQingCeData();
                     dianxianQingCeData1.setId(1);
-                    dianxianQingCeData1.setDxNumber("dx_0000" + k);
+                    dianxianQingCeData1.setSerial_number("dx_0000" + k);
                     dianxianQingCeData1.setDxModel("型号00" + k);
                     dianxianQingCeData1.setStartPoint("杭州A00" + k);
                     dianxianQingCeData1.setEndPoint("上海B001"  + k);

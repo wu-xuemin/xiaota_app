@@ -11,9 +11,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -31,9 +35,12 @@ import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.URL;
+import com.zhihuta.xiaota.net.Network;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 //public class DianxianQingCe extends AppCompatActivity {
@@ -92,12 +99,23 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
 
     private ArrayList<DistanceData> mDistanceForShaixuanList = new ArrayList<>(); //从扫码筛选获取的间距列表
+
+    private Network mNetwork;
+    private GetUserHandler getUserHandler;
+
+    String getUserListUrl8004 = URL.HTTP_HEAD + "172.20.10.3:8004"+ URL.GET_USER_LIST;
+    String loginUrl8004 = URL.HTTP_HEAD +"172.20.10.3:8004"+ URL.USER_LOGIN;
+    String getDxListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_DIANXIAN_QINGCE_LIST;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_main);
+
+
+        mNetwork = Network.Instance(getApplication());
+        getUserHandler = new Main.GetUserHandler();
         initViews();//初始化控件
         initEvents();//初始化事件
         selectTab(1);//默认选中第2个Tab
@@ -105,6 +123,20 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     }
 
+    @SuppressLint("HandlerLeak")
+    class GetUserHandler extends Handler {
+        @Override
+        public void handleMessage(final Message msg) {
+
+
+            if (msg.what == Network.OK) {
+                Log.d("GetUserHandler", "OKKK");
+            } else {
+                String errorMsg = (String)msg.obj;
+                Log.d("GetUserHandler NG:", "errorMsg");
+            }
+        }
+    }
     private void initEvents() {
         //初始化3个Tab的点击事件
         mTabDxQingce.setOnClickListener(this);
@@ -338,6 +370,19 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 //                break;
             case R.id.id_tab_lujing_moxing:
                 selectTab(1);
+                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                mPostValue.put("account","z");
+                mPostValue.put("password", "a");
+                mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
+//                mNetwork.getUserList(getUserListUrl, mPostValue, getUserHandler);
+//                mNetwork.fetchLoginData(loginUrl8004, mPostValue, getUserHandler);          /// OK
+//                mNetwork.fetchUserListData(getUserListUrl8004, mPostValue, getUserHandler); /// oK
+                mNetwork.fetchDxListData(getDxListUrl8083, mPostValue, getUserHandler);
+
+
+
+//                mNetwork.getDxList(getDxListUrl, mPostValue, getUserHandler);
+
                 break;
             case R.id.id_tab_setting:
                 selectTab(2);

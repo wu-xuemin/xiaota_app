@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class DianxianQingCeData implements Serializable {
     private int id;
-    private String DxNumber;
+    private String serial_number;
     private String StartPoint;
     private String EndPoint;
     private String DxModel; // 型号
@@ -78,8 +78,8 @@ public class DianxianQingCeData implements Serializable {
         this.id = id;
     }
 
-    public void setDxNumber(String dxNumber) {
-        DxNumber = dxNumber;
+    public void setSerial_number(String serial_number) {
+        this.serial_number = serial_number;
     }
 
     public void setStartPoint(String startPoint) {
@@ -94,8 +94,8 @@ public class DianxianQingCeData implements Serializable {
         DxModel = dxModel;
     }
 
-    public String getDxNumber() {
-        return DxNumber;
+    public String getSerial_number() {
+        return serial_number;
     }
 
     public String getStartPoint() {

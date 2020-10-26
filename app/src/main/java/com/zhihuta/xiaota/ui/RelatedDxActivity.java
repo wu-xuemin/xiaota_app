@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
-import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.common.Constant;
 
 import java.util.ArrayList;
@@ -66,7 +65,7 @@ public class RelatedDxActivity extends AppCompatActivity {
         for(int k=0;k<15; k++) {
             DianxianQingCeData mDxData1 = new DianxianQingCeData();
             mDxData1.setId(k);
-            mDxData1.setDxNumber("DX2211-" + k );
+            mDxData1.setSerial_number("DX2211-" + k );
             mDxData1.setStartPoint("杭州A点" + k);
             mDxData1.setEndPoint("岳阳A点" + k);
             mDxData1.setDxModel("型号K");
@@ -148,7 +147,7 @@ public class RelatedDxActivity extends AppCompatActivity {
                     // 取出Intent里的选择电线的结果
                     List<DianxianQingCeData> list = (List<DianxianQingCeData>) data.getSerializableExtra("mCheckedDxList");
                     for(int i =0; i<list.size(); i++ ) {
-                        Toast.makeText(this, " 选中了电线：" + list.get(i).getDxNumber(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, " 选中了电线：" + list.get(i).getSerial_number(), Toast.LENGTH_LONG).show();
                         //把扫码新加的各个间距加入间距列表
                         mDianxianList.add(list.get(i));
                         showDxList();

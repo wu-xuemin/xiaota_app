@@ -52,7 +52,7 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
         final DianXianQingceAdapter.ItemView_DianXianViewHolder itemView = (DianXianQingceAdapter.ItemView_DianXianViewHolder) holder;
 
         DianxianQingCeData data = dataList.get(position);
-        holder.dianxianBianhaoTv.setText(data.getDxNumber());
+        holder.dianxianBianhaoTv.setText(data.getSerial_number());
         holder.qidianTv.setText( data.getStartPoint() );// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
         holder.zhongdianTv.setText(data.getEndPoint());
         holder.modelTv.setText(data.getDxModel());

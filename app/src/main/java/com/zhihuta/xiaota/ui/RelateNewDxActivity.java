@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
-import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.common.Constant;
 
 import java.io.Serializable;
@@ -63,7 +62,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
         for(int i=0; i<10; i++) {
             DianxianQingCeData mDxData1 = new DianxianQingCeData(); //这个放在循环外面，所有mDxData1对象 会被编译优化成最后一个对象的
             mDxData1.setId(i);
-            mDxData1.setDxNumber("DX22候选" + i);
+            mDxData1.setSerial_number("DX22候选" + i);
             mDxData1.setStartPoint("乌鲁木齐" + i);
             mDxData1.setEndPoint("北京B点" + i);
             mDxData1.setDxModel("型号S" + i);
@@ -75,7 +74,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
 //        mDxData1.setHoseRedundancy("5M");
 
             mDianxianTobeSelectList.add(mDxData1);
-            Log.d("newDx", "mDxData1 getDxNumber:" + mDxData1.getDxNumber());
+            Log.d("newDx", "mDxData1 getDxNumber:" + mDxData1.getSerial_number());
 
             /**
              * 备选的电线，初始状态都是未选

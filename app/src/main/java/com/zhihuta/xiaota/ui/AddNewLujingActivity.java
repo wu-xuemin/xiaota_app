@@ -192,7 +192,7 @@ public class AddNewLujingActivity extends AppCompatActivity {
                     // 取出Intent里的 选中的 电线
                     List<DianxianQingCeData> list = (List<DianxianQingCeData>) data.getSerializableExtra("mScanResultDistanceList");
                     for(int i =0; i<list.size(); i++ ) {
-                        Toast.makeText(this, " 选中的电线：" + list.get(i).getDxNumber(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, " 选中的电线：" + list.get(i).getSerial_number(), Toast.LENGTH_LONG).show();
 
 //                        mLujing.add(list.get(i));
 //                        mDistanceAdapter.notifyDataSetChanged();
