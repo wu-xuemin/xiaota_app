@@ -15,7 +15,6 @@ import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 //MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyViewHolder> implements View.OnClickListener{
 
@@ -48,9 +47,9 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.LujingView
     public void onBindViewHolder(@NonNull LujingViewHolder holder, int position) {
 
         LujingData data = list.get(position);
-        holder.lujingNameTv.setText(data.getLujingName());
-        holder.lujingCreatedDateTv.setText(sf3.format(data.getLujingCreatedDate()));// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
-        holder.lujingCreaterTv.setText(data.getLujingCreater());
+        holder.lujingNameTv.setText(data.getName());
+        holder.lujingCreatedDateTv.setText(sf3.format(data.getCreate_time()));// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
+        holder.lujingCreaterTv.setText(data.getCreator());
         holder.modifyLujingBt.setTag(position);
         holder.createLujingBaseOnExistBt.setTag(position);
         holder.deleteLujingBt.setTag(position);

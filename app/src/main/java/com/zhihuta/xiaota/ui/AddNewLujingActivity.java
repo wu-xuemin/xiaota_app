@@ -114,9 +114,9 @@ public class AddNewLujingActivity extends AppCompatActivity {
                     return;
                 }
                 //TODO 检测路径名称唯一性。。。
-                mNewLujing.setLujingName(lujingNameTv.getText().toString());
-                mNewLujing.setLujingCreater("当前账号");
-                mNewLujing.setLujingCreatedDate(new Date());
+                mNewLujing.setName(lujingNameTv.getText().toString());
+                mNewLujing.setCreator("当前账号");
+                mNewLujing.setCreate_time(new Date());
 
 //                Intent intent = getIntent();
 //                intent.setClass(ZxingScanActivity.this, AddNewLujingActivity.class);
@@ -137,7 +137,7 @@ public class AddNewLujingActivity extends AppCompatActivity {
             // 如果是修改路径，那路径名称不变, 标题设为 编辑路径
             TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
             LujingData lujingDataToBeModified = (LujingData) intent.getExtras().getSerializable("tobeModifiedLujing");
-            lujingNameTv.setText( lujingDataToBeModified.getLujingName());
+            lujingNameTv.setText( lujingDataToBeModified.getName());
             lujingNameTv.setEnabled(false);
             this.setTitle("编辑路径");
         }

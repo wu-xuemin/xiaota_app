@@ -90,6 +90,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private DianXianQingceAdapter mDxQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
     private RecyclerView mQingceRV;
+    private RecyclerView mLujingRV;
 //    private OrderAdapter mOrderAdapter;
 //    private ArrayList<OrderData> mOrderList = new ArrayList<>();
 
@@ -105,10 +106,12 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private Network mNetwork;
     private GetUserHandler getUserHandler;
     private GetDxListHandler getDxListHandler;
+    private GetLujingListHandler getLujingListHandler;
 
     String getUserListUrl8004 = URL.HTTP_HEAD + "172.20.10.3:8004"+ URL.GET_USER_LIST;
     String loginUrl8004 = URL.HTTP_HEAD +"172.20.10.3:8004"+ URL.USER_LOGIN;
     String getDxListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_DIANXIAN_QINGCE_LIST;
+    String getLujingListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_LIST;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +123,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         mNetwork = Network.Instance(getApplication());
         getUserHandler = new Main.GetUserHandler();
         getDxListHandler = new GetDxListHandler();
+        getLujingListHandler = new GetLujingListHandler();
         initViews();//初始化控件
         initEvents();//初始化事件
         selectTab(1);//默认选中第2个Tab
@@ -130,9 +134,39 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
         /// mPostValue 貌似没必要。待更新
         mNetwork.fetchDxListData(getDxListUrl8083, mPostValue, getDxListHandler);///ok
+        mNetwork.fetchLujingListData(getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
 
     }
 
+    @SuppressLint("HandlerLeak")
+    class GetLujingListHandler extends Handler {
+        @Override
+        public void handleMessage(final Message msg) {
+//            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
+//                mLoadingProcessDialog.dismiss();
+//            }
+
+            if (msg.what == Network.OK) {
+                Log.d("GetLujingListHandler", "OKKK");
+                mLujingList = (ArrayList<LujingData>)msg.obj;
+                Log.d(TAG, "handleMessage: size: " + mLujingList.size());
+                if (mLujingList.size()==0){
+                    Toast.makeText(Main.this, "路径数量为0！", Toast.LENGTH_SHORT).show();
+                } else {
+                    mLujingAdapter = new LujingAdapter(mLujingList,Main.this);
+                    mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this,DividerItemDecoration.VERTICAL));
+                    mLujingRV.setAdapter(mLujingAdapter);
+                    mLujingAdapter.notifyDataSetChanged();
+                       // 设置item及item中控件的点击事件
+                    mLujingAdapter.setOnItemClickListener(MyItemClickListener);
+                }
+            } else {
+                String errorMsg = (String)msg.obj;
+                Log.d("GetDxListHandler NG:", "errorMsg");
+                Toast.makeText(Main.this, "路径获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
     @SuppressLint("HandlerLeak")
     class GetDxListHandler extends Handler {
         @Override
@@ -146,7 +180,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 mDianxianQingCeList = (ArrayList<DianxianQingCeData>)msg.obj;
                 Log.d(TAG, "handleMessage: size: " + mDianxianQingCeList.size());
                 if (mDianxianQingCeList.size()==0){
-
+                    Toast.makeText(Main.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
                 } else {
                     for(int k=0; k<mDianxianQingCeList.size(); k++) {
                         mDianxianQingCeList.get(k).setFlag(Constant.FLAG_QINGCE_DX);
@@ -159,7 +193,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             } else {
                 String errorMsg = (String)msg.obj;
                 Log.d("GetDxListHandler NG:", "errorMsg");
-                Toast.makeText(Main.this, "搜索失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(Main.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -267,16 +301,11 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             Toast.makeText(this, "   路径列表为空！！！" , Toast.LENGTH_SHORT).show();
         }
         //路径列表
-        RecyclerView mLujingRV = (RecyclerView) findViewById(R.id.rv_lujing);
+        mLujingRV = (RecyclerView) findViewById(R.id.rv_lujing);
         LinearLayoutManager manager3 = new LinearLayoutManager(this);
         manager3.setOrientation(LinearLayoutManager.VERTICAL);
         mLujingRV.setLayoutManager(manager3);
-//        mLujingAdapter = new LujingAdapter(mLujingList);
-        mLujingAdapter = new LujingAdapter(mLujingList,this);
-        mLujingRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        mLujingRV.setAdapter(mLujingAdapter);
-        // 设置item及item中控件的点击事件
-        mLujingAdapter.setOnItemClickListener(MyItemClickListener);
+//
 
 
         mLujingShaixuanList = (ArrayList<LujingData>) bundle.getSerializable("mLujingShaixuanList");
@@ -418,6 +447,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 //                mNetwork.fetchLoginData(loginUrl8004, mPostValue, getUserHandler);          /// OK
 //                mNetwork.fetchUserListData(getUserListUrl8004, mPostValue, getUserHandler); /// oK
 //                mNetwork.fetchDxListData(getDxListUrl8083, mPostValue, getDxListHandler);///ok
+//                mNetwork.fetchLujingListData(getLujingListUrl8083, mPostValue, getLujingListHandler);///ok
 
 
 
@@ -544,7 +574,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     // 取出Intent里的新路径信息
                     LujingData lujingData = (LujingData) data.getSerializableExtra("mNewLujing");
 
-                    Toast.makeText(this, " 新路径名称：" + lujingData.getLujingName(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, " 新路径名称：" + lujingData.getName(), Toast.LENGTH_LONG).show();
 
                     mLujingList.add(lujingData);
                     mLujingAdapter.notifyDataSetChanged();
@@ -570,7 +600,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     // 取出Intent里的新路径信息
                     LujingData lujingData = (LujingData) data.getSerializableExtra("mNewLujing");
 
-                    Toast.makeText(this, " 基于已有路径，新建的新路径名称：" + lujingData.getLujingName(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, " 基于已有路径，新建的新路径名称：" + lujingData.getName(), Toast.LENGTH_LONG).show();
 
                     mLujingList.add(lujingData);
                     mLujingAdapter.notifyDataSetChanged();
@@ -582,7 +612,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     // 取出Intent里的新路径信息
                     LujingData lujingData = (LujingData) data.getSerializableExtra("mNewLujing");
 
-                    Toast.makeText(this, " 被修改路径的名称：" + lujingData.getLujingName(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, " 被修改路径的名称：" + lujingData.getName(), Toast.LENGTH_LONG).show();
                     mLujingAdapter.notifyDataSetChanged();
                 }
                 break;

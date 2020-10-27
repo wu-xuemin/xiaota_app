@@ -9,6 +9,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="4"
+        android:ellipsize="marquee"
+        android:singleLine="true"
         android:text="路径名称" />
 
     <TextView
@@ -16,6 +18,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"
+        android:ellipsize="marquee"
+        android:singleLine="true"
         android:text="创建人" />
 
     <TextView
@@ -23,6 +27,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="4"
+        android:ellipsize="marquee"
+        android:singleLine="true"
         android:text="日期" />
 
     <Button

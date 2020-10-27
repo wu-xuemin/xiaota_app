@@ -226,47 +226,47 @@ public class LoginActivity extends AppCompatActivity {
 
                 LujingData mLujingData1 = new LujingData();
                 mLujingData1.setId(1);
-                mLujingData1.setLujingName("路径_abc1");
+                mLujingData1.setName("路径_abc1");
 //                String sDate = sf3.format(new Date());
 //                try {
-                    mLujingData1.setLujingCreatedDate(new Date());
+                    mLujingData1.setCreate_time(new Date());
 //                } catch (ParseException e) {
 //                    e.printStackTrace();
 //                }
-                mLujingData1.setLujingCreater("路小凡");
+                mLujingData1.setCreator("路小凡");
                 mLujingData1.setLujingCaozuo("cccc");
 
                 LujingData mLujingData2 = new LujingData();
                 mLujingData2.setId(2);
-                mLujingData2.setLujingName("路径_bbb2");
-                mLujingData2.setLujingCreatedDate(new Date());
-                mLujingData2.setLujingCreater("张三");
+                mLujingData2.setName("路径_bbb2");
+                mLujingData2.setCreate_time(new Date());
+                mLujingData2.setCreator("张三");
 
                 LujingData mLujingData3 = new LujingData();
                 mLujingData3.setId(3);
-                mLujingData3.setLujingName("上海南京1");
-                mLujingData3.setLujingCreatedDate(new Date());
-                mLujingData3.setLujingCreater("张三丰");
+                mLujingData3.setName("上海南京1");
+                mLujingData3.setCreate_time(new Date());
+                mLujingData3.setCreator("张三丰");
                 LujingData mLujingData4 = new LujingData();
                 mLujingData4.setId(4);
-                mLujingData4.setLujingName("北京南京12");
-                mLujingData4.setLujingCreatedDate(new Date());
-                mLujingData4.setLujingCreater("小王");
+                mLujingData4.setName("北京南京12");
+                mLujingData4.setCreate_time(new Date());
+                mLujingData4.setCreator("小王");
                 LujingData mLujingData5 = new LujingData();
                 mLujingData5.setId(5);
-                mLujingData5.setLujingName("杭州太原88");
-                mLujingData5.setLujingCreatedDate(new Date());
-                mLujingData5.setLujingCreater("张小明");
+                mLujingData5.setName("杭州太原88");
+                mLujingData5.setCreate_time(new Date());
+                mLujingData5.setCreator("张小明");
                 LujingData mLujingData6 = new LujingData();
                 mLujingData6.setId(5);
-                mLujingData6.setLujingName("沿海888A");
-                mLujingData6.setLujingCreatedDate(new Date());
-                mLujingData6.setLujingCreater("杨晓阳");
+                mLujingData6.setName("沿海888A");
+                mLujingData6.setCreate_time(new Date());
+                mLujingData6.setCreator("杨晓阳");
                 LujingData mLujingData7 = new LujingData();
                 mLujingData7.setId(5);
-                mLujingData7.setLujingName("秦岭淮河790");
-                mLujingData7.setLujingCreatedDate(new Date());
-                mLujingData7.setLujingCreater("秦始皇");
+                mLujingData7.setName("秦岭淮河790");
+                mLujingData7.setCreate_time(new Date());
+                mLujingData7.setCreator("秦始皇");
 
                 mLujingList = new ArrayList<>();
                 mLujingList.add(mLujingData1);

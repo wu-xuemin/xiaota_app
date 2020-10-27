@@ -9,9 +9,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.google.gson.GsonBuilder;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.response.LoginResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.DxResponseDataWrap;
+import com.zhihuta.xiaota.bean.response.LujingResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.UserResponseDataWrap;
 import com.zhihuta.xiaota.ui.XiaotaApp;
 import com.google.gson.Gson;
@@ -70,6 +72,87 @@ public class Network {
         }
         return false;
     }
+    public void fetchLujingListData(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
+        final Message msg = handler.obtainMessage();
+        if (!isNetworkConnected()) {
+            Log.d(TAG, "fetchLujingListData: 没网络");
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = mCtx.getString(R.string.network_not_connect);
+            handler.sendMessage(msg);
+        } else {
+            Log.d(TAG, "fetchLujingListData: 有网络");
+            if (url != null && values != null) {
+                Log.d(TAG, "fetchLujingListData: not null");
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        RequestBody requestBody;
+                        FormBody.Builder builder = new FormBody.Builder();
+                        for (Object o : values.entrySet()) {
+                            HashMap.Entry entry = (HashMap.Entry) o;
+                            builder.add((String) entry.getKey(), (String) entry.getValue());
+                        }
+                        requestBody = builder.build();
+                        //Post method
+//                        Request request = new Request.Builder().url(url).post(requestBody).build();
+                        Request request = new Request.Builder().url(url).get().build();
+                        OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+                        Response response = null;
+                        try {
+                            //同步网络请求
+                            response = client.newCall(request).execute();
+                            boolean success = false;
+                            if (response.isSuccessful()) {
+                                Log.d(TAG, "fetchLujingListData run: response success");
+//                                Gson gson = new Gson();
+                                Gson gson = new GsonBuilder()
+                                        .setDateFormat("yyyy-MM-dd HH:mm:ss")
+                                        .create(); //没有指定时间格式的话 解析会出错。
+                                LujingResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<LujingResponseDataWrap>(){}.getType());
+                                if (responseData != null) {
+                                    Log.d(TAG, "fetchLujingListData run: responseData："+responseData.getCode());
+                                    if (responseData.getCode() == 200) {
+
+                                        for(int k=0; k<responseData.getData().getPaths().size(); k++) {
+                                            success = true;
+                                            msg.obj = responseData.getData().getPaths();
+                                        }
+                                    } else if (responseData.getCode() == 400) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        Log.d(TAG, "fetchLujingListData run: error 400 :"+responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    } else if (responseData.getCode() == 500) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        Log.d(TAG, "fetchLujingListData run: error 500 :"+responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    }else {
+                                        Log.e(TAG, "fetchLujingListData Format JSON string to object error!");
+                                    }
+                                }
+                                if (success) {
+                                    msg.what = OK;
+                                }
+                            } else {
+                                msg.what = NG;
+                            }
+                            response.close();
+                        } catch (Exception e) {
+                            msg.what = NG;
+                            msg.obj = "Network error!";
+                            Log.d(TAG, "fetchLujingListData run: catch "+e + e.getMessage() + e.getCause());
+                        } finally {
+                            handler.sendMessage(msg);
+                            Log.d(TAG, "fetchLujingListData run: finally");
+                            if(response != null) {
+                                response.close();
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
     public void  fetchDxListData(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
         final Message msg = handler.obtainMessage();
         if (!isNetworkConnected()) {
@@ -119,14 +202,14 @@ public class Network {
                                         }
                                     } else if (responseData.getCode() == 400) {
                                         Log.e(TAG, responseData.getMessage());
-                                        Log.d(TAG, "fetchLoginData run: error 400 :"+responseData.getMessage());
+                                        Log.d(TAG, "fetchDxListData run: error 400 :"+responseData.getMessage());
                                         msg.obj = responseData.getMessage();
                                     } else if (responseData.getCode() == 500) {
                                         Log.e(TAG, responseData.getMessage());
-                                        Log.d(TAG, "fetchLoginData run: error 500 :"+responseData.getMessage());
+                                        Log.d(TAG, "fetchDxListData run: error 500 :"+responseData.getMessage());
                                         msg.obj = responseData.getMessage();
                                     }else {
-                                        Log.e(TAG, "fetchLoginData Format JSON string to object error!");
+                                        Log.e(TAG, "fetchDxListData Format JSON string to object error!");
                                     }
                                 }
                                 if (success) {
@@ -139,10 +222,10 @@ public class Network {
                         } catch (Exception e) {
                             msg.what = NG;
                             msg.obj = "Network error!";
-                            Log.d(TAG, "fetchLoginData run: catch "+e);
+                            Log.d(TAG, "fetchDxListData run: catch "+e);
                         } finally {
                             handler.sendMessage(msg);
-                            Log.d(TAG, "fetchLoginData run: finally");
+                            Log.d(TAG, "fetchDxListData run: finally");
                             if(response != null) {
                                 response.close();
                             }

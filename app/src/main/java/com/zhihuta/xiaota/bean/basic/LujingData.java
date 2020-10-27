@@ -5,9 +5,9 @@ import java.util.Date;
 
 public class LujingData implements Serializable {
     private int id;
-    private String LujingName; // 路径名称
-    private String LujingCreater; //路径的创建人
-    private Date LujingCreatedDate; // 创建日期
+    private String name; // 路径名称
+    private String creator; //路径的创建人
+    private Date create_time; // 创建日期
 
     public String getLujingCaozuo() {
         return LujingCaozuo;
@@ -27,27 +27,27 @@ public class LujingData implements Serializable {
         this.id = id;
     }
 
-    public String getLujingName() {
-        return LujingName;
+    public String getName() {
+        return name;
     }
 
-    public void setLujingName(String lujingName) {
-        LujingName = lujingName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLujingCreater() {
-        return LujingCreater;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setLujingCreater(String lujingCreater) {
-        LujingCreater = lujingCreater;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
-    public Date getLujingCreatedDate() {
-        return LujingCreatedDate;
+    public Date getCreate_time() {
+        return create_time;
     }
 
-    public void setLujingCreatedDate(Date lujingCreatedDate) {
-        LujingCreatedDate = lujingCreatedDate;
+    public void setCreate_time(Date create_time) {
+        this.create_time = create_time;
     }
 }
