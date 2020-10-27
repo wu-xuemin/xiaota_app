@@ -115,7 +115,7 @@ public class Network {
                                             success = true;
                                             String serial_number = responseData.getData().getWires().get(k).getSerial_number();
                                             Log.i("aaa", "serial_number is " + serial_number);
-                                            msg.obj = responseData.getData();
+                                            msg.obj = responseData.getData().getWires();
                                         }
                                     } else if (responseData.getCode() == 400) {
                                         Log.e(TAG, responseData.getMessage());

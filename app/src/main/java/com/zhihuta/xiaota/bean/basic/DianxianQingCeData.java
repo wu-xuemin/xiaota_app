@@ -5,13 +5,13 @@ import java.io.Serializable;
 public class DianxianQingCeData implements Serializable {
     private int id;
     private String serial_number;
-    private String StartPoint;
-    private String EndPoint;
-    private String DxModel; // 型号
-    private String DxXinshuJieMian; // 芯数X截面
-    private String DxLength; //电线长度
-    private String SteelRedundancy;  //钢冗
-    private String HoseRedundancy;  //皮冗
+    private String start_point;
+    private String end_point;
+    private String parts_code; // 型号
+    private String wickes_cross_section; // 芯数X截面
+    private String length; //电线长度
+    private String steel_redundancy;  //钢冗
+    private String hose_redundancy;  //皮冗
 
     /**
      * 用于标记不同的场合
@@ -38,36 +38,36 @@ public class DianxianQingCeData implements Serializable {
         this.flag = flag;
     }
 
-    public String getDxXinshuJieMian() {
-        return DxXinshuJieMian;
+    public String getWickes_cross_section() {
+        return wickes_cross_section;
     }
 
-    public void setDxXinshuJieMian(String dxXinshuJieMian) {
-        DxXinshuJieMian = dxXinshuJieMian;
+    public void setWickes_cross_section(String wickes_cross_section) {
+        this.wickes_cross_section = wickes_cross_section;
     }
 
-    public String getDxLength() {
-        return DxLength;
+    public String getLength() {
+        return length;
     }
 
-    public void setDxLength(String dxLength) {
-        DxLength = dxLength;
+    public void setLength(String length) {
+        this.length = length;
     }
 
-    public String getSteelRedundancy() {
-        return SteelRedundancy;
+    public String getSteel_redundancy() {
+        return steel_redundancy;
     }
 
-    public void setSteelRedundancy(String steelRedundancy) {
-        SteelRedundancy = steelRedundancy;
+    public void setSteel_redundancy(String steel_redundancy) {
+        this.steel_redundancy = steel_redundancy;
     }
 
-    public String getHoseRedundancy() {
-        return HoseRedundancy;
+    public String getHose_redundancy() {
+        return hose_redundancy;
     }
 
-    public void setHoseRedundancy(String hoseRedundancy) {
-        HoseRedundancy = hoseRedundancy;
+    public void setHose_redundancy(String hose_redundancy) {
+        this.hose_redundancy = hose_redundancy;
     }
 
     public int getId() {
@@ -82,31 +82,31 @@ public class DianxianQingCeData implements Serializable {
         this.serial_number = serial_number;
     }
 
-    public void setStartPoint(String startPoint) {
-        StartPoint = startPoint;
+    public void setStart_point(String start_point) {
+        this.start_point = start_point;
     }
 
-    public void setEndPoint(String endPoint) {
-        EndPoint = endPoint;
+    public void setEnd_point(String end_point) {
+        this.end_point = end_point;
     }
 
-    public void setDxModel(String dxModel) {
-        DxModel = dxModel;
+    public void setParts_code(String parts_code) {
+        this.parts_code = parts_code;
     }
 
     public String getSerial_number() {
         return serial_number;
     }
 
-    public String getStartPoint() {
-        return StartPoint;
+    public String getStart_point() {
+        return start_point;
     }
 
-    public String getEndPoint() {
-        return EndPoint;
+    public String getEnd_point() {
+        return end_point;
     }
 
-    public String getDxModel() {
-        return DxModel;
+    public String getParts_code() {
+        return parts_code;
     }
 }

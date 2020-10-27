@@ -53,12 +53,12 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
 
         DianxianQingCeData data = dataList.get(position);
         holder.dianxianBianhaoTv.setText(data.getSerial_number());
-        holder.qidianTv.setText( data.getStartPoint() );// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
-        holder.zhongdianTv.setText(data.getEndPoint());
-        holder.modelTv.setText(data.getDxModel());
-        holder.xinshuJiemianTv.setText(data.getDxXinshuJieMian());
-        holder.dxLengthTv.setText(data.getDxLength());
-        holder.steelHoseRedundancyTv.setText(data.getSteelRedundancy() + "/" + data.getHoseRedundancy());
+        holder.qidianTv.setText( data.getStart_point() );// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
+        holder.zhongdianTv.setText(data.getEnd_point());
+        holder.modelTv.setText(data.getParts_code());
+        holder.xinshuJiemianTv.setText(data.getWickes_cross_section());
+        holder.dxLengthTv.setText(data.getLength());
+        holder.steelHoseRedundancyTv.setText(data.getSteel_redundancy() + "/" + data.getHose_redundancy());
 
         holder.deleteBt.setTag(position);
         holder.dxTobeSelectCheckBox.setTag(position);
@@ -66,7 +66,13 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
         /**
          * 不同的数据，显示不同的内容，比如在备选电线列表里，不需要显示删除按钮
          */
-        if(dataList.get(position).getFlag().equals(Constant.FLAG_RELATED_DX) || dataList.get(position).getFlag().equals(Constant.FLAG_QINGCE_DX)) {
+        if(dataList.get(position).getFlag().equals(Constant.FLAG_QINGCE_DX)) {
+            itemView.deleteBt.setVisibility(View.VISIBLE);
+            itemView.dxTobeSelectCheckBox.setVisibility(View.GONE);
+            itemView.modelTv.setVisibility(View.GONE);
+            itemView.steelHoseRedundancyTv.setVisibility(View.GONE);
+            itemView.xinshuJiemianTv.setVisibility(View.GONE);
+        } else if(dataList.get(position).getFlag().equals(Constant.FLAG_RELATED_DX) ) {
             itemView.deleteBt.setVisibility(View.VISIBLE);
             itemView.dxTobeSelectCheckBox.setVisibility(View.GONE);
         } else if(dataList.get(position).getFlag().equals(Constant.FLAG_TOBE_SELECT_DX)) {

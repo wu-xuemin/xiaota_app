@@ -63,13 +63,13 @@ public class RelateNewDxActivity extends AppCompatActivity {
             DianxianQingCeData mDxData1 = new DianxianQingCeData(); //这个放在循环外面，所有mDxData1对象 会被编译优化成最后一个对象的
             mDxData1.setId(i);
             mDxData1.setSerial_number("DX22候选" + i);
-            mDxData1.setStartPoint("乌鲁木齐" + i);
-            mDxData1.setEndPoint("北京B点" + i);
-            mDxData1.setDxModel("型号S" + i);
-            mDxData1.setDxLength("3100km" +i);
-            mDxData1.setDxXinshuJieMian("4X180");
-            mDxData1.setSteelRedundancy("55M");
-            mDxData1.setHoseRedundancy("15M");
+            mDxData1.setStart_point("乌鲁木齐" + i);
+            mDxData1.setEnd_point("北京B点" + i);
+            mDxData1.setParts_code("型号S" + i);
+            mDxData1.setLength("3100km" +i);
+            mDxData1.setWickes_cross_section("4X180");
+            mDxData1.setSteel_redundancy("55M");
+            mDxData1.setHose_redundancy("15M");
             mDxData1.setFlag(Constant.FLAG_TOBE_SELECT_DX);
 //        mDxData1.setHoseRedundancy("5M");
 

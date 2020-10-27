@@ -45,6 +45,8 @@ import java.util.List;
 
 //public class DianxianQingCe extends AppCompatActivity {
 public class Main extends FragmentActivity implements View.OnClickListener {
+
+    private static String TAG = "Main";
     //声明3个Tab的布局文件
     private LinearLayout mTabDxQingce;
 //    private LinearLayout mTabFrd;
@@ -85,9 +87,9 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private Button mComputeScanBt; //计算中心主界面的扫码按钮
     private Button mLujingScanBt; //路径主界面的扫码按钮，用于 筛选出需要查看或者编辑的路径, 扫的越多码筛选出的路径越精确.
 
-    private DianXianQingceAdapter mQingceAdapter;
+    private DianXianQingceAdapter mDxQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
-
+    private RecyclerView mQingceRV;
 //    private OrderAdapter mOrderAdapter;
 //    private ArrayList<OrderData> mOrderList = new ArrayList<>();
 
@@ -102,6 +104,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     private Network mNetwork;
     private GetUserHandler getUserHandler;
+    private GetDxListHandler getDxListHandler;
 
     String getUserListUrl8004 = URL.HTTP_HEAD + "172.20.10.3:8004"+ URL.GET_USER_LIST;
     String loginUrl8004 = URL.HTTP_HEAD +"172.20.10.3:8004"+ URL.USER_LOGIN;
@@ -116,13 +119,50 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
         mNetwork = Network.Instance(getApplication());
         getUserHandler = new Main.GetUserHandler();
+        getDxListHandler = new GetDxListHandler();
         initViews();//初始化控件
         initEvents();//初始化事件
         selectTab(1);//默认选中第2个Tab
 
+        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+        mPostValue.put("account","z");
+        mPostValue.put("password", "a");
+        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
+        /// mPostValue 貌似没必要。待更新
+        mNetwork.fetchDxListData(getDxListUrl8083, mPostValue, getDxListHandler);///ok
 
     }
 
+    @SuppressLint("HandlerLeak")
+    class GetDxListHandler extends Handler {
+        @Override
+        public void handleMessage(final Message msg) {
+//            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
+//                mLoadingProcessDialog.dismiss();
+//            }
+
+            if (msg.what == Network.OK) {
+                Log.d("GetDxListHandler", "OKKK");
+                mDianxianQingCeList = (ArrayList<DianxianQingCeData>)msg.obj;
+                Log.d(TAG, "handleMessage: size: " + mDianxianQingCeList.size());
+                if (mDianxianQingCeList.size()==0){
+
+                } else {
+                    for(int k=0; k<mDianxianQingCeList.size(); k++) {
+                        mDianxianQingCeList.get(k).setFlag(Constant.FLAG_QINGCE_DX);
+                    }
+                    mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList,Main.this);
+                    mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this,DividerItemDecoration.VERTICAL));
+                    mQingceRV.setAdapter(mDxQingceAdapter);
+                    mDxQingceAdapter.notifyDataSetChanged();
+                }
+            } else {
+                String errorMsg = (String)msg.obj;
+                Log.d("GetDxListHandler NG:", "errorMsg");
+                Toast.makeText(Main.this, "搜索失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
     @SuppressLint("HandlerLeak")
     class GetUserHandler extends Handler {
         @Override
@@ -131,12 +171,14 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
             if (msg.what == Network.OK) {
                 Log.d("GetUserHandler", "OKKK");
+
             } else {
                 String errorMsg = (String)msg.obj;
                 Log.d("GetUserHandler NG:", "errorMsg");
             }
         }
     }
+
     private void initEvents() {
         //初始化3个Tab的点击事件
         mTabDxQingce.setOnClickListener(this);
@@ -210,13 +252,11 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             Toast.makeText(this, "电线清单 为空！！！" , Toast.LENGTH_SHORT).show();
         }
         //电线列表
-        RecyclerView mQingceRV = (RecyclerView) findViewById(R.id.rv_dianxian);
+        mQingceRV = (RecyclerView) findViewById(R.id.rv_dianxian);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mQingceRV.setLayoutManager(manager);
-        mQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList,this);
-        mQingceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        mQingceRV.setAdapter(mQingceAdapter);
+
 
         //获取传递过来的路径信息
         mLujingList = (ArrayList<LujingData>) bundle.getSerializable("mLujingList");
@@ -377,7 +417,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 //                mNetwork.getUserList(getUserListUrl, mPostValue, getUserHandler);
 //                mNetwork.fetchLoginData(loginUrl8004, mPostValue, getUserHandler);          /// OK
 //                mNetwork.fetchUserListData(getUserListUrl8004, mPostValue, getUserHandler); /// oK
-                mNetwork.fetchDxListData(getDxListUrl8083, mPostValue, getUserHandler);
+//                mNetwork.fetchDxListData(getDxListUrl8083, mPostValue, getDxListHandler);///ok
 
 
 

@@ -66,13 +66,13 @@ public class RelatedDxActivity extends AppCompatActivity {
             DianxianQingCeData mDxData1 = new DianxianQingCeData();
             mDxData1.setId(k);
             mDxData1.setSerial_number("DX2211-" + k );
-            mDxData1.setStartPoint("杭州A点" + k);
-            mDxData1.setEndPoint("岳阳A点" + k);
-            mDxData1.setDxModel("型号K");
-            mDxData1.setDxLength("500km");
-            mDxData1.setDxXinshuJieMian("3X185");
-            mDxData1.setSteelRedundancy("10M");
-            mDxData1.setHoseRedundancy("5M");
+            mDxData1.setStart_point("杭州A点" + k);
+            mDxData1.setEnd_point("岳阳A点" + k);
+            mDxData1.setParts_code("型号K");
+            mDxData1.setLength("500km");
+            mDxData1.setWickes_cross_section("3X185");
+            mDxData1.setSteel_redundancy("10M");
+            mDxData1.setHose_redundancy("5M");
             mDxData1.setFlag(Constant.FLAG_RELATED_DX);
 
             mDianxianList.add(mDxData1);

@@ -193,11 +193,11 @@ public class LoginActivity extends AppCompatActivity {
                     DianxianQingCeData dianxianQingCeData1 = new DianxianQingCeData();
                     dianxianQingCeData1.setId(1);
                     dianxianQingCeData1.setSerial_number("dx_0000" + k);
-                    dianxianQingCeData1.setDxModel("型号00" + k);
-                    dianxianQingCeData1.setStartPoint("杭州A00" + k);
-                    dianxianQingCeData1.setEndPoint("上海B001"  + k);
-                    dianxianQingCeData1.setSteelRedundancy("20M");
-                    dianxianQingCeData1.setHoseRedundancy("6M");
+                    dianxianQingCeData1.setParts_code("型号00" + k);
+                    dianxianQingCeData1.setStart_point("杭州A00" + k);
+                    dianxianQingCeData1.setEnd_point("上海B001"  + k);
+                    dianxianQingCeData1.setSteel_redundancy("20M");
+                    dianxianQingCeData1.setHose_redundancy("6M");
                     dianxianQingCeData1.setFlag(Constant.FLAG_QINGCE_DX);
 
                     mDianxianQingCeList.add(dianxianQingCeData1);
