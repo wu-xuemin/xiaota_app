@@ -132,7 +132,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         mPostValue.put("account","z");
         mPostValue.put("password", "a");
         mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
-        /// mPostValue 貌似没必要。待更新
+        /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
         mNetwork.fetchDxListData(getDxListUrl8083, mPostValue, getDxListHandler);///ok
         mNetwork.fetchLujingListData(getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
 
@@ -336,15 +336,16 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         initViewsCompute();
         initViewsLujing();
     }
-    private void gotoAddNewLujing(int requestCode, LujingData tobeModifiedLujing){
+    //
+    private void gotoAddNewLujing(int requestCode, LujingData tobeModifiedOrBasedLujing){
         Intent intent = new Intent(Main.this, AddNewLujingActivity.class);
 
         ArrayList<DistanceData> mDistanceList = new ArrayList<>();
         for(int d=0;d<5; d++) {
             DistanceData mDistanceData1 = new DistanceData();
-            mDistanceData1.setId(d);
-            mDistanceData1.setDistanceName("间距杭州上海" +d);
-            mDistanceData1.setDistanceNumber("JJ_000" +d);
+            mDistanceData1.setQr_id(d);
+            mDistanceData1.setName("间距杭州上海" +d);
+            mDistanceData1.setSerial_number("JJ_000" +d);
 
             mDistanceList.add(mDistanceData1);
 
@@ -352,10 +353,11 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         Bundle bundle = new Bundle();
         bundle.putSerializable("mDistanceList", (Serializable) mDistanceList);
         bundle.putSerializable("requestCode", (Serializable) requestCode);
-        if(requestCode == Constant.REQUEST_CODE_MODIFY_LUJING){
-            //如果是修改路径，需要把路径信息传过去
-            bundle.putSerializable("tobeModifiedLujing",tobeModifiedLujing);
+        if(requestCode == Constant.REQUEST_CODE_MODIFY_LUJING || requestCode == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST){
+            //如果是修改路径或者基于旧路径，需要把路径信息传过去
+            bundle.putSerializable("tobeModifiedOrBasedLujing",tobeModifiedOrBasedLujing);
         }
+
         intent.putExtras(bundle);
 //                startActivity(intent);
         startActivityForResult(intent, requestCode);
@@ -402,7 +404,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     gotoAddNewLujing(Constant.REQUEST_CODE_MODIFY_LUJING, mLujingList.get(position));
                     break;
                 case R.id.button_create_lujing_base_exist:
-                    gotoAddNewLujing(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST,null);
+                    gotoAddNewLujing(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST, mLujingList.get(position));
                     break;
                 case R.id.button_delete_lujing:
                     Toast.makeText(Main.this,"你点击了 删除路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
@@ -586,7 +588,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     // 取出Intent里的  间距信息
                     List<DistanceData> list = (List<DistanceData>) data.getSerializableExtra("mScanResultDistanceList");
                     for(int i =0; i<list.size(); i++ ) {
-                        Toast.makeText(this, " 扫码获得的间距信息1：" + list.get(i).getDistanceName(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, " 扫码获得的间距信息1：" + list.get(i).getName(), Toast.LENGTH_LONG).show();
                         //把扫码新加的各个间距加入间距列表
                         mDistanceForShaixuanList.add(list.get(i));
                         //todo 根据这些间距 筛选
@@ -599,7 +601,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 {
                     // 取出Intent里的新路径信息
                     LujingData lujingData = (LujingData) data.getSerializableExtra("mNewLujing");
-
+                    //保存到服务器
                     Toast.makeText(this, " 基于已有路径，新建的新路径名称：" + lujingData.getName(), Toast.LENGTH_LONG).show();
 
                     mLujingList.add(lujingData);

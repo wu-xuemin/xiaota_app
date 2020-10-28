@@ -1,43 +1,51 @@
 package com.zhihuta.xiaota.bean.basic;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class DistanceData implements Serializable {
-    private int id;
-    private String DistanceName; // 间距名称
-    private String DistanceNumber; //间距 编号
-    private String DistanceValue; // 距离值
+    private int qr_id;
+    private String name; // 间距名称
+    private String serial_number; //间距 编号
+    private String distance; // 距离值
+    private Integer qr_sequence; ///二维码的顺序  path distance qr表
 
-    public String getDistanceValue() {
-        return DistanceValue;
+    public Integer getQr_sequence() {
+        return qr_sequence;
     }
 
-    public void setDistanceValue(String distanceValue) {
-        DistanceValue = distanceValue;
+    public void setQr_sequence(Integer qr_sequence) {
+        this.qr_sequence = qr_sequence;
     }
 
-    public int getId() {
-        return id;
+    public String getDistance() {
+        return distance;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setDistance(String distance) {
+        this.distance = distance;
     }
 
-    public String getDistanceName() {
-        return DistanceName;
+    public int getQr_id() {
+        return qr_id;
     }
 
-    public void setDistanceName(String distanceName) {
-        DistanceName = distanceName;
+    public void setQr_id(int qr_id) {
+        this.qr_id = qr_id;
     }
 
-    public String getDistanceNumber() {
-        return DistanceNumber;
+    public String getName() {
+        return name;
     }
 
-    public void setDistanceNumber(String distanceNumber) {
-        DistanceNumber = distanceNumber;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSerial_number() {
+        return serial_number;
+    }
+
+    public void setSerial_number(String serial_number) {
+        this.serial_number = serial_number;
     }
 }

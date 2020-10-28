@@ -9,9 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,20 +24,32 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
+import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.URL;
+import com.zhihuta.xiaota.net.Network;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class AddNewLujingActivity extends AppCompatActivity {
 
+    private static String TAG = "AddNewLujingActivity";
     private DistanceAdapter mDistanceAdapter;
     private ArrayList<DistanceData> mDistanceList = new ArrayList<>();
+    private RecyclerView mDistanceRV;
+
+    private Network mNetwork;
+    //获取 路径对应的间距列表 (编辑路径时，或 在基于已有路径 新建路径时)
+    String getLujingDistanceListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_DISTANCE_LIST;
+
+    private GetLujingDistanceListHandler getLujingDistanceListHandler;
 
     private Button mButtonScanToAddXianduan; // 扫码去添加线段
     private Button mButtonRelateDx; // 去关联电缆电线
@@ -48,6 +63,10 @@ public class AddNewLujingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_lujing);
+
+        mNetwork = Network.Instance(getApplication());
+
+        getLujingDistanceListHandler = new GetLujingDistanceListHandler();
         //返回前页按钮
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -56,21 +75,30 @@ public class AddNewLujingActivity extends AppCompatActivity {
         }
 
         initViews();//初始化控件
+
+
     }
-
-
     private void initViews() {
 
         //获取传递过来的信息
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        mDistanceList = (ArrayList<DistanceData>) bundle.getSerializable("mDistanceList");
+        if(intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_MODIFY_LUJING)){
+            // 如果是修改路径，那路径名称不变, 标题设为 编辑路径
+            LujingData lujingDataToBeModified = (LujingData) intent.getExtras().getSerializable("tobeModifiedOrBasedLujing");
+            TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
 
-        if(mDistanceList !=null) {
-            Toast.makeText(this, "  得到 间距列表 size:" + mDistanceList.size(), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, " 间距 列表为空！！！" , Toast.LENGTH_SHORT).show();
+            lujingNameTv.setText( lujingDataToBeModified.getName());
+            lujingNameTv.setEnabled(false);
+            this.setTitle("编辑路径");
+            getGetLujingDistanceList(intent);
         }
+        // 在基于已有路径 新建路径
+        if(intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) ){
+
+            getGetLujingDistanceList(intent);
+        }
+
         showDistanceList();
         mButtonScanToAddXianduan = (Button) findViewById(R.id.button_scan_to_add_xianduan);
         mButtonScanToAddXianduan.setOnClickListener(new View.OnClickListener() {
@@ -94,11 +122,6 @@ public class AddNewLujingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddNewLujingActivity.this, RelatedDxActivity.class);
-
-
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("mDianxianList", (Serializable) mDianxianList);
-//                intent.putExtras(bundle);
                 startActivityForResult(intent, REQUEST_CODE_RELATEd_DX);
             }
         });
@@ -133,19 +156,20 @@ public class AddNewLujingActivity extends AppCompatActivity {
             }
         });
 
-        if(intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_MODIFY_LUJING)){
-            // 如果是修改路径，那路径名称不变, 标题设为 编辑路径
-            TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
-            LujingData lujingDataToBeModified = (LujingData) intent.getExtras().getSerializable("tobeModifiedLujing");
-            lujingNameTv.setText( lujingDataToBeModified.getName());
-            lujingNameTv.setEnabled(false);
-            this.setTitle("编辑路径");
-        }
+
     }
 
+    private void getGetLujingDistanceList(Intent intent){
+        //获取 路径对应的间距列表
+        LujingData oldBasedlujingData = (LujingData) intent.getExtras().getSerializable("tobeModifiedOrBasedLujing");
+        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+        mPostValue.put("account","z");
+        String theUrl = getLujingDistanceListUrl.replace("lujingID", String.valueOf(oldBasedlujingData.getId()));
+        mNetwork.fetchDistanceListOfLujing(theUrl, mPostValue, getLujingDistanceListHandler);//ok
+    }
     private void showDistanceList(){
         //间距列表
-        RecyclerView mDistanceRV = (RecyclerView) findViewById(R.id.rv_distance);
+        mDistanceRV = (RecyclerView) findViewById(R.id.rv_distance);
         LinearLayoutManager manager5 = new LinearLayoutManager(this);
         manager5.setOrientation(LinearLayoutManager.VERTICAL);
         mDistanceRV.setLayoutManager(manager5);
@@ -179,7 +203,7 @@ public class AddNewLujingActivity extends AppCompatActivity {
 //                    List<DistanceData> list = (List<DistanceData>) getIntent().getSerializableExtra("mScanResultDistanceList");
                     List<DistanceData> list = (List<DistanceData>) data.getSerializableExtra("mScanResultDistanceList");
                     for(int i =0; i<list.size(); i++ ) {
-                        Toast.makeText(this, " 扫码获得的结果信息1：" + list.get(i).getDistanceName(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, " 扫码获得的结果信息1：" + list.get(i).getName(), Toast.LENGTH_LONG).show();
                         //把扫码新加的各个间距加入间距列表
                         mDistanceList.add(list.get(i));
                         mDistanceAdapter.notifyDataSetChanged();
@@ -238,4 +262,34 @@ public class AddNewLujingActivity extends AppCompatActivity {
         }
     };
 
+
+    @SuppressLint("HandlerLeak")
+    class GetLujingDistanceListHandler extends Handler {
+        @Override
+        public void handleMessage(final Message msg) {
+//            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
+//                mLoadingProcessDialog.dismiss();
+//            }
+
+            if (msg.what == Network.OK) {
+                Log.d(TAG , "GetLujingDistanceListHandler OKKK");
+                mDistanceList = (ArrayList<DistanceData>)msg.obj;
+                Log.d(TAG, "handleMessage: size: " + mDistanceList.size());
+                if (mDistanceList.size()==0){
+                    Toast.makeText(AddNewLujingActivity.this, "该路径的间距数量为0！", Toast.LENGTH_SHORT).show();
+                } else {
+                    mDistanceAdapter = new DistanceAdapter(mDistanceList,AddNewLujingActivity.this);
+                    mDistanceRV.addItemDecoration(new DividerItemDecoration(AddNewLujingActivity.this,DividerItemDecoration.VERTICAL));
+                    mDistanceRV.setAdapter(mDistanceAdapter);
+                    mDistanceAdapter.notifyDataSetChanged();
+                    // 设置item及item中控件的点击事件
+                    mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
+                }
+            } else {
+                String errorMsg = (String)msg.obj;
+                Log.d(TAG, "errorMsg");
+                Toast.makeText(AddNewLujingActivity.this, "获取该路径的 间距列表失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

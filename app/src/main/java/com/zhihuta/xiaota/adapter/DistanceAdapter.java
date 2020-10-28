@@ -49,8 +49,8 @@ public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.Distan
     public void onBindViewHolder(@NonNull DistanceAdapter.DistanceViewHolder holder, int position) {
 
         DistanceData data = list.get(position);
-        holder.distanceNameTv.setText(data.getDistanceName());
-        holder.distanceNumberTv.setText(data.getDistanceNumber());// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
+        holder.distanceNameTv.setText(data.getName());
+        holder.distanceNumberTv.setText(data.getSerial_number());// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
         holder.distanceUpBt.setTag(position);
         holder.distanceDownBt.setTag(position);
         holder.deleteDistanceBt.setTag(position);

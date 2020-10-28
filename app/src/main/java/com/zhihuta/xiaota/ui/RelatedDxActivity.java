@@ -18,6 +18,8 @@ import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.URL;
+import com.zhihuta.xiaota.net.Network;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,6 @@ public class RelatedDxActivity extends AppCompatActivity {
         }
         initViews();
         showDxList();
-
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
