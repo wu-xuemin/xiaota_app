@@ -4,9 +4,12 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.MenuItem;
@@ -19,9 +22,15 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
+import com.zhihuta.xiaota.bean.basic.LujingData;
+import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.URL;
+import com.zhihuta.xiaota.net.Network;
+import com.zhihuta.xiaota.util.ShowMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -48,12 +57,18 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
      */
 //    private List<String> mScanResultList = new ArrayList<>();
     private ArrayList<DistanceData> mScanResultDistanceList = new ArrayList<>();
+    private Network mNetwork;
 
+    private String putLujingDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.PUT_LUJING_DISTANCE;
+
+    //从路径界面传给扫描界面的路径信息，在该路径里添加扫描获得的间距
+    private LujingData mLujing;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zxing_scan);
 
+        mNetwork = Network.Instance(getApplication());
         //返回前页按钮
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
@@ -82,12 +97,24 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "点击了结束按钮");
-                sendQrMsgBack();
+                //在扫描页面 已经 保存到了数据库，
+//                sendQrMsgBack();
                 ZxingScanActivity.this.finish();
             }
             });
 
+        Intent intent = getIntent();
+        mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujing");
+
+        if(intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING)) {
+            mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujing");
+        } else if (intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_MODIFY_LUJING)) {
+            mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujing");
+        } else if (intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST)) {
+            mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujing");
+        }
     }
+
     public void sendQrMsgBack(){
         Intent intent = getIntent();
         intent.setClass(ZxingScanActivity.this, AddNewLujingActivity.class);
@@ -167,8 +194,29 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             ToastUtils.showShort("异常，距离信息为NULL！");
         }
 
+
+        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+        mPostValue.put("qr_id", new Gson().toJson(distanceData.getQr_id()));
+        String url = putLujingDistanceUrl.replace("lujingID", String.valueOf(mLujing.getId()));
+        mNetwork.putLujingDistance(url, mPostValue, new PutLujingDistanceHandler());
     }
 
+    @SuppressLint("HandlerLeak")
+    class PutLujingDistanceHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == Network.OK) {
+                ShowMessage.showToast(ZxingScanActivity.this,"添加间距成功！",ShowMessage.MessageDuring.SHORT);
+//                //把扫码新加的各个间距加入间距列表
+//                mDistanceList.add(list.get(i));
+//                mDistanceAdapter.notifyDataSetChanged();
+
+            }else {
+                ShowMessage.showDialog(ZxingScanActivity.this,"出错！请检查网络！");
+            }
+        }
+    }
     @Override
     public void onScanQRCodeOpenCameraError() {
         Log.e(TAG, "open camera fail!");

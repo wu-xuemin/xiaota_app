@@ -123,9 +123,10 @@ public class Network {
                                     if (responseData.getCode() == 200) {
 
                                         for (int k = 0; k < responseData.getData().getDistance_qrs().size(); k++) {
-                                            success = true;
+//                                            success = true;
                                             msg.obj = responseData.getData().getDistance_qrs();
                                         }
+                                        success = true; //可能还没有间距列表，这也是OK的
                                     } else if (responseData.getCode() == 400) {
                                         Log.e(TAG, responseData.getMessage());
                                         Log.d(TAG, "getDistance_qrs run: error 400 :" + responseData.getMessage());
@@ -611,13 +612,13 @@ public class Network {
                             e.printStackTrace();
                         }
                         RequestBody RequestBody2 = RequestBody.create(type, "" + obj);
-                        try {
-                            OkHttpClient client = new OkHttpClient();
-                            Request request = new Request.Builder()
-                                    // 指定访问的服务器地址
-                                    .url(url).post(RequestBody2)
-                                    .build();
-                            Response response = null;
+
+                        OkHttpClient client = new OkHttpClient();
+                        Request request = new Request.Builder()
+                                // 指定访问的服务器地址
+                                .url(url).post(RequestBody2)
+                                .build();
+                        Response response = null;
                         try {
                             //同步网络请求
                             response = client.newCall(request).execute();
@@ -638,13 +639,68 @@ public class Network {
                                 response.close();
                             }
                         }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+
                     }
                 });
             }
         }
     }
- 
+
+    /**
+     * 添加路径的一个间距, 间距信息(只有qr_id号)在 values中。 方法是Put不是POST
+     */
+    public void putLujingDistance(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
+        final Message msg = handler.obtainMessage();
+        if (!isNetworkConnected()) {
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = mCtx.getString(R.string.network_not_connect);
+            handler.sendMessage(msg);
+        } else {
+            if (url != null && values != null) {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        MediaType type = MediaType.parse("application/json;charset=utf-8");
+                        JSONObject obj = new JSONObject();
+                        try {
+                            obj.put("qr_id", values.get("qr_id"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        RequestBody RequestBody2 = RequestBody.create(type, "" + obj);
+
+                        OkHttpClient client = new OkHttpClient();
+                        Request request = new Request.Builder()
+                                // 指定访问的服务器地址
+                                .url(url).put(RequestBody2)
+                                .build();
+                        Response response = null;
+                        try {
+                            //同步网络请求
+                            response = client.newCall(request).execute();
+                            boolean success = false;
+                            if (response.isSuccessful()) {
+                                msg.what = OK;
+                            } else {
+                                msg.what = NG;
+                            }
+                            Log.i(TAG,"添加了间距 " + values.get("qr_id"));
+                            response.close();
+                        } catch (Exception e) {
+                            msg.what = NG;
+                            msg.obj = "Network error!";
+                            Log.d(TAG, "addNewLujing run: network error!");
+                        } finally {
+                            handler.sendMessage(msg);
+                            if (response != null) {
+                                response.close();
+                            }
+                        }
+
+                    }
+                });
+            }
+        }
+    }
 }
