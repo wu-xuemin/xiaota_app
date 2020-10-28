@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.adapter.LujingAdapter;
@@ -31,6 +32,7 @@ import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
+import com.zhihuta.xiaota.util.ShowMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,6 +50,7 @@ public class AddNewLujingActivity extends AppCompatActivity {
     private Network mNetwork;
     //获取 路径对应的间距列表 (编辑路径时，或 在基于已有路径 新建路径时)
     String getLujingDistanceListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_DISTANCE_LIST;
+    String addNewLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.POST_ADD_NEW_LUJING;
 
     private GetLujingDistanceListHandler getLujingDistanceListHandler;
 
@@ -151,13 +154,17 @@ public class AddNewLujingActivity extends AppCompatActivity {
 
                 AddNewLujingActivity.this.setResult(RESULT_OK, intent);
 
-                Log.d("", "新路径  传回去");
-                AddNewLujingActivity.this.finish();
+                //TODO  把路径传给服务端而不是传给主界面，返回主界面时，主界面要刷新
+                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                mPostValue.put("name", new Gson().toJson(mNewLujing.getName()));
+                mNetwork.addNewLujing(addNewLujingUrl, mPostValue, new AddNewLujingHandler());
+
             }
         });
 
 
     }
+
 
     private void getGetLujingDistanceList(Intent intent){
         //获取 路径对应的间距列表
@@ -165,7 +172,7 @@ public class AddNewLujingActivity extends AppCompatActivity {
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
         mPostValue.put("account","z");
         String theUrl = getLujingDistanceListUrl.replace("lujingID", String.valueOf(oldBasedlujingData.getId()));
-        mNetwork.fetchDistanceListOfLujing(theUrl, mPostValue, getLujingDistanceListHandler);//ok
+        mNetwork.fetchDistanceListOfLujing(theUrl, mPostValue, getLujingDistanceListHandler);
     }
     private void showDistanceList(){
         //间距列表
@@ -289,6 +296,19 @@ public class AddNewLujingActivity extends AppCompatActivity {
                 String errorMsg = (String)msg.obj;
                 Log.d(TAG, "errorMsg");
                 Toast.makeText(AddNewLujingActivity.this, "获取该路径的 间距列表失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    @SuppressLint("HandlerLeak")
+    class AddNewLujingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == Network.OK) {
+                ShowMessage.showToast(AddNewLujingActivity.this,"添加新路径成功！",ShowMessage.MessageDuring.SHORT);
+                AddNewLujingActivity.this.finish();
+            }else {
+                ShowMessage.showDialog(AddNewLujingActivity.this,"出错！请检查网络！");
             }
         }
     }
