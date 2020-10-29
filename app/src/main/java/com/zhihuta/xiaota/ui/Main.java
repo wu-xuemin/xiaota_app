@@ -291,15 +291,6 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mQingceRV.setLayoutManager(manager);
 
-
-        //获取传递过来的路径信息
-        mLujingList = (ArrayList<LujingData>) bundle.getSerializable("mLujingList");
-
-        if(mLujingList !=null) {
-            Toast.makeText(this, "       得到 路径列表 size:" + mLujingList.size(), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "   路径列表为空！！！" , Toast.LENGTH_SHORT).show();
-        }
         //路径列表
         mLujingRV = (RecyclerView) findViewById(R.id.rv_lujing);
         LinearLayoutManager manager3 = new LinearLayoutManager(this);
@@ -316,7 +307,6 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         }
         //计算路径，扫描筛选得到的路径列表
         RecyclerView mLujingShaixuanRV = (RecyclerView) findViewById(R.id.rv_lujing_compute);
-//        RecyclerView mDistanceRV = (RecyclerView) findViewById(R.id.rv_distance);  /// ====
         LinearLayoutManager manager4 = new LinearLayoutManager(this);
         manager4.setOrientation(LinearLayoutManager.VERTICAL);
         mLujingShaixuanRV.setLayoutManager(manager4);
@@ -338,20 +328,10 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     }
     //
     private void gotoAddNewLujing(int requestCode, LujingData tobeModifiedOrBasedLujing){
-        Intent intent = new Intent(Main.this, AddNewLujingActivity.class);
+        Intent intent = new Intent(Main.this, LujingActivity.class);
 
-        ArrayList<DistanceData> mDistanceList = new ArrayList<>();
-        for(int d=0;d<5; d++) {
-            DistanceData mDistanceData1 = new DistanceData();
-            mDistanceData1.setQr_id(d);
-            mDistanceData1.setName("间距杭州上海" +d);
-            mDistanceData1.setSerial_number("JJ_000" +d);
 
-            mDistanceList.add(mDistanceData1);
-
-        }
         Bundle bundle = new Bundle();
-        bundle.putSerializable("mDistanceList", (Serializable) mDistanceList);
         bundle.putSerializable("requestCode", (Serializable) requestCode);
         if(requestCode == Constant.REQUEST_CODE_MODIFY_LUJING || requestCode == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST){
             //如果是修改路径或者基于旧路径，需要把路径信息传过去
@@ -401,7 +381,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             switch (v.getId()){
                 case R.id.button_modify_lujing:
 //                    Toast.makeText(Main.this,"你点击了 修改路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
-                    gotoAddNewLujing(Constant.REQUEST_CODE_MODIFY_LUJING, mLujingList.get(position));
+                    gotoAddNewLujing(Constant.REQUEST_CODE_MODIFY_LUJING, mLujingList.get(position)); ///这里的id为000000000
                     break;
                 case R.id.button_create_lujing_base_exist:
                     gotoAddNewLujing(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST, mLujingList.get(position));
@@ -571,8 +551,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING:
-                if (resultCode == RESULT_OK)
-                {
+                if (resultCode == RESULT_OK) {
                     // 取出Intent里的新路径信息
                     LujingData lujingData = (LujingData) data.getSerializableExtra("mNewLujing");
 
@@ -583,8 +562,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 }
                 break;
                 case Constant.REQUEST_CODE_SCAN_TO_SHAIXUAN_LUJING:
-                if (resultCode == RESULT_OK)
-                {
+                if (resultCode == RESULT_OK) {
                     // 取出Intent里的  间距信息
                     List<DistanceData> list = (List<DistanceData>) data.getSerializableExtra("mScanResultDistanceList");
                     for(int i =0; i<list.size(); i++ ) {
@@ -596,11 +574,20 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     }
                 }
                 break;
-            case Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST:
-                if (resultCode == RESULT_OK)
-                {
+
+            case Constant.REQUEST_CODE_MODIFY_LUJING:
+                if (resultCode == RESULT_OK) {
                     // 取出Intent里的新路径信息
-                    LujingData lujingData = (LujingData) data.getSerializableExtra("mNewLujing");
+                    LujingData lujingData = (LujingData) data.getSerializableExtra("mLujingDataToBeModified");
+
+                    Toast.makeText(this, " 被修改路径：" + lujingData.getName(), Toast.LENGTH_LONG).show();
+                    mLujingAdapter.notifyDataSetChanged();
+                }
+                break;
+            case Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST:
+                if (resultCode == RESULT_OK) {
+                    // 取出Intent里的新路径信息
+                    LujingData lujingData = (LujingData) data.getSerializableExtra("mOldBasedNewLujing");
                     //保存到服务器
                     Toast.makeText(this, " 基于已有路径，新建的新路径名称：" + lujingData.getName(), Toast.LENGTH_LONG).show();
 
@@ -608,17 +595,6 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     mLujingAdapter.notifyDataSetChanged();
                 }
                 break;
-            case Constant.REQUEST_CODE_MODIFY_LUJING:
-                if (resultCode == RESULT_OK)
-                {
-                    // 取出Intent里的新路径信息
-                    LujingData lujingData = (LujingData) data.getSerializableExtra("mNewLujing");
-
-                    Toast.makeText(this, " 被修改路径的名称：" + lujingData.getName(), Toast.LENGTH_LONG).show();
-                    mLujingAdapter.notifyDataSetChanged();
-                }
-                break;
-
             default:
                 break;
         }

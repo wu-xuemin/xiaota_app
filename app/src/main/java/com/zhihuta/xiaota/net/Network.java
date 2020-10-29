@@ -17,7 +17,9 @@ import com.zhihuta.xiaota.bean.response.DistanceResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.LoginResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.DxResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.LujingResponseDataWrap;
+import com.zhihuta.xiaota.bean.response.MsgFailResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.ResponseData;
+import com.zhihuta.xiaota.bean.response.UserResponseData;
 import com.zhihuta.xiaota.bean.response.UserResponseDataWrap;
 import com.zhihuta.xiaota.ui.XiaotaApp;
 import com.google.gson.Gson;
@@ -611,7 +613,7 @@ public class Network {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        RequestBody RequestBody2 = RequestBody.create(type, "" + obj);
+                        RequestBody RequestBody2 = RequestBody.create(type, obj.toString());
 
                         OkHttpClient client = new OkHttpClient();
                         Request request = new Request.Builder()
@@ -645,7 +647,62 @@ public class Network {
             }
         }
     }
+    /**
+     * 修改 路径的名称
+     */
+    public void modifyLujingName(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
+        final Message msg = handler.obtainMessage();
+        if (!isNetworkConnected()) {
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = mCtx.getString(R.string.network_not_connect);
+            handler.sendMessage(msg);
+        } else {
+            if (url != null && values != null) {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        MediaType type = MediaType.parse("application/json;charset=utf-8");
+                        JSONObject obj = new JSONObject();
+                        try {
+                            obj.put("name", values.get("name"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        RequestBody RequestBody2 = RequestBody.create(type, obj.toString());
 
+                        OkHttpClient client = new OkHttpClient();
+                        Request request = new Request.Builder()
+                                // 指定访问的服务器地址
+                                .url(url).put(RequestBody2)
+                                .build();
+                        Response response = null;
+                        try {
+                            //同步网络请求
+                            response = client.newCall(request).execute();
+                            boolean success = false;
+                            if (response.isSuccessful()) {
+                                msg.what = OK;
+                            } else {
+                                msg.what = NG;
+                            }
+                            response.close();
+                        } catch (Exception e) {
+                            msg.what = NG;
+                            msg.obj = "Network error!";
+                            Log.d(TAG, "modifyLujingName run: network error!");
+                        } finally {
+                            handler.sendMessage(msg);
+                            if (response != null) {
+                                response.close();
+                            }
+                        }
+
+                    }
+                });
+            }
+        }
+    }
     /**
      * 添加路径的一个间距, 间距信息(只有qr_id号)在 values中。 方法是Put不是POST
      */
@@ -681,13 +738,42 @@ public class Network {
                             response = client.newCall(request).execute();
                             boolean success = false;
                             if (response.isSuccessful()) {
-                                msg.what = OK;
+                                Gson gson = new Gson();
+//                                Result result =  gson.fromJson(response.body().string(), new TypeToken<Result>(){}.getType());
+//                                LoginResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<LoginResponseDataWrap>(){}.getType());
+//                                 UserResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken< UserResponseDataWrap >() {
+//                                UserResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken< UserResponseDataWrap >() {}.getType());
+                                MsgFailResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken< MsgFailResponseDataWrap >() {}.getType());
+                                if (responseData != null) {
+                                    Log.d(TAG, "putLujingDistance run: " + responseData.getCode());
+                                    if (responseData.getCode() == 200) {
+                                        success = true;
+//                                        msg.obj = responseData.getData().getList();
+                                        msg.obj = responseData.getMessage();
+                                    } else if (responseData.getCode() == 400) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    } else if (responseData.getCode() == 500) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        Log.d(TAG, "putLujingDistance run: error 500 :" + responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    } else {
+                                        msg.obj = responseData.getMessage(); //后端添加失败时，比如二维码已经存在在该路径中。返回的message会包含这个信息
+                                        Log.e(TAG, "putLujingDistance Format JSON string to object error!");
+                                    }
+                                }
+
+                                if (success) {
+                                    msg.what = OK;
+                                }
+
                             } else {
                                 msg.what = NG;
+                                msg.obj = "网络请求错误！";
+                                Log.e("aaaa", "response 4 网络请求错误");
                             }
-                            Log.i(TAG,"添加了间距 " + values.get("qr_id"));
                             response.close();
-                        } catch (Exception e) {
+                        }catch (Exception e) {
                             msg.what = NG;
                             msg.obj = "Network error!";
                             Log.d(TAG, "addNewLujing run: network error!");

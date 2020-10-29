@@ -25,7 +25,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
-import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
@@ -40,9 +39,9 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class AddNewLujingActivity extends AppCompatActivity {
+public class LujingActivity extends AppCompatActivity {
 
-    private static String TAG = "AddNewLujingActivity";
+    private static String TAG = "LujingActivity";
     private DistanceAdapter mDistanceAdapter;
     private ArrayList<DistanceData> mDistanceList = new ArrayList<>();
     private RecyclerView mDistanceRV;
@@ -51,20 +50,21 @@ public class AddNewLujingActivity extends AppCompatActivity {
     //获取 路径对应的间距列表 (编辑路径时，或 在基于已有路径 新建路径时)
     String getLujingDistanceListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_DISTANCE_LIST;
     String addNewLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.POST_ADD_NEW_LUJING;
+    String modifyLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.PUT_MODIFY_LUJING_NAME;
 
     private GetLujingDistanceListHandler getLujingDistanceListHandler;
 
     private Button mButtonScanToAddXianduan; // 扫码去添加线段
     private Button mButtonRelateDx; // 去关联电缆电线
-    private Button mButtonOkToCreateLujing; // 去关联电缆电线
+    private Button mButtonOk; // 完成按钮 (包括： 全新新建、修改、基于旧路径新建)
 
-    private int mRequestCode =0 ; //标记, 来自Main界面， 是 全新新建/修改/基于旧的新建
+    private int mRequestCodeFromMain =0 ; //标记, 来自Main界面， 是 全新新建/修改/基于旧的新建
     private static final int REQUEST_CODE_SCAN_QRCODE_START = 1;
     private static final int REQUEST_CODE_RELATEd_DX =2;
 
     private LujingData mNewLujing = new LujingData(); //新建的路径
     private LujingData mLujingDataToBeModified = new LujingData(); //待修改的路径
-    private LujingData oldBasedOrModifyLujingData = new LujingData(); //待修改的路径
+    private LujingData mOldBasedNewLujing = new LujingData(); //基于旧路径 新建路径
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,21 +95,24 @@ public class AddNewLujingActivity extends AppCompatActivity {
         //获取传递过来的信息
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        mRequestCode = (int) intent.getExtras().getSerializable("requestCode");
-        if(mRequestCode == Constant.REQUEST_CODE_MODIFY_LUJING ){
-            // 如果是修改路径，那路径名称不变, 标题设为 编辑路径
+        mRequestCodeFromMain = (int) intent.getExtras().getSerializable("requestCode");
+        if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING){
+//            mNewLujing
+        } else if(mRequestCodeFromMain == Constant.REQUEST_CODE_MODIFY_LUJING ){
+            // 如果是修改路径，那路径名称也可改, 标题设为 编辑路径
             mLujingDataToBeModified = (LujingData) intent.getExtras().getSerializable("tobeModifiedOrBasedLujing");
             TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
 
             lujingNameTv.setText( mLujingDataToBeModified.getName());
-            lujingNameTv.setEnabled(false);
+//            lujingNameTv.setEnabled(false);
             this.setTitle("编辑路径");
             getGetLujingDistanceList(intent);
         }
         // 在基于已有路径 新建路径
-        if(mRequestCode == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ){
+        else if(mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ){
 
             getGetLujingDistanceList(intent);
+            mOldBasedNewLujing = (LujingData) intent.getExtras().getSerializable("tobeModifiedOrBasedLujing");
         }
 
         showDistanceList();
@@ -120,24 +123,32 @@ public class AddNewLujingActivity extends AppCompatActivity {
                 Intent intent = getIntent();
 
                 Bundle bundle2 = new Bundle();
-                if( mRequestCode == Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING ) {
-                    bundle2.putSerializable("mLujing", (Serializable) mNewLujing);
-                } else if (mRequestCode == Constant.REQUEST_CODE_MODIFY_LUJING ) {
-                    bundle2.putSerializable("mLujing", (Serializable) mLujingDataToBeModified);
-                } else if (mRequestCode == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ) {
-                    bundle2.putSerializable("mLujing", (Serializable) oldBasedOrModifyLujingData);
+                if( mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING ) {
+                    /**
+                     * 全新路径时，要输入路径名称才允许去扫码，因为扫码时就要直接加间距到该路径了。
+                     */
+                    TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
+                    if(lujingNameTv.getText().toString().equals("")){
+                        Toast.makeText(LujingActivity.this, " 扫码前，请输入路径名称", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    bundle2.putSerializable("mNewLujing", (Serializable) mNewLujing);
+                } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_MODIFY_LUJING ) {
+                    bundle2.putSerializable("mLujingDataToBeModified", (Serializable) mLujingDataToBeModified);
+                } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ) {
+                    bundle2.putSerializable("mOldBasedNewLujing", (Serializable) mOldBasedNewLujing);
                 }
-                Intent intent2 = new Intent(AddNewLujingActivity.this, ZxingScanActivity.class);
+                Intent intent2 = new Intent(LujingActivity.this, ZxingScanActivity.class);
 
-                bundle2.putSerializable("requestCode", (Serializable) mRequestCode);
+                bundle2.putSerializable("requestCode", (Serializable) mRequestCodeFromMain);
                 intent2.putExtras(bundle2);
 
 //运行时权限
-                if (ContextCompat.checkSelfPermission(AddNewLujingActivity.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(AddNewLujingActivity.this,new String[]{Manifest.permission.CAMERA},1);
+                if (ContextCompat.checkSelfPermission(LujingActivity.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(LujingActivity.this,new String[]{Manifest.permission.CAMERA},1);
                 }else {
 //                    startActivityForResult(intent2, REQUEST_CODE_SCAN_QRCODE_START);
-                    startActivityForResult(intent2, mRequestCode);
+                    startActivityForResult(intent2, mRequestCodeFromMain);
                 }
 
             }
@@ -147,36 +158,59 @@ public class AddNewLujingActivity extends AppCompatActivity {
         mButtonRelateDx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AddNewLujingActivity.this, RelatedDxActivity.class);
+                Intent intent = new Intent(LujingActivity.this, RelatedDxActivity.class);
                 startActivityForResult(intent, REQUEST_CODE_RELATEd_DX);
             }
         });
 
-        mButtonOkToCreateLujing = (Button) findViewById(R.id.button_create_lj);
-        mButtonOkToCreateLujing.setOnClickListener(new View.OnClickListener() {
+        mButtonOk = (Button) findViewById(R.id.button_create_lj);
+        mButtonOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
-                if(lujingNameTv.isEnabled() && lujingNameTv.getText().toString().equals("")){
-//                    Toast.makeText(AddNewLujingActivity.this, " 路径名称不能为空：", Toast.LENGTH_LONG).show();
-                    Log.d("", "路径名称不能为空");
-                    return;
+
+                /**
+                 * 访问服务端去加全新路径、基于旧路径加新路径、修改路径。
+                 * 成功后再返回主页面。否则留在本页。
+                 */
+                if( mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING ) {
+                    TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
+                    if(lujingNameTv.isEnabled() && lujingNameTv.getText().toString().equals("")){
+                    Toast.makeText(LujingActivity.this, " 路径名称不能为空：", Toast.LENGTH_LONG).show();
+                        Log.d("", "路径名称不能为空");
+                        return;
+                    }
+                    //TODO 检测路径名称唯一性。。。
+                    mNewLujing.setName(lujingNameTv.getText().toString());
+                    mNewLujing.setCreator("当前账号");
+                    mNewLujing.setCreate_time(new Date());
+
+                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                    mPostValue.put("name", new Gson().toJson(mNewLujing.getName()));
+                    mNetwork.addNewLujing(addNewLujingUrl, mPostValue, new AddNewLujingHandler());
+                } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ) {
+                    TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
+                    mOldBasedNewLujing.setName(lujingNameTv.getText().toString());
+                    mOldBasedNewLujing.setCreator("当前账号");
+                    mOldBasedNewLujing.setCreate_time(new Date());
+
+                    // 把路径传给服务端而不是传给主界面，返回主界面时，主界面要刷新
+                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                    mPostValue.put("name", new Gson().toJson(mOldBasedNewLujing.getName()));
+                    String theUrl = modifyLujingUrl.replace("{id}", String.valueOf(mOldBasedNewLujing.getId()));
+                    mNetwork.modifyLujingName(modifyLujingUrl, mPostValue, new ModifyLujingHandler());
+                } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_MODIFY_LUJING) {
+                    TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
+                    mLujingDataToBeModified.setName(lujingNameTv.getText().toString());
+                    mLujingDataToBeModified.setCreator("当前账号");
+                    mLujingDataToBeModified.setCreate_time(new Date());
+
+                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                    mPostValue.put("name", new Gson().toJson(mOldBasedNewLujing.getName()));
+                    String theUrl = modifyLujingUrl.replace("{id}", String.valueOf(mOldBasedNewLujing.getId()));
+                    mNetwork.modifyLujingName(modifyLujingUrl, mPostValue, new ModifyLujingHandler());
                 }
-                //TODO 检测路径名称唯一性。。。
-                mNewLujing.setName(lujingNameTv.getText().toString());
-                mNewLujing.setCreator("当前账号");
-                mNewLujing.setCreate_time(new Date());
 
-                Intent intent =getIntent();
-                intent.setClass(AddNewLujingActivity.this, Main.class);
-                intent.putExtra("mNewLujing", (Serializable) mNewLujing); // putSerializable和区别 ？？？？？？？
 
-                AddNewLujingActivity.this.setResult(RESULT_OK, intent);
-
-                //TODO  把路径传给服务端而不是传给主界面，返回主界面时，主界面要刷新
-                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-                mPostValue.put("name", new Gson().toJson(mNewLujing.getName()));
-                mNetwork.addNewLujing(addNewLujingUrl, mPostValue, new AddNewLujingHandler());
 
             }
         });
@@ -187,10 +221,14 @@ public class AddNewLujingActivity extends AppCompatActivity {
     // 无论是 修改路径，还是基于已有路径新建路径，都需要获该路径取原有的间距列表
     private void getGetLujingDistanceList(Intent intent){
         //获取 路径对应的间距列表
-        oldBasedOrModifyLujingData = (LujingData) intent.getExtras().getSerializable("tobeModifiedOrBasedLujing");
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
         mPostValue.put("account","z");
-        String theUrl = getLujingDistanceListUrl.replace("lujingID", String.valueOf(oldBasedOrModifyLujingData.getId()));
+        String theUrl;
+        if( mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ) {
+            theUrl = getLujingDistanceListUrl.replace("lujingID", String.valueOf(mOldBasedNewLujing.getId()));
+        } else { // if (mRequestCode == Constant.REQUEST_CODE_MODIFY_LUJING )
+            theUrl = getLujingDistanceListUrl.replace("lujingID", String.valueOf(mLujingDataToBeModified.getId()));
+        }
         mNetwork.fetchDistanceListOfLujing(theUrl, mPostValue, getLujingDistanceListHandler);
         Log.i(TAG,"刷新了间距列表");
     }
@@ -227,7 +265,6 @@ public class AddNewLujingActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK)
                 {
                     // 取出Intent里的扫码结果
-//                    List<DistanceData> list = (List<DistanceData>) getIntent().getSerializableExtra("mScanResultDistanceList");
                     List<DistanceData> list = (List<DistanceData>) data.getSerializableExtra("mScanResultDistanceList");
                     for(int i =0; i<list.size(); i++ ) {
                         Toast.makeText(this, " 扫码获得的结果信息1：" + list.get(i).getName(), Toast.LENGTH_LONG).show();
@@ -265,21 +302,21 @@ public class AddNewLujingActivity extends AppCompatActivity {
             //viewName可区分item及item内部控件
             switch (v.getId()) {
                 case R.id.button_distance_up:
-                    Toast.makeText(AddNewLujingActivity.this,"你点击了 Up 按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LujingActivity.this,"你点击了 Up 按钮"+(position+1),Toast.LENGTH_SHORT).show();
 //                    gotoAddNewLujing(Constant.REQUEST_CODE_MODIFY_LUJING, mLujingList.get(position));
                     break;
                 case R.id.button_distance_down:
 //                    gotoAddNewLujing(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST,null);
-                    Toast.makeText(AddNewLujingActivity.this,"你点击了 Down 按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LujingActivity.this,"你点击了 Down 按钮"+(position+1),Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.button_distance_delete:
-                    Toast.makeText(AddNewLujingActivity.this, "你点击了 删除 jj 按钮" + (position + 1), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LujingActivity.this, "你点击了 删除 jj 按钮" + (position + 1), Toast.LENGTH_SHORT).show();
                     //TODO 警告之后再删除??
                     mDistanceList.remove(position);
                     mDistanceAdapter.notifyDataSetChanged();
                     break;
                 default:
-                    Toast.makeText(AddNewLujingActivity.this, "你点击了item按钮" + (position + 1), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LujingActivity.this, "你点击了item按钮" + (position + 1), Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -306,10 +343,10 @@ public class AddNewLujingActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "handleMessage: size: " + mDistanceList.size());
                     if (mDistanceList.size() == 0) {
-                        Toast.makeText(AddNewLujingActivity.this, "该路径的间距数量为0！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LujingActivity.this, "该路径的间距数量为0！", Toast.LENGTH_SHORT).show();
                     } else {
-                        mDistanceAdapter = new DistanceAdapter(mDistanceList, AddNewLujingActivity.this);
-                        mDistanceRV.addItemDecoration(new DividerItemDecoration(AddNewLujingActivity.this, DividerItemDecoration.VERTICAL));
+                        mDistanceAdapter = new DistanceAdapter(mDistanceList, LujingActivity.this);
+                        mDistanceRV.addItemDecoration(new DividerItemDecoration(LujingActivity.this, DividerItemDecoration.VERTICAL));
                         mDistanceRV.setAdapter(mDistanceAdapter);
                         mDistanceAdapter.notifyDataSetChanged();
                         // 设置item及item中控件的点击事件
@@ -319,7 +356,7 @@ public class AddNewLujingActivity extends AppCompatActivity {
             } else {
                 String errorMsg = (String) msg.obj;
                 Log.d(TAG, "errorMsg");
-                Toast.makeText(AddNewLujingActivity.this, "获取该路径的 间距列表失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LujingActivity.this, "获取该路径的 间距列表失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -329,10 +366,33 @@ public class AddNewLujingActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == Network.OK) {
-                ShowMessage.showToast(AddNewLujingActivity.this,"添加新路径成功！",ShowMessage.MessageDuring.SHORT);
-                AddNewLujingActivity.this.finish();
+                ShowMessage.showToast(LujingActivity.this,"添加路径成功！",ShowMessage.MessageDuring.SHORT);
+
+                Intent intent =getIntent();
+                intent.setClass(LujingActivity.this, Main.class);
+                intent.putExtra("mNewLujing", (Serializable) mNewLujing);
+                LujingActivity.this.setResult(RESULT_OK, intent);
+                LujingActivity.this.finish();
             }else {
-                ShowMessage.showDialog(AddNewLujingActivity.this,"出错！请检查网络！");
+                ShowMessage.showDialog(LujingActivity.this,"添加路径出错！");
+            }
+        }
+    }
+
+    @SuppressLint("HandlerLeak")
+    class ModifyLujingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == Network.OK) {
+                ShowMessage.showToast(LujingActivity.this," 修改路径成功！",ShowMessage.MessageDuring.SHORT);
+                Intent intent =getIntent();
+                intent.setClass(LujingActivity.this, Main.class);
+                intent.putExtra("mLujingDataToBeModified", (Serializable) mLujingDataToBeModified);
+                LujingActivity.this.setResult(RESULT_OK, intent);
+                LujingActivity.this.finish();
+            }else {
+                ShowMessage.showDialog(LujingActivity.this,"修改路径出错！请检查网络！");
             }
         }
     }

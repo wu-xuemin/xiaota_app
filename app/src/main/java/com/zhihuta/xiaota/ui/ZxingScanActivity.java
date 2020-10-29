@@ -3,10 +3,8 @@ package com.zhihuta.xiaota.ui;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,7 +17,6 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
@@ -31,7 +28,6 @@ import com.zhihuta.xiaota.util.ShowMessage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -104,20 +100,19 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             });
 
         Intent intent = getIntent();
-        mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujing");
-
+        //3种情况一样的。
         if(intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING)) {
-            mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujing");
+            mLujing = (LujingData) getIntent().getExtras().getSerializable("mNewLujing");
         } else if (intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_MODIFY_LUJING)) {
-            mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujing");
+            mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujingDataToBeModified");
         } else if (intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST)) {
-            mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujing");
+            mLujing = (LujingData) getIntent().getExtras().getSerializable("mOldBasedNewLujing");
         }
     }
 
     public void sendQrMsgBack(){
         Intent intent = getIntent();
-        intent.setClass(ZxingScanActivity.this, AddNewLujingActivity.class);
+        intent.setClass(ZxingScanActivity.this, LujingActivity.class);
         intent.putExtra("mScanResultDistanceList", (Serializable) mScanResultDistanceList);
 
 //        intent.putExtra("mScanResultDistanceList", mScanResultDistanceList);
@@ -188,11 +183,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
         // 解析数据，并填入
         Gson gson = new Gson();
         DistanceData distanceData = gson.fromJson(result, DistanceData.class);
-        mScanResultDistanceList.add(distanceData);
 
-        if(mScanResultDistanceList == null){
-            ToastUtils.showShort("异常，距离信息为NULL！");
-        }
 
 
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
@@ -213,7 +204,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 //                mDistanceAdapter.notifyDataSetChanged();
 
             }else {
-                ShowMessage.showDialog(ZxingScanActivity.this,"出错！请检查网络！");
+                ShowMessage.showDialog(ZxingScanActivity.this,"出错！请检查网络！" + msg.obj.toString()); //
             }
         }
     }
@@ -232,73 +223,5 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
         }
         return super.onOptionsItemSelected(item);
     }
-
-//    private void showDialog(final String result) {
-//        Log.d(TAG, "result:" + result);
-//        if(scanQrResultDialog != null && scanQrResultDialog.isShowing()) {
-//            scanQrResultDialog.dismiss();
-//            scanQrResultDialog = null;
-//        }
-//        scanQrResultDialog = new AlertDialog.Builder(ZxingScanActivity.this).create();
-//        scanQrResultDialog.setTitle("扫描结果");
-//        scanQrResultDialog.setCancelable(false);
-//        final EditText et = new EditText(this);
-//        if(result != null) {
-//            scanQrResultDialog.setMessage("扫描结果： "+result);
-//        } else {
-//            scanQrResultDialog.setView(et);
-//        }
-//        scanQrResultDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定",
-//                new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        String qrMessage = "";
-//                        if(result != null) {
-//                            qrMessage = result;
-//                        } else {
-//                            qrMessage = et.getText().toString();
-//                        }
-//                        if("".equals(qrMessage)) {
-//                            ToastUtils.showShort("信息为空！");
-//                            ZxingScanActivity.this.finish();
-//                        } else {
-//                            //根据result获取对应taskRecordDetail
-//                            Intent intent = getIntent();
-//                            intent.putExtra("scanGotMessage", qrMessage);
-//                            ZxingScanActivity.this.setResult(RESULT_OK, intent);
-//                            if(!mStopScanTimer.isShutdown() ) {
-//                                mStopScanTimer.shutdownNow();
-//                            }
-//                            ZxingScanActivity.this.finish();
-//                        }
-//                    }
-//                });
-//        scanQrResultDialog.setButton(AlertDialog.BUTTON_NEGATIVE,"重新扫描",
-//                new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        //重新扫描
-//                        mQRCodeView.startSpot();
-//                        mStopScanTimer = new ScheduledThreadPoolExecutor(1);
-//                        mStopScanTimer.schedule(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                ToastUtils.showShort("扫描失败，切换至手动模式！");
-//                                mQRCodeView.post(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        mQRCodeView.stopSpot();
-//                                        showDialog(null);
-//                                    }
-//                                });
-//                            }
-//                        }, 10, TimeUnit.SECONDS);
-//                    }
-//                });
-//        // 显示
-//        scanQrResultDialog.show();
-//        //震动
-//        vibrate();
-//    }
 
 }

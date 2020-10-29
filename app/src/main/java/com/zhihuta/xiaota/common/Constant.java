@@ -16,4 +16,8 @@ public class Constant {
 
     public static final int REQUEST_CODE_MODIFY_LUJING = 3;                 //路径中心，修改已有路径
     public static final int REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST = 4;  //路径中心，基于已有路径， 新建路径
+
+
+// 后端 TODO: 同个用户下，路径名称要唯一
+
 }
