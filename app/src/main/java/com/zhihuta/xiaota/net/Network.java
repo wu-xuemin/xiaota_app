@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -124,10 +125,10 @@ public class Network {
                                     Log.d(TAG, "fetchDistanceListOfLujing run: responseData：" + responseData.getCode());
                                     if (responseData.getCode() == 200) {
 
-                                        for (int k = 0; k < responseData.getData().getDistance_qrs().size(); k++) {
+                                      //  for (int k = 0; k < responseData.getData().getDistance_qrs().size(); k++) {
 //                                            success = true;
                                             msg.obj = responseData.getData().getDistance_qrs();
-                                        }
+                                        //}
                                         success = true; //可能还没有间距列表，这也是OK的
                                     } else if (responseData.getCode() == 400) {
                                         Log.e(TAG, responseData.getMessage());
@@ -626,9 +627,35 @@ public class Network {
                             response = client.newCall(request).execute();
                             boolean success = false;
                             if (response.isSuccessful()) {
-                                msg.what = OK;
+                                Gson gson = new Gson();
+                                MsgFailResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken< MsgFailResponseDataWrap >() {}.getType());
+                                if (responseData != null) {
+                                    Log.d(TAG, "putLujingDistance run: " + responseData.getCode());
+                                    if (responseData.getCode() == 200) {
+                                        success = true;
+                                        msg.obj = responseData.getData(); //成功时，后端返回路径的ID.  {errorCode=0.0, id=56.0}
+//
+                                    } else if (responseData.getCode() == 400) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    } else if (responseData.getCode() == 500) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        Log.d(TAG, "addNewLujing run: error 500 :" + responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    } else {
+                                        msg.obj = responseData.getMessage(); //后端添加失败时，比如二维码已经存在在该路径中。返回的message会包含这个信息
+                                        Log.e(TAG, "addNewLujing Format JSON string to object error!");
+                                    }
+                                }
+
+                                if (success) {
+                                    msg.what = OK;
+                                }
+
                             } else {
                                 msg.what = NG;
+                                msg.obj = "网络请求错误！";
+                                Log.e("aaaa", "response 4 网络请求错误");
                             }
                             response.close();
                         } catch (Exception e) {

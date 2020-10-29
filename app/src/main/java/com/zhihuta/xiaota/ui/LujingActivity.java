@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
@@ -38,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import static java.nio.file.Paths.get;
 
 public class LujingActivity extends AppCompatActivity {
 
@@ -126,30 +129,46 @@ public class LujingActivity extends AppCompatActivity {
                 if( mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING ) {
                     /**
                      * 全新路径时，要输入路径名称才允许去扫码，因为扫码时就要直接加间距到该路径了。
+                     * 使用该名称生成新路径，再去扫码界面。
                      */
                     TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
                     if(lujingNameTv.getText().toString().equals("")){
                         Toast.makeText(LujingActivity.this, " 扫码前，请输入路径名称", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    bundle2.putSerializable("mNewLujing", (Serializable) mNewLujing);
+                    mNewLujing.setName(lujingNameTv.getText().toString());
+                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                    mPostValue.put("name", new Gson().toJson(mNewLujing.getName()));
+                    mNetwork.addNewLujing(addNewLujingUrl, mPostValue, new AddNewLujingBeforeGotoScanHandler());
+
                 } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_MODIFY_LUJING ) {
                     bundle2.putSerializable("mLujingDataToBeModified", (Serializable) mLujingDataToBeModified);
+                    Intent intent2 = new Intent(LujingActivity.this, ZxingScanActivity.class);
+
+                    bundle2.putSerializable("requestCode", (Serializable) mRequestCodeFromMain);
+                    intent2.putExtras(bundle2);
+
+                    //运行时权限
+                    if (ContextCompat.checkSelfPermission(LujingActivity.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(LujingActivity.this,new String[]{Manifest.permission.CAMERA},1);
+                    }else {
+                        startActivityForResult(intent2, mRequestCodeFromMain);
+                    }
                 } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ) {
                     bundle2.putSerializable("mOldBasedNewLujing", (Serializable) mOldBasedNewLujing);
-                }
-                Intent intent2 = new Intent(LujingActivity.this, ZxingScanActivity.class);
+                    Intent intent2 = new Intent(LujingActivity.this, ZxingScanActivity.class);
 
-                bundle2.putSerializable("requestCode", (Serializable) mRequestCodeFromMain);
-                intent2.putExtras(bundle2);
+                    bundle2.putSerializable("requestCode", (Serializable) mRequestCodeFromMain);
+                    intent2.putExtras(bundle2);
 
-//运行时权限
-                if (ContextCompat.checkSelfPermission(LujingActivity.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(LujingActivity.this,new String[]{Manifest.permission.CAMERA},1);
-                }else {
-//                    startActivityForResult(intent2, REQUEST_CODE_SCAN_QRCODE_START);
-                    startActivityForResult(intent2, mRequestCodeFromMain);
+                    //运行时权限
+                    if (ContextCompat.checkSelfPermission(LujingActivity.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(LujingActivity.this,new String[]{Manifest.permission.CAMERA},1);
+                    }else {
+                        startActivityForResult(intent2, mRequestCodeFromMain);
+                    }
                 }
+
 
             }
         });
@@ -159,6 +178,22 @@ public class LujingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LujingActivity.this, RelatedDxActivity.class);
+                Bundle bundle2 = new Bundle();
+                if( mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING ) {
+                    /**
+                     * 全新路径时，要输入路径名称才允许去关联电线，
+                     */
+                    TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
+                    if(lujingNameTv.getText().toString().equals("")){
+                        Toast.makeText(LujingActivity.this, " 关联电线前，请输入路径名称", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    bundle2.putSerializable("mNewLujing", (Serializable) mNewLujing);
+                } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_MODIFY_LUJING ) {
+                    bundle2.putSerializable("mLujingDataToBeModified", (Serializable) mLujingDataToBeModified);
+                } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ) {
+                    bundle2.putSerializable("mOldBasedNewLujing", (Serializable) mOldBasedNewLujing);
+                }
                 startActivityForResult(intent, REQUEST_CODE_RELATEd_DX);
             }
         });
@@ -219,18 +254,20 @@ public class LujingActivity extends AppCompatActivity {
     }
 
     // 无论是 修改路径，还是基于已有路径新建路径，都需要获该路径取原有的间距列表
-    private void getGetLujingDistanceList(Intent intent){
+    private void getGetLujingDistanceList(Intent intent) {
         //获取 路径对应的间距列表
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-        mPostValue.put("account","z");
+        mPostValue.put("account", "z");
         String theUrl;
-        if( mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ) {
+        if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
             theUrl = getLujingDistanceListUrl.replace("lujingID", String.valueOf(mOldBasedNewLujing.getId()));
-        } else { // if (mRequestCode == Constant.REQUEST_CODE_MODIFY_LUJING )
+        } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_MODIFY_LUJING) {
             theUrl = getLujingDistanceListUrl.replace("lujingID", String.valueOf(mLujingDataToBeModified.getId()));
+        } else { //Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING
+            theUrl = getLujingDistanceListUrl.replace("lujingID", String.valueOf(mNewLujing.getId()));
         }
         mNetwork.fetchDistanceListOfLujing(theUrl, mPostValue, getLujingDistanceListHandler);
-        Log.i(TAG,"刷新了间距列表");
+        Log.i(TAG, "刷新了间距列表");
     }
     private void showDistanceList(){
         //间距列表
@@ -379,13 +416,50 @@ public class LujingActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 在新建全新路径，点击扫码，需要先生成路径，之后再跳到扫码界面。
+     */
+    @SuppressLint("HandlerLeak")
+    class AddNewLujingBeforeGotoScanHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == Network.OK) {
+                ShowMessage.showToast(LujingActivity.this,"添加路径成功，跳转到扫码！",ShowMessage.MessageDuring.SHORT);
+//                在新建全新路径，点击扫码，需要先生成路径，如何再跳到扫码界面。
+                Intent intent2 = new Intent(LujingActivity.this, ZxingScanActivity.class);
+                Bundle bundle2 = new Bundle();
+                bundle2.putSerializable("requestCode", (Serializable) mRequestCodeFromMain);
+//                msg.obj
+//                mNewLujing.setId( Integer.parseInt( (LinkedTreeMap) msg.obj).get("id") ));
+//                int id = Integer.parseInt ((LinkedTreeMap) msg.obj.).get("id").toString());
+
+//                ((LinkedTreeMap) msg.obj).findByObject("id") /// 解析  {errorCode=0.0, id=56.0}
+               String idStr = ((LinkedTreeMap) msg.obj).get("id").toString();
+               int lujingID = Double.valueOf(idStr).intValue();
+               mNewLujing.setId(lujingID);
+                bundle2.putSerializable("mNewLujing", (Serializable) mNewLujing);
+                intent2.putExtras(bundle2);
+
+                //运行时权限
+                if (ContextCompat.checkSelfPermission(LujingActivity.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(LujingActivity.this,new String[]{Manifest.permission.CAMERA},1);
+                }else {
+                    startActivityForResult(intent2, mRequestCodeFromMain);
+                }
+            }else {
+                ShowMessage.showDialog(LujingActivity.this,"添加路径出错！");
+            }
+        }
+    }
+
     @SuppressLint("HandlerLeak")
     class ModifyLujingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == Network.OK) {
-                ShowMessage.showToast(LujingActivity.this," 修改路径成功！",ShowMessage.MessageDuring.SHORT);
+//                ShowMessage.showToast(LujingActivity.this," 修改路径成功！",ShowMessage.MessageDuring.SHORT);
                 Intent intent =getIntent();
                 intent.setClass(LujingActivity.this, Main.class);
                 intent.putExtra("mLujingDataToBeModified", (Serializable) mLujingDataToBeModified);
