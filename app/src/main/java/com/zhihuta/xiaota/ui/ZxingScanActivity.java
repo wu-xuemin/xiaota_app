@@ -100,7 +100,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             });
 
         Intent intent = getIntent();
-        //3种情况一样的。
+        //3种情况
         if(intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING)) {
             mLujing = (LujingData) getIntent().getExtras().getSerializable("mNewLujing");
         } else if (intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_MODIFY_LUJING)) {
@@ -184,8 +184,9 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
         Gson gson = new Gson();
         DistanceData distanceData = gson.fromJson(result, DistanceData.class);
 
-
-
+        /**
+         * 每次扫码成功，都尝试把二维码加入到路径
+         */
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
         mPostValue.put("qr_id", new Gson().toJson(distanceData.getQr_id()));
         String url = putLujingDistanceUrl.replace("lujingID", String.valueOf(mLujing.getId()));
@@ -204,7 +205,14 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 //                mDistanceAdapter.notifyDataSetChanged();
 
             }else {
-                ShowMessage.showDialog(ZxingScanActivity.this,"出错！请检查网络！" + msg.obj.toString()); //
+
+                if( msg.obj != null){
+                    if( msg.obj.toString().equals("PATH_QRCODE_EXIST")){
+                        ShowMessage.showDialog(ZxingScanActivity.this,"异常！该路径已包含了该二维码" ); //
+                    } else {
+                        ShowMessage.showDialog(ZxingScanActivity.this,"出错！" ); //
+                    }
+                }
             }
         }
     }
