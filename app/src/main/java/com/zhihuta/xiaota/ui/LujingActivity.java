@@ -188,12 +188,16 @@ public class LujingActivity extends AppCompatActivity {
                         Toast.makeText(LujingActivity.this, " 关联电线前，请输入路径名称", Toast.LENGTH_LONG).show();
                         return;
                     }
+                    bundle2.putSerializable("requestCode", (Serializable) mRequestCodeFromMain);
                     bundle2.putSerializable("mNewLujing", (Serializable) mNewLujing);
                 } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_MODIFY_LUJING ) {
+                    bundle2.putSerializable("requestCode", (Serializable) mRequestCodeFromMain);
                     bundle2.putSerializable("mLujingDataToBeModified", (Serializable) mLujingDataToBeModified);
                 } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ) {
+                    bundle2.putSerializable("requestCode", (Serializable) mRequestCodeFromMain);
                     bundle2.putSerializable("mOldBasedNewLujing", (Serializable) mOldBasedNewLujing);
                 }
+                intent.putExtras(bundle2);
                 startActivityForResult(intent, REQUEST_CODE_RELATEd_DX);
             }
         });

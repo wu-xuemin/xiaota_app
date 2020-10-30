@@ -6,8 +6,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -17,21 +21,32 @@ import android.widget.Toast;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class RelatedDxActivity extends AppCompatActivity {
 
+    private static String TAG = "RelatedDxActivity";
     private ArrayList<DianxianQingCeData> mDianxianList;
 
-    private DianXianQingceAdapter mDianXianQingceAdapter;
+    private DianXianQingceAdapter mDianXianAdapter;
+    private RecyclerView mDxRV;
     private Button mAddNewDxBt;
     private Button mOKtoConfirmRelateDxBt; //
     private static final int RELATE_NEW_DX = 1;
+
+    private Network mNetwork;
+    String getDxListOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_DX_OF_LUJING;
+    //从路径界面传给电线界面的路径信息，在电线界面查看已绑定的电线，也在该路径里添加电线
+    private LujingData mLujing;
+
+    private int mRequestCodeFromMain =0 ; //标记, 来自Main界面， 是 全新新建/修改/基于旧的新建
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +58,7 @@ public class RelatedDxActivity extends AppCompatActivity {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        mNetwork = Network.Instance(getApplication());
         initViews();
         showDxList();
     }
@@ -59,25 +75,31 @@ public class RelatedDxActivity extends AppCompatActivity {
 
     private void initViews() {
 
+        Intent intent = getIntent();
+        //3种情况
+        if(intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING)) {
+            mLujing = (LujingData) getIntent().getExtras().getSerializable("mNewLujing");
+        } else if (intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_MODIFY_LUJING)) {
+            mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujingDataToBeModified");
+        } else if (intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST)) {
+            mLujing = (LujingData) getIntent().getExtras().getSerializable("mOldBasedNewLujing");
+        }
+
+        /**
+         * 获取该路径的电线列表
+         */
+        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+        mPostValue.put("account","NO USE"); //paths/{lujingId}/wires?serial_number={dxSN}&parts_code={dxPartsCode}
+        String theUrl = getDxListOfLujingUrl.replace("{lujingId}", String.valueOf(mLujing.getId()));
+        theUrl = theUrl.replace("{dxSN}","").replace("{dxPartsCode}","");
+        Log.i(TAG,"获取该路径的电线列表 " + theUrl);
+        mNetwork.fetchDxListOfLujing(theUrl, mPostValue, new GetDxListOfLujingHandler());///
+
         TextView textViewTitle = findViewById(R.id.textView_lujingNameShow);
-        textViewTitle.setText("路径ABC");
+        textViewTitle.setText(mLujing.getName());
 
         mDianxianList = new ArrayList<>();
-        for(int k=0;k<15; k++) {
-            DianxianQingCeData mDxData1 = new DianxianQingCeData();
-            mDxData1.setId(k);
-            mDxData1.setSerial_number("DX2211-" + k );
-            mDxData1.setStart_point("杭州A点" + k);
-            mDxData1.setEnd_point("岳阳A点" + k);
-            mDxData1.setParts_code("型号K");
-            mDxData1.setLength("500km");
-            mDxData1.setWickes_cross_section("3X185");
-            mDxData1.setSteel_redundancy("10M");
-            mDxData1.setHose_redundancy("5M");
-            mDxData1.setFlag(Constant.FLAG_RELATED_DX);
 
-            mDianxianList.add(mDxData1);
-        }
         mAddNewDxBt = (Button) findViewById(R.id.button_to_add_new_Dx);
         mAddNewDxBt.setOnClickListener(new View.OnClickListener() {
                                          @Override
@@ -98,16 +120,16 @@ public class RelatedDxActivity extends AppCompatActivity {
 
     private void showDxList(){
         //电线列表
-        RecyclerView mDxRV = (RecyclerView) findViewById(R.id.rv_dx);
+        mDxRV = (RecyclerView) findViewById(R.id.rv_dx);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mDxRV.setLayoutManager(manager);
-        mDianXianQingceAdapter = new DianXianQingceAdapter(mDianxianList,this);
+        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList,this);
         mDxRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        mDxRV.setAdapter(mDianXianQingceAdapter);
+        mDxRV.setAdapter(mDianXianAdapter);
 
         // 设置item及item中控件的点击事件
-        mDianXianQingceAdapter.setOnItemClickListener(MyItemClickListener);
+        mDianXianAdapter.setOnItemClickListener(MyItemClickListener);
 
     }
 
@@ -123,7 +145,7 @@ public class RelatedDxActivity extends AppCompatActivity {
                 case R.id.buttonDxDelete:
                     Toast.makeText(RelatedDxActivity.this," 已选电线的 删除:" + (position+1),Toast.LENGTH_SHORT).show();
                     mDianxianList.remove(position);
-                    mDianXianQingceAdapter.notifyDataSetChanged(); //刷新列表
+                    mDianXianAdapter.notifyDataSetChanged(); //刷新列表
                     break;
 
                 default:
@@ -157,6 +179,37 @@ public class RelatedDxActivity extends AppCompatActivity {
                 break;
             default:
                 break;
+        }
+    }
+
+    @SuppressLint("HandlerLeak")
+    class GetDxListOfLujingHandler extends Handler {
+        @Override
+        public void handleMessage(final Message msg) {
+//            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
+//                mLoadingProcessDialog.dismiss();
+//            }
+
+            if (msg.what == Network.OK) {
+                Log.d("GetDxListHandler", "OKKK");
+                mDianxianList = (ArrayList<DianxianQingCeData>)msg.obj;
+                Log.d(TAG, "handleMessage: size: " + mDianxianList.size());
+                if (mDianxianList.size()==0){
+                    Toast.makeText(RelatedDxActivity.this, "已关联的电线数量为0！", Toast.LENGTH_SHORT).show();
+                } else {
+                    for(int k=0; k<mDianxianList.size(); k++) {
+                        mDianxianList.get(k).setFlag(Constant.FLAG_RELATED_DX);
+                    }
+                    mDianXianAdapter = new DianXianQingceAdapter(mDianxianList,RelatedDxActivity.this);
+                    mDxRV.addItemDecoration(new DividerItemDecoration(RelatedDxActivity.this,DividerItemDecoration.VERTICAL));
+                    mDxRV.setAdapter(mDianXianAdapter);
+                    mDianXianAdapter.notifyDataSetChanged();
+                }
+            } else {
+                String errorMsg = (String)msg.obj;
+                Log.d("GetDxListHandler NG:", "errorMsg");
+                Toast.makeText(RelatedDxActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -249,6 +249,9 @@ public class Network {
         }
     }
 
+    /**
+     * 这里是所有的电线
+     */
     public void fetchDxListData(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
         final Message msg = handler.obtainMessage();
         if (!isNetworkConnected()) {
@@ -498,100 +501,7 @@ public class Network {
             }
         }
     }
-
-    /**
-     * 获取单个machineByNameplate
-     */
-    public void getDxList(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
-        final Message msg = handler.obtainMessage();
-        if (!isNetworkConnected()) {
-            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
-            msg.what = NG;
-            msg.obj = mCtx.getString(R.string.network_not_connect);
-            handler.sendMessage(msg);
-        } else {
-            Log.e("aaaa", "net okkkkk 00");
-            if (url != null && values != null) {
-
-                Log.e("aaaa", " before run ....");
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.e("aaaa", "run 00");
-                        RequestBody requestBody;
-                        FormBody.Builder builder = new FormBody.Builder();
-                        for (Object o : values.entrySet()) {
-                            HashMap.Entry entry = (HashMap.Entry) o;
-                            builder.add((String) entry.getKey(), (String) entry.getValue());
-                        }
-                        Log.e("aaaa", "run 01");
-                        requestBody = builder.build();
-                        //Post method
-//                        Request request = new Request.Builder().url(url).post(requestBody).build();
-                        Request request = new Request.Builder().url(url).get().build();
-                        Log.e("aaaa", "run 02");
-                        OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
-                        Log.e("aaaa", "run 03");
-                        Response response = null;
-                        try {
-                            //同步网络请求
-                            response = client.newCall(request).execute();
-                            boolean success = false;
-                            if (response.isSuccessful()) {
-                                Gson gson = new Gson();
-//                                Result result =  gson.fromJson(response.body().string(), new TypeToken<Result>(){}.getType());
-//                                LoginResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<LoginResponseDataWrap>(){}.getType());
-                                DxResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<DxResponseDataWrap>() {
-                                }.getType());
-                                if (responseData != null) {
-                                    Log.d(TAG, "getDxList run: " + responseData.getCode());
-                                    if (responseData.getCode() == 200) {
-                                        success = true;
-//                                        msg.obj = responseData.getData().getList();
-                                        msg.obj = responseData.getData();
-                                    } else if (responseData.getCode() == 400) {
-                                        Log.e(TAG, responseData.getMessage());
-                                        msg.obj = responseData.getMessage();
-                                    } else if (responseData.getCode() == 500) {
-                                        Log.e(TAG, responseData.getMessage());
-                                        Log.d(TAG, "getDxList run: error 500 :" + responseData.getMessage());
-                                        msg.obj = responseData.getMessage();
-                                    } else {
-                                        Log.e(TAG, "getDxList Format JSON string to object error!");
-                                    }
-                                }
-
-                                if (success) {
-                                    msg.what = OK;
-                                }
-
-                            } else {
-                                msg.what = NG;
-                                msg.obj = "网络请求错误！";
-                                Log.e("aaaa", "response 4 网络请求错误");
-                            }
-                            response.close();
-                        } catch (Exception e) {
-                            msg.what = NG;
-                            msg.obj = "网络请求错误！";
-                            Log.e("aaaa", "response 5 网络请求错误");
-                        } finally {
-                            handler.sendMessage(msg);
-                            if (msg != null) {
-                                Log.e("aaaa", "response 6  ");
-                            } else {
-                                Log.e("aaaa", "response 6  " + "msg is nullllll");
-                            }
-                            if (response != null) {
-                                response.close();
-                            }
-                        }
-                    }
-                });
-            }
-        }
-    }
-
+ 
     /**
      * 添加新路径， values里 name-xxx
      */
@@ -811,6 +721,89 @@ public class Network {
                             }
                         }
 
+                    }
+                });
+            }
+        }
+    }
+
+    //获取某路径的电线列表，不是所有电线
+    public void fetchDxListOfLujing(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
+        final Message msg = handler.obtainMessage();
+        if (!isNetworkConnected()) {
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = mCtx.getString(R.string.network_not_connect);
+            handler.sendMessage(msg);
+        } else {
+            if (url != null && values != null) {
+                Log.d(TAG, "fetchDxListOfLujing: not null");
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        RequestBody requestBody;
+                        FormBody.Builder builder = new FormBody.Builder();
+                        for (Object o : values.entrySet()) {
+                            HashMap.Entry entry = (HashMap.Entry) o;
+                            builder.add((String) entry.getKey(), (String) entry.getValue());
+                        }
+                        requestBody = builder.build();
+                        //Post method
+//                        Request request = new Request.Builder().url(url).post(requestBody).build();
+                        Request request = new Request.Builder().url(url).get().build();
+                        OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+                        Response response = null;
+                        try {
+                            //同步网络请求
+                            response = client.newCall(request).execute();
+                            boolean success = false;
+                            if (response.isSuccessful()) {
+                                Log.d(TAG, "fetchDxListOfLujing run: response success");
+                                Gson gson = new Gson();
+//                                LoginResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<LoginResponseDataWrap>(){}.getType());
+//                                UserResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<UserResponseDataWrap>(){}.getType());
+                                DxResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<DxResponseDataWrap>() {
+                                }.getType());
+                                if (responseData != null) {
+                                    Log.d(TAG, "fetchDxListOfLujing run: responseData：" + responseData.getCode());
+                                    if (responseData.getCode() == 200) {
+
+                                        for (int k = 0; k < responseData.getData().getWires().size(); k++) {
+                                            success = true;
+                                            String serial_number = responseData.getData().getWires().get(k).getSerial_number();
+                                            Log.i("aaa", "serial_number is " + serial_number);
+                                            msg.obj = responseData.getData().getWires();
+                                        }
+                                    } else if (responseData.getCode() == 400) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        Log.d(TAG, "fetchDxListOfLujing run: error 400 :" + responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    } else if (responseData.getCode() == 500) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        Log.d(TAG, "fetchDxListOfLujing run: error 500 :" + responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    } else {
+                                        Log.e(TAG, "fetchDxListOfLujing Format JSON string to object error!");
+                                    }
+                                }
+                                if (success) {
+                                    msg.what = OK;
+                                }
+                            } else {
+                                msg.what = NG;
+                            }
+                            response.close();
+                        } catch (Exception e) {
+                            msg.what = NG;
+                            msg.obj = "Network error!";
+                            Log.d(TAG, "fetchDxListOfLujing run: catch " + e);
+                        } finally {
+                            handler.sendMessage(msg);
+                            Log.d(TAG, "fetchDxListOfLujing run: finally");
+                            if (response != null) {
+                                response.close();
+                            }
+                        }
                     }
                 });
             }
