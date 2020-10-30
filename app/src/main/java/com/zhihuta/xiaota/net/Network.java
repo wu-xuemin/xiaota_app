@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -19,8 +18,6 @@ import com.zhihuta.xiaota.bean.response.LoginResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.DxResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.LujingResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.MsgFailResponseDataWrap;
-import com.zhihuta.xiaota.bean.response.ResponseData;
-import com.zhihuta.xiaota.bean.response.UserResponseData;
 import com.zhihuta.xiaota.bean.response.UserResponseDataWrap;
 import com.zhihuta.xiaota.ui.XiaotaApp;
 import com.google.gson.Gson;
@@ -29,7 +26,7 @@ import com.zhihuta.xiaota.util.ShowMessage;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -287,8 +284,6 @@ public class Network {
                             if (response.isSuccessful()) {
                                 Log.d(TAG, "fetchDxListData run: response success");
                                 Gson gson = new Gson();
-//                                LoginResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<LoginResponseDataWrap>(){}.getType());
-//                                UserResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<UserResponseDataWrap>(){}.getType());
                                 DxResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<DxResponseDataWrap>() {
                                 }.getType());
                                 if (responseData != null) {
@@ -371,7 +366,6 @@ public class Network {
                             if (response.isSuccessful()) {
                                 Log.d(TAG, "fetchUserListData run: response success");
                                 Gson gson = new Gson();
-//                                LoginResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<LoginResponseDataWrap>(){}.getType());
                                 UserResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<UserResponseDataWrap>() {
                                 }.getType());
                                 if (responseData != null) {
@@ -438,13 +432,24 @@ public class Network {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
+                        MediaType type = MediaType.parse("application/json;charset=utf-8");
                         RequestBody requestBody;
                         FormBody.Builder builder = new FormBody.Builder();
-                        for (Object o : values.entrySet()) {
-                            HashMap.Entry entry = (HashMap.Entry) o;
-                            builder.add((String) entry.getKey(), (String) entry.getValue());
+
+                        JSONObject obj = new JSONObject();
+                        try {
+                            for (Object o : values.entrySet()) {
+                                HashMap.Entry entry = (HashMap.Entry) o;
+                                //builder.add((String) entry.getKey(), (String) entry.getValue());
+                                obj.put((String) entry.getKey(), (String) entry.getValue());
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                        requestBody = builder.build();
+                        requestBody = RequestBody.create(type, obj.toString());
+
+
                         //Post method
                         Request request = new Request.Builder().url(url).post(requestBody).build();
                         OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
@@ -461,13 +466,9 @@ public class Network {
                                 if (responseData != null) {
                                     Log.d(TAG, "fetchLoginData run: responseData：" + responseData.getCode());
                                     if (responseData.getCode() == 200) {
-                                        if (responseData.getData().getValid() != 1) {
-                                            Log.e(TAG, "用户已离职");
-                                            msg.obj = "用户已离职";
-                                        } else {
-                                            success = true;
-                                            msg.obj = responseData.getData();
-                                        }
+
+                                        success = true;
+                                        msg.obj = responseData.getData();
                                     } else if (responseData.getCode() == 400) {
                                         Log.e(TAG, responseData.getMessage());
                                         Log.d(TAG, "fetchLoginData run: error 400 :" + responseData.getMessage());
@@ -528,7 +529,7 @@ public class Network {
                         }
                         RequestBody RequestBody2 = RequestBody.create(type, obj.toString());
 
-                        OkHttpClient client = new OkHttpClient();
+                        OkHttpClient client =((XiaotaApp) mCtx).getOKHttpClient();;
                         Request request = new Request.Builder()
                                 // 指定访问的服务器地址
                                 .url(url).post(RequestBody2)
@@ -610,7 +611,7 @@ public class Network {
                         }
                         RequestBody RequestBody2 = RequestBody.create(type, obj.toString());
 
-                        OkHttpClient client = new OkHttpClient();
+                        OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();;
                         Request request = new Request.Builder()
                                 // 指定访问的服务器地址
                                 .url(url).put(RequestBody2)
@@ -666,7 +667,7 @@ public class Network {
                         }
                         RequestBody RequestBody2 = RequestBody.create(type, "" + obj);
 
-                        OkHttpClient client = new OkHttpClient();
+                        OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();;
                         Request request = new Request.Builder()
                                 // 指定访问的服务器地址
                                 .url(url).put(RequestBody2)

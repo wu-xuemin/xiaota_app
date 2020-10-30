@@ -380,19 +380,18 @@ public class LujingActivity extends AppCompatActivity {
                 Log.d(TAG, "GetLujingDistanceListHandler OKKK");
                 mDistanceList = (ArrayList<DistanceData>) msg.obj;
                 if (mDistanceList == null) {
-                    Log.d(TAG, "handleMessage: " + "间距数量为0或异常"  );
+                    Log.d(TAG, "handleMessage: " + "间距获取异常"  );
                 } else {
                     Log.d(TAG, "handleMessage: size: " + mDistanceList.size());
                     if (mDistanceList.size() == 0) {
                         Toast.makeText(LujingActivity.this, "该路径的间距数量为0！", Toast.LENGTH_SHORT).show();
-                    } else {
-                        mDistanceAdapter = new DistanceAdapter(mDistanceList, LujingActivity.this);
-                        mDistanceRV.addItemDecoration(new DividerItemDecoration(LujingActivity.this, DividerItemDecoration.VERTICAL));
-                        mDistanceRV.setAdapter(mDistanceAdapter);
-                        mDistanceAdapter.notifyDataSetChanged();
-                        // 设置item及item中控件的点击事件
-                        mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
                     }
+                    mDistanceAdapter = new DistanceAdapter(mDistanceList, LujingActivity.this);
+                    mDistanceRV.addItemDecoration(new DividerItemDecoration(LujingActivity.this, DividerItemDecoration.VERTICAL));
+                    mDistanceRV.setAdapter(mDistanceAdapter);
+                    mDistanceAdapter.notifyDataSetChanged();
+                    // 设置item及item中控件的点击事件
+                    mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
                 }
             } else {
                 String errorMsg = (String) msg.obj;

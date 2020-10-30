@@ -144,21 +144,23 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
             if (msg.what == Network.OK) {
                 Log.d("GetLujingListHandler", "OKKK");
-                mLujingList = (ArrayList<LujingData>)msg.obj;
+                mLujingList = (ArrayList<LujingData>) msg.obj;
                 if (mLujingList == null) {
-                    Log.d(TAG, "handleMessage: " + "路径数量为0或异常"  );
+                    mLujingList = new ArrayList<>(); 
+                    Log.d(TAG, "handleMessage: " + "路径获取异常");
                 } else {
                     if (mLujingList.size() == 0) {
                         Toast.makeText(Main.this, "路径数量为0！", Toast.LENGTH_SHORT).show();
-                    } else {
-                        mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
-                        mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
-                        mLujingRV.setAdapter(mLujingAdapter);
-                        mLujingAdapter.notifyDataSetChanged();
-                        // 设置item及item中控件的点击事件
-                        mLujingAdapter.setOnItemClickListener(MyItemClickListener);
+//                    } else {
                     }
                 }
+                mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
+                mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                mLujingRV.setAdapter(mLujingAdapter);
+                mLujingAdapter.notifyDataSetChanged();
+                // 设置item及item中控件的点击事件
+                mLujingAdapter.setOnItemClickListener(MyItemClickListener);
+
             } else {
                 String errorMsg = (String)msg.obj;
                 Log.d("GetLujingListHand NG:", errorMsg);
@@ -176,10 +178,10 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
             if (msg.what == Network.OK) {
                 Log.d("GetDxListHandler", "OKKK");
-                mDianxianQingCeList = (ArrayList<DianxianQingCeData>)msg.obj;
+                mDianxianQingCeList = (ArrayList<DianxianQingCeData>) msg.obj;
 
                 if (mDianxianQingCeList == null) {
-                    Log.d(TAG, "handleMessage: " + "电线 数量为0或异常"  );
+                    Log.d(TAG, "handleMessage: " + "电线 获取异常");
                 } else {
                     if (mDianxianQingCeList.size() == 0) {
                         Toast.makeText(Main.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
@@ -187,12 +189,13 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                         for (int k = 0; k < mDianxianQingCeList.size(); k++) {
                             mDianxianQingCeList.get(k).setFlag(Constant.FLAG_QINGCE_DX);
                         }
-                        mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this);
-                        mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
-                        mQingceRV.setAdapter(mDxQingceAdapter);
-                        mDxQingceAdapter.notifyDataSetChanged();
                     }
+                    mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this);
+                    mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                    mQingceRV.setAdapter(mDxQingceAdapter);
+                    mDxQingceAdapter.notifyDataSetChanged();
                 }
+
             } else {
                 String errorMsg = (String)msg.obj;
                 Log.d("GetDxListHandler NG:", errorMsg);

@@ -137,15 +137,14 @@ public class RelateNewDxActivity extends AppCompatActivity {
                 } else {
                     if (mDianxianTobeSelectList.size() == 0) {
                         Toast.makeText(RelateNewDxActivity.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
-                    } else {
-                        for (int k = 0; k < mDianxianTobeSelectList.size(); k++) {
-                            mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_TOBE_SELECT_DX);
-                        }
-                        mDianXianToBeSelectedAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList, RelateNewDxActivity.this);
-                        mDxRV.addItemDecoration(new DividerItemDecoration(RelateNewDxActivity.this, DividerItemDecoration.VERTICAL));
-                        mDxRV.setAdapter(mDianXianToBeSelectedAdapter);
-                        mDianXianToBeSelectedAdapter.notifyDataSetChanged();
                     }
+                    for (int k = 0; k < mDianxianTobeSelectList.size(); k++) {
+                        mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_TOBE_SELECT_DX);
+                    }
+                    mDianXianToBeSelectedAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList, RelateNewDxActivity.this);
+                    mDxRV.addItemDecoration(new DividerItemDecoration(RelateNewDxActivity.this, DividerItemDecoration.VERTICAL));
+                    mDxRV.setAdapter(mDianXianToBeSelectedAdapter);
+                    mDianXianToBeSelectedAdapter.notifyDataSetChanged();
                 }
             } else {
                 String errorMsg = (String)msg.obj;

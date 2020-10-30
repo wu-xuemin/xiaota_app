@@ -113,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
         mPassword=mPasswordText.getText().toString();
         mPostValue.put("account", mAccountText.getText().toString());
         mPostValue.put("password", mPassword);
-        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
+//        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
         Log.d(TAG, "login: IMEI: "+XiaotaApp.getApp().getIMEI());
         if(TextUtils.isEmpty(XiaotaApp.getApp().getServerIP())){
             if(mLoadingProcessDialog.isShowing()) {
@@ -133,8 +133,8 @@ public class LoginActivity extends AppCompatActivity {
         else {
             String loginUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.USER_LOGIN;
             ///test
-//            mNetwork.fetchLoginData(loginUrl, mPostValue, mLoginHandler);
-            onLoginSuccess(null);
+            mNetwork.fetchLoginData(loginUrl, mPostValue, mLoginHandler);
+//            onLoginSuccess(null);
         }
 
     }

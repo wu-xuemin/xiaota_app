@@ -10,6 +10,13 @@ import com.blankj.utilcode.util.CacheUtils;
 import com.blankj.utilcode.util.Utils;
 import com.zhihuta.xiaota.util.LogUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
 
@@ -45,6 +52,9 @@ public class XiaotaApp extends Application {
 
     private String IMEI;
     private static XiaotaApp mApp;
+
+
+    private final HashMap<String, List<Cookie>> cookieStore = new HashMap<>();
 
     /**
      * 缓存
@@ -94,7 +104,27 @@ public class XiaotaApp extends Application {
         Utils.init(this);
         mCache = CacheUtils.getInstance(this.getCacheDir());
 
-        mOKHttpClient = new OkHttpClient();
+        /**
+         * okhttp3带cookie请求
+         * 从返回的response里得到新的Cookie，你可能得想办法把Cookie保存起来。
+         * 但是OkHttp可以不用我们管理Cookie，自动携带，保存和更新Cookie。
+         * 方法是在创建OkHttpClient设置管理Cookie的CookieJar
+         */
+        mOKHttpClient = new OkHttpClient.Builder()
+                .cookieJar(new CookieJar() {
+                    @Override
+                    public void saveFromResponse(HttpUrl httpUrl, List<Cookie> list) {
+                        cookieStore.put(httpUrl.host(), list);
+                    }
+
+                    @Override
+                    public List<Cookie> loadForRequest(HttpUrl httpUrl) {
+                        List<Cookie> cookies = cookieStore.get(httpUrl.host());
+                        return cookies != null ? cookies : new ArrayList<Cookie>();
+                    }
+                })
+                .build();
+
         /*
 		 * Get shared preferences and editor so we can read/write program settings.
 		 */
@@ -125,7 +155,8 @@ public class XiaotaApp extends Application {
 //        this.ip = "10.0.2.2:8080";
 //模拟器
 //        this.ip = "10.0.2.2:8004";
-        this.ip = "172.20.10.3:8083";
+//        this.ip = "172.20.10.3:8083";
+        this.ip = "47.114.157.108:8083";
         String appUserIdStr = readValue(PersistentValueType.USER_ID, "0");
         if ("".equals(appUserIdStr)){
             this.appUserId =0;
