@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="输入新路径名称："
+                android:text="路径名称："
                 android:textSize="18sp"
                 android:textStyle="bold" />
 

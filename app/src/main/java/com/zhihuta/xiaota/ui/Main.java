@@ -108,10 +108,6 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private GetDxListHandler getDxListHandler;
     private GetLujingListHandler getLujingListHandler;
 
-    String getUserListUrl8004 = URL.HTTP_HEAD + "172.20.10.3:8004"+ URL.GET_USER_LIST;
-    String loginUrl8004 = URL.HTTP_HEAD +"172.20.10.3:8004"+ URL.USER_LOGIN;
-    String getDxListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_DIANXIAN_QINGCE_LIST;
-    String getLujingListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_LIST;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,8 +129,8 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         mPostValue.put("password", "a");
         mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
         /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
-        mNetwork.fetchDxListData(getDxListUrl8083, mPostValue, getDxListHandler);///ok
-        mNetwork.fetchLujingListData(getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
+        mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, getDxListHandler);///ok
+        mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
 
     }
 
@@ -149,20 +145,23 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             if (msg.what == Network.OK) {
                 Log.d("GetLujingListHandler", "OKKK");
                 mLujingList = (ArrayList<LujingData>)msg.obj;
-                Log.d(TAG, "handleMessage: size: " + mLujingList.size());
-                if (mLujingList.size()==0){
-                    Toast.makeText(Main.this, "路径数量为0！", Toast.LENGTH_SHORT).show();
+                if (mLujingList == null) {
+                    Log.d(TAG, "handleMessage: " + "路径数量为0或异常"  );
                 } else {
-                    mLujingAdapter = new LujingAdapter(mLujingList,Main.this);
-                    mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this,DividerItemDecoration.VERTICAL));
-                    mLujingRV.setAdapter(mLujingAdapter);
-                    mLujingAdapter.notifyDataSetChanged();
-                       // 设置item及item中控件的点击事件
-                    mLujingAdapter.setOnItemClickListener(MyItemClickListener);
+                    if (mLujingList.size() == 0) {
+                        Toast.makeText(Main.this, "路径数量为0！", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
+                        mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                        mLujingRV.setAdapter(mLujingAdapter);
+                        mLujingAdapter.notifyDataSetChanged();
+                        // 设置item及item中控件的点击事件
+                        mLujingAdapter.setOnItemClickListener(MyItemClickListener);
+                    }
                 }
             } else {
                 String errorMsg = (String)msg.obj;
-                Log.d("GetDxListHandler NG:", "errorMsg");
+                Log.d("GetLujingListHand NG:", errorMsg);
                 Toast.makeText(Main.this, "路径获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
         }
@@ -178,21 +177,25 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             if (msg.what == Network.OK) {
                 Log.d("GetDxListHandler", "OKKK");
                 mDianxianQingCeList = (ArrayList<DianxianQingCeData>)msg.obj;
-                Log.d(TAG, "handleMessage: size: " + mDianxianQingCeList.size());
-                if (mDianxianQingCeList.size()==0){
-                    Toast.makeText(Main.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
+
+                if (mDianxianQingCeList == null) {
+                    Log.d(TAG, "handleMessage: " + "电线 数量为0或异常"  );
                 } else {
-                    for(int k=0; k<mDianxianQingCeList.size(); k++) {
-                        mDianxianQingCeList.get(k).setFlag(Constant.FLAG_QINGCE_DX);
+                    if (mDianxianQingCeList.size() == 0) {
+                        Toast.makeText(Main.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
+                    } else {
+                        for (int k = 0; k < mDianxianQingCeList.size(); k++) {
+                            mDianxianQingCeList.get(k).setFlag(Constant.FLAG_QINGCE_DX);
+                        }
+                        mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this);
+                        mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                        mQingceRV.setAdapter(mDxQingceAdapter);
+                        mDxQingceAdapter.notifyDataSetChanged();
                     }
-                    mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList,Main.this);
-                    mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this,DividerItemDecoration.VERTICAL));
-                    mQingceRV.setAdapter(mDxQingceAdapter);
-                    mDxQingceAdapter.notifyDataSetChanged();
                 }
             } else {
                 String errorMsg = (String)msg.obj;
-                Log.d("GetDxListHandler NG:", "errorMsg");
+                Log.d("GetDxListHandler NG:", errorMsg);
                 Toast.makeText(Main.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
         }
@@ -208,7 +211,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
             } else {
                 String errorMsg = (String)msg.obj;
-                Log.d("GetUserHandler NG:", "errorMsg");
+                Log.d("GetUserHandler NG:", errorMsg);
             }
         }
     }
@@ -300,11 +303,11 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
 
         mLujingShaixuanList = (ArrayList<LujingData>) bundle.getSerializable("mLujingShaixuanList");
-        if(mLujingShaixuanList !=null) {
-            Toast.makeText(this, "    得到    筛选的 路径列表 size:" + mLujingShaixuanList.size(), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "   路径列表为空！！！" , Toast.LENGTH_SHORT).show();
-        }
+//        if(mLujingShaixuanList !=null) {
+//            Toast.makeText(this, "    得到    筛选的 路径列表 size:" + mLujingShaixuanList.size(), Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(this, "   路径列表为空！！！" , Toast.LENGTH_SHORT).show();
+//        }
         //计算路径，扫描筛选得到的路径列表
         RecyclerView mLujingShaixuanRV = (RecyclerView) findViewById(R.id.rv_lujing_compute);
         LinearLayoutManager manager4 = new LinearLayoutManager(this);

@@ -191,23 +191,27 @@ public class RelatedDxActivity extends AppCompatActivity {
 //            }
 
             if (msg.what == Network.OK) {
-                Log.d("GetDxListHandler", "OKKK");
+                Log.d("GetDxListOfLujingHand", "OKKK");
                 mDianxianList = (ArrayList<DianxianQingCeData>)msg.obj;
-                Log.d(TAG, "handleMessage: size: " + mDianxianList.size());
-                if (mDianxianList.size()==0){
-                    Toast.makeText(RelatedDxActivity.this, "已关联的电线数量为0！", Toast.LENGTH_SHORT).show();
+
+                if (mDianxianList == null) {
+                    Log.d(TAG, "handleMessage: " + "路径的电线数量为0或异常"  );
                 } else {
-                    for(int k=0; k<mDianxianList.size(); k++) {
-                        mDianxianList.get(k).setFlag(Constant.FLAG_RELATED_DX);
+                    if (mDianxianList.size() == 0) {
+                        Toast.makeText(RelatedDxActivity.this, "已关联的电线数量为0！", Toast.LENGTH_SHORT).show();
+                    } else {
+                        for (int k = 0; k < mDianxianList.size(); k++) {
+                            mDianxianList.get(k).setFlag(Constant.FLAG_RELATED_DX);
+                        }
+                        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, RelatedDxActivity.this);
+                        mDxRV.addItemDecoration(new DividerItemDecoration(RelatedDxActivity.this, DividerItemDecoration.VERTICAL));
+                        mDxRV.setAdapter(mDianXianAdapter);
+                        mDianXianAdapter.notifyDataSetChanged();
                     }
-                    mDianXianAdapter = new DianXianQingceAdapter(mDianxianList,RelatedDxActivity.this);
-                    mDxRV.addItemDecoration(new DividerItemDecoration(RelatedDxActivity.this,DividerItemDecoration.VERTICAL));
-                    mDxRV.setAdapter(mDianXianAdapter);
-                    mDianXianAdapter.notifyDataSetChanged();
                 }
             } else {
                 String errorMsg = (String)msg.obj;
-                Log.d("GetDxListHandler NG:", "errorMsg");
+                Log.d("GetDxListOfLujingHd NG:", errorMsg);
                 Toast.makeText(RelatedDxActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
         }

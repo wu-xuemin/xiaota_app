@@ -1,5 +1,7 @@
 package com.zhihuta.xiaota.common;
 
+import com.zhihuta.xiaota.ui.XiaotaApp;
+
 public class Constant {
     /**
      * 用于标记不同的场合
@@ -18,6 +20,10 @@ public class Constant {
     public static final int REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST = 4;  //路径中心，基于已有路径， 新建路径
 
 
+    public static final String getUserListUrl8004 = URL.HTTP_HEAD + "172.20.10.3:8004"+ URL.GET_USER_LIST;
+    public static final String loginUrl8004 = URL.HTTP_HEAD +"172.20.10.3:8004"+ URL.USER_LOGIN;
+    public static final String getDxListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_DIANXIAN_QINGCE_LIST;
+    public static final String getLujingListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_LIST;
 // 后端 TODO: 同个用户下，路径名称要唯一
 
 }

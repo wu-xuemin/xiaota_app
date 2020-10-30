@@ -66,18 +66,26 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
         /**
          * 不同的数据，显示不同的内容，比如在备选电线列表里，不需要显示删除按钮
          */
-        if(dataList.get(position).getFlag().equals(Constant.FLAG_QINGCE_DX)) {
+        if(dataList.get(position).getFlag().equals(Constant.FLAG_QINGCE_DX)) { //清册
             itemView.deleteBt.setVisibility(View.VISIBLE);
             itemView.dxTobeSelectCheckBox.setVisibility(View.GONE);
             itemView.modelTv.setVisibility(View.GONE);
             itemView.steelHoseRedundancyTv.setVisibility(View.GONE);
             itemView.xinshuJiemianTv.setVisibility(View.GONE);
-        } else if(dataList.get(position).getFlag().equals(Constant.FLAG_RELATED_DX) ) {
+        } else if(dataList.get(position).getFlag().equals(Constant.FLAG_RELATED_DX) ) { // 已关联
             itemView.deleteBt.setVisibility(View.VISIBLE);
             itemView.dxTobeSelectCheckBox.setVisibility(View.GONE);
-        } else if(dataList.get(position).getFlag().equals(Constant.FLAG_TOBE_SELECT_DX)) {
+            itemView.modelTv.setVisibility(View.GONE);
+            itemView.steelHoseRedundancyTv.setVisibility(View.GONE);
+            itemView.xinshuJiemianTv.setVisibility(View.GONE);
+        } else if(dataList.get(position).getFlag().equals(Constant.FLAG_TOBE_SELECT_DX)) { // 可选
             itemView.deleteBt.setVisibility(View.GONE);
             itemView.dxTobeSelectCheckBox.setVisibility(View.VISIBLE);
+
+            itemView.modelTv.setVisibility(View.GONE);
+            itemView.steelHoseRedundancyTv.setVisibility(View.GONE);
+            itemView.xinshuJiemianTv.setVisibility(View.GONE);
+            itemView.dxLengthTv.setVisibility(View.GONE);
         }
     }
 

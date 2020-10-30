@@ -210,9 +210,10 @@ public class Network {
                                     if (responseData.getCode() == 200) {
 
                                         for (int k = 0; k < responseData.getData().getPaths().size(); k++) {
-                                            success = true;
+//                                            success = true;
                                             msg.obj = responseData.getData().getPaths();
                                         }
+                                        success = true;//
                                     } else if (responseData.getCode() == 400) {
                                         Log.e(TAG, responseData.getMessage());
                                         Log.d(TAG, "fetchLujingListData run: error 400 :" + responseData.getMessage());
@@ -295,11 +296,12 @@ public class Network {
                                     if (responseData.getCode() == 200) {
 
                                         for (int k = 0; k < responseData.getData().getWires().size(); k++) {
-                                            success = true;
+//                                            success = true;
                                             String serial_number = responseData.getData().getWires().get(k).getSerial_number();
                                             Log.i("aaa", "serial_number is " + serial_number);
                                             msg.obj = responseData.getData().getWires();
                                         }
+                                        success = true;//
                                     } else if (responseData.getCode() == 400) {
                                         Log.e(TAG, responseData.getMessage());
                                         Log.d(TAG, "fetchDxListData run: error 400 :" + responseData.getMessage());
@@ -501,7 +503,7 @@ public class Network {
             }
         }
     }
- 
+
     /**
      * 添加新路径， values里 name-xxx
      */
@@ -769,11 +771,12 @@ public class Network {
                                     if (responseData.getCode() == 200) {
 
                                         for (int k = 0; k < responseData.getData().getWires().size(); k++) {
-                                            success = true;
+//                                            success = true;
                                             String serial_number = responseData.getData().getWires().get(k).getSerial_number();
                                             Log.i("aaa", "serial_number is " + serial_number);
                                             msg.obj = responseData.getData().getWires();
                                         }
+                                        success = true;//
                                     } else if (responseData.getCode() == 400) {
                                         Log.e(TAG, responseData.getMessage());
                                         Log.d(TAG, "fetchDxListOfLujing run: error 400 :" + responseData.getMessage());

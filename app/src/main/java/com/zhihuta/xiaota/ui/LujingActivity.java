@@ -396,7 +396,7 @@ public class LujingActivity extends AppCompatActivity {
                 }
             } else {
                 String errorMsg = (String) msg.obj;
-                Log.d(TAG, "errorMsg");
+                Log.d(TAG, errorMsg);
                 Toast.makeText(LujingActivity.this, "获取该路径的 间距列表失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
         }
@@ -408,7 +408,12 @@ public class LujingActivity extends AppCompatActivity {
             super.handleMessage(msg);
             if (msg.what == Network.OK) {
                 ShowMessage.showToast(LujingActivity.this,"添加路径成功！",ShowMessage.MessageDuring.SHORT);
-
+                /**
+                 * 解析获取路径的ID , 因为有可能在新建路径之后，马上就去添加间距，需要用到ID
+                 */
+                String idStr = ((LinkedTreeMap) msg.obj).get("id").toString(); ///  {errorCode=0.0, id=56.0}
+                int lujingID = Double.valueOf(idStr).intValue();
+                mNewLujing.setId(lujingID);
                 Intent intent =getIntent();
                 intent.setClass(LujingActivity.this, Main.class);
                 intent.putExtra("mNewLujing", (Serializable) mNewLujing);
