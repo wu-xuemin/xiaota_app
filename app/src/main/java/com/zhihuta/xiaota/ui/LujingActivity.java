@@ -236,7 +236,7 @@ public class LujingActivity extends AppCompatActivity {
                     LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
                     mPostValue.put("name", new Gson().toJson(mOldBasedNewLujing.getName()));
                     String theUrl = modifyLujingUrl.replace("{id}", String.valueOf(mOldBasedNewLujing.getId()));
-                    mNetwork.modifyLujingName(modifyLujingUrl, mPostValue, new ModifyLujingHandler());
+                    mNetwork.addNewLujing(theUrl, mPostValue, new AddNewLujingBaseOnExistHandler());
                 } else if (mRequestCodeFromMain == Constant.REQUEST_CODE_MODIFY_LUJING) {
                     TextInputEditText lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
                     mLujingDataToBeModified.setName(lujingNameTv.getText().toString());
@@ -244,9 +244,9 @@ public class LujingActivity extends AppCompatActivity {
                     mLujingDataToBeModified.setCreate_time(new Date());
 
                     LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-                    mPostValue.put("name", new Gson().toJson(mOldBasedNewLujing.getName()));
-                    String theUrl = modifyLujingUrl.replace("{id}", String.valueOf(mOldBasedNewLujing.getId()));
-                    mNetwork.modifyLujingName(modifyLujingUrl, mPostValue, new ModifyLujingHandler());
+                    mPostValue.put("name", new Gson().toJson(mLujingDataToBeModified.getName()));
+                    String theUrl = modifyLujingUrl.replace("{id}", String.valueOf(mLujingDataToBeModified.getId()));
+                    mNetwork.modifyLujingName(theUrl, mPostValue, new ModifyLujingHandler());
                 }
 
 
@@ -478,4 +478,22 @@ public class LujingActivity extends AppCompatActivity {
             }
         }
     }
+
+    @SuppressLint("HandlerLeak")
+    class AddNewLujingBaseOnExistHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == Network.OK) {
+                Intent intent =getIntent();
+                intent.setClass(LujingActivity.this, Main.class);
+                intent.putExtra("mOldBasedNewLujing", (Serializable) mOldBasedNewLujing);
+                LujingActivity.this.setResult(RESULT_OK, intent);
+                LujingActivity.this.finish();
+            }else {
+                ShowMessage.showDialog(LujingActivity.this,"基于旧路径新增路径出错！请检查网络！");
+            }
+        }
+    }
+
 }

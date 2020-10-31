@@ -196,6 +196,7 @@ public class RelatedDxActivity extends AppCompatActivity {
 
                 if (mDianxianList == null) {
                     Log.d(TAG, "handleMessage: " + "路径的电线数量为0或异常"  );
+                    mDianxianList = new ArrayList<>();
                 } else {
                     if (mDianxianList.size() == 0) {
                         Toast.makeText(RelatedDxActivity.this, "已关联的电线数量为0！", Toast.LENGTH_SHORT).show();

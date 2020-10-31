@@ -411,6 +411,15 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     };
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+        mPostValue.put("account","z"); ///TODO
+        mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, getDxListHandler);///ok
+        mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
+
+    }
 
 
     //处理Tab的点击事件
@@ -551,6 +560,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

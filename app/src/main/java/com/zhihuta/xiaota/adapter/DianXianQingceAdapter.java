@@ -137,10 +137,10 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
         void onItemLongClick(View v);
     }
 
-    private DianXianQingceAdapter.OnItemClickListener mOnItemClickListener;//声明自定义的接口
+    private OnItemClickListener mOnItemClickListener;//声明自定义的接口
 
     //定义方法并传给外面的使用者
-    public void setOnItemClickListener(DianXianQingceAdapter.OnItemClickListener listener) {
+    public void setOnItemClickListener(OnItemClickListener listener) {
         this.mOnItemClickListener  = listener;
     }
 
@@ -149,12 +149,13 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
         int position = (int) v.getTag();      //getTag()获取数据
         if (mOnItemClickListener != null) {
             switch (v.getId()){
-//                case R.id.rv_dx_:
-//                    mOnItemClickListener.onItemClick(v, DianXianQingceAdapter.ViewName.PRACTISE, position);
-//                    break;
-//                case R.id.rv_dx_tobeSelect:
-//                    mOnItemClickListener.onItemClick(v, DianXianQingceAdapter.ViewName.PRACTISE, position);
-//                    break;
+			// todo 
+                case R.id.rv_dx:
+                    mOnItemClickListener.onItemClick(v, DianXianQingceAdapter.ViewName.PRACTISE, position);
+                    break;
+                case R.id.rv_dx_tobeSelect:
+                    mOnItemClickListener.onItemClick(v, DianXianQingceAdapter.ViewName.DX_TO_BE_SELECT, position);
+                    break;
                 default:
                     mOnItemClickListener.onItemClick(v, DianXianQingceAdapter.ViewName.ITEM, position);
                     break;

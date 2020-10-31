@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
+import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
@@ -52,7 +53,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
 
         mNetwork = Network.Instance(getApplication());
         initViews();
-        showTobeSelectedDxList();
+//        showTobeSelectedDxList();
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -67,6 +68,11 @@ public class RelateNewDxActivity extends AppCompatActivity {
 
     private void initViews() {
 
+        mDxRV = (RecyclerView) findViewById(R.id.rv_dx_tobeSelect);
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
+        mDxRV.setLayoutManager(manager);
+
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
         mPostValue.put("account","z");
         mPostValue.put("password", "a");
@@ -74,33 +80,10 @@ public class RelateNewDxActivity extends AppCompatActivity {
         /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
         mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, new GetDxListHandler());///ok
         mDianxianTobeSelectList = new ArrayList<>();
-//        for(int i=0; i<10; i++) {
-//            DianxianQingCeData mDxData1 = new DianxianQingCeData(); //这个放在循环外面，所有mDxData1对象 会被编译优化成最后一个对象的
-//            mDxData1.setId(i);
-//            mDxData1.setSerial_number("DX22候选" + i);
-//            mDxData1.setStart_point("乌鲁木齐" + i);
-//            mDxData1.setEnd_point("北京B点" + i);
-//            mDxData1.setParts_code("型号S" + i);
-//            mDxData1.setLength("3100km" +i);
-//            mDxData1.setWickes_cross_section("4X180");
-//            mDxData1.setSteel_redundancy("55M");
-//            mDxData1.setHose_redundancy("15M");
-//            mDxData1.setFlag(Constant.FLAG_TOBE_SELECT_DX);
-////        mDxData1.setHoseRedundancy("5M");
-//
-//            mDianxianTobeSelectList.add(mDxData1);
-//            Log.d("newDx", "mDxData1 getDxNumber:" + mDxData1.getSerial_number());
-//
-//            /**
-//             * 备选的电线，初始状态都是未选
-//             */
-//            checkedList.add(false);
-//        }
         mOkTobeSelectBt = (Button) findViewById(R.id.button_OK_to_add_dxTobeSelect22 );
         mOkTobeSelectBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 for(int k=0; k< checkedList.size(); k++){
                     if(checkedList.get(k)){
                         //该电线由待选 改为 已选
@@ -111,11 +94,12 @@ public class RelateNewDxActivity extends AppCompatActivity {
                 }
                 Intent intent = getIntent();
                 intent.setClass(RelateNewDxActivity.this, RelatedDxActivity.class);
-                intent.putExtra("mCheckedDxList", (Serializable) mCheckedDxList);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("mCheckedDxList", (Serializable) mCheckedDxList);
+                intent.putExtras(bundle);
 
                 RelateNewDxActivity.this.setResult(RESULT_OK, intent);
                 RelateNewDxActivity.this.finish();
-
             }
         });
     }
@@ -140,11 +124,14 @@ public class RelateNewDxActivity extends AppCompatActivity {
                     }
                     for (int k = 0; k < mDianxianTobeSelectList.size(); k++) {
                         mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_TOBE_SELECT_DX);
+                        checkedList.add(false); //初始时都是未选中。
                     }
                     mDianXianToBeSelectedAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList, RelateNewDxActivity.this);
                     mDxRV.addItemDecoration(new DividerItemDecoration(RelateNewDxActivity.this, DividerItemDecoration.VERTICAL));
                     mDxRV.setAdapter(mDianXianToBeSelectedAdapter);
                     mDianXianToBeSelectedAdapter.notifyDataSetChanged();
+                    mDianXianToBeSelectedAdapter.setOnItemClickListener(MyItemClickListener);
+
                 }
             } else {
                 String errorMsg = (String)msg.obj;
@@ -152,18 +139,6 @@ public class RelateNewDxActivity extends AppCompatActivity {
                 Toast.makeText(RelateNewDxActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
         }
-    }
-    private void showTobeSelectedDxList(){
-        //候选的电线列表
-        mDxRV = (RecyclerView) findViewById(R.id.rv_dx_tobeSelect);
-        LinearLayoutManager manager = new LinearLayoutManager(this);
-        manager.setOrientation(LinearLayoutManager.VERTICAL);
-        mDxRV.setLayoutManager(manager);
-        mDianXianToBeSelectedAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList,this);
-        mDxRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        mDxRV.setAdapter(mDianXianToBeSelectedAdapter);
-        // 设置item及item中控件的点击事件
-        mDianXianToBeSelectedAdapter.setOnItemClickListener(MyItemClickListener);
     }
 
     /**
