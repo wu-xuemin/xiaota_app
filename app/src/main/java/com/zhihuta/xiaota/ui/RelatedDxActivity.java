@@ -26,6 +26,7 @@ import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -76,14 +77,8 @@ public class RelatedDxActivity extends AppCompatActivity {
     private void initViews() {
 
         Intent intent = getIntent();
-        //3种情况
-        if(intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING)) {
-            mLujing = (LujingData) getIntent().getExtras().getSerializable("mNewLujing");
-        } else if (intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_MODIFY_LUJING)) {
-            mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujingDataToBeModified");
-        } else if (intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST)) {
-            mLujing = (LujingData) getIntent().getExtras().getSerializable("mOldBasedNewLujing");
-        }
+        mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+
 
         /**
          * 获取该路径的电线列表
@@ -105,6 +100,7 @@ public class RelatedDxActivity extends AppCompatActivity {
                                          @Override
                                          public void onClick(View view) {
                                              Intent intent = new Intent(RelatedDxActivity.this, RelateNewDxActivity.class);
+                                             intent.putExtra("mLujing", (Serializable) mLujing);
                                              startActivityForResult(intent,RELATE_NEW_DX);
                                          }
                                      });

@@ -45,6 +45,7 @@ public class Network {
     @SuppressLint("StaticFieldLeak")
     private static Application mCtx;
     private static ThreadPoolExecutor executor;
+    private static final MediaType typeJSON = MediaType.parse("application/json;charset=utf-8");
     //    private static final int CORE_THREAD_NUM = 3;
     private static final int CORE_THREAD_NUM = 1;
     public static final int OK = 1;
@@ -432,7 +433,7 @@ public class Network {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        MediaType type = MediaType.parse("application/json;charset=utf-8");
+
                         RequestBody requestBody;
                         FormBody.Builder builder = new FormBody.Builder();
 
@@ -447,7 +448,7 @@ public class Network {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        requestBody = RequestBody.create(type, obj.toString());
+                        requestBody = RequestBody.create(typeJSON, obj.toString());
 
 
                         //Post method
@@ -520,14 +521,13 @@ public class Network {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        MediaType type = MediaType.parse("application/json;charset=utf-8");
                         JSONObject obj = new JSONObject();
                         try {
                             obj.put("name", values.get("name"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        RequestBody RequestBody2 = RequestBody.create(type, obj.toString());
+                        RequestBody RequestBody2 = RequestBody.create(typeJSON, obj.toString());
 
                         OkHttpClient client =((XiaotaApp) mCtx).getOKHttpClient();;
                         Request request = new Request.Builder()
@@ -543,7 +543,7 @@ public class Network {
                                 Gson gson = new Gson();
                                 MsgFailResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken< MsgFailResponseDataWrap >() {}.getType());
                                 if (responseData != null) {
-                                    Log.d(TAG, "putLujingDistance run: " + responseData.getCode());
+                                    Log.d(TAG, "addNewLujing run: " + responseData.getCode());
                                     if (responseData.getCode() == 200) {
                                         success = true;
                                         msg.obj = responseData.getData(); //成功时，后端返回路径的ID.  {errorCode=0.0, id=56.0}
@@ -588,7 +588,7 @@ public class Network {
         }
     }
     // 删除路径，  ids 如 "1,2,3,4"
-    public void deleteLujing(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
+    public void deleteLujing(final String url, final JSONObject  IDs, final Handler handler) {
         final Message msg = handler.obtainMessage();
         if (!isNetworkConnected()) {
             ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
@@ -596,18 +596,13 @@ public class Network {
             msg.obj = mCtx.getString(R.string.network_not_connect);
             handler.sendMessage(msg);
         } else {
-            if (url != null && values != null) {
+            if (url != null && IDs != null) {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        MediaType type = MediaType.parse("application/json;charset=utf-8");
                         JSONObject obj = new JSONObject();
-                        try {
-                            obj.put("ids", values.get("ids"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        RequestBody RequestBody2 = RequestBody.create(type, obj.toString());
+
+                        RequestBody RequestBody2 = RequestBody.create(typeJSON, IDs.toString());
 
                         OkHttpClient client =((XiaotaApp) mCtx).getOKHttpClient();;
                         Request request = new Request.Builder()
@@ -680,14 +675,13 @@ public class Network {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        MediaType type = MediaType.parse("application/json;charset=utf-8");
                         JSONObject obj = new JSONObject();
                         try {
                             obj.put("name", values.get("name"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        RequestBody RequestBody2 = RequestBody.create(type, obj.toString());
+                        RequestBody RequestBody2 = RequestBody.create(typeJSON, obj.toString());
 
                         OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();;
                         Request request = new Request.Builder()
@@ -736,14 +730,13 @@ public class Network {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        MediaType type = MediaType.parse("application/json;charset=utf-8");
                         JSONObject obj = new JSONObject();
                         try {
                             obj.put("qr_id", values.get("qr_id"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        RequestBody RequestBody2 = RequestBody.create(type, "" + obj);
+                        RequestBody RequestBody2 = RequestBody.create(typeJSON, "" + obj);
 
                         OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();;
                         Request request = new Request.Builder()
@@ -808,6 +801,89 @@ public class Network {
         }
     }
 
+    /**
+     * 关联电线
+     */
+    public void putPathWires(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
+        final Message msg = handler.obtainMessage();
+        if (!isNetworkConnected()) {
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = mCtx.getString(R.string.network_not_connect);
+            handler.sendMessage(msg);
+        } else {
+            if (url != null && values != null) {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject obj = new JSONObject();
+                        try {
+                            obj.put("wires_id", values.get("wires_id"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        RequestBody RequestBody2 = RequestBody.create(typeJSON, "" + obj);
+
+                        OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+                        ;
+                        Request request = new Request.Builder()
+                                // 指定访问的服务器地址
+                                .url(url).put(RequestBody2)
+                                .build();
+                        Response response = null;
+                        try {
+                            //同步网络请求
+                            response = client.newCall(request).execute();
+                            boolean success = false;
+                            if (response.isSuccessful()) {
+                                Gson gson = new Gson();
+                                MsgFailResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<MsgFailResponseDataWrap>() {
+                                }.getType());
+                                if (responseData != null) {
+                                    Log.d(TAG, "putPathWires run: " + responseData.getCode());
+                                    if (responseData.getCode() == 200) {
+                                        success = true;
+//                                        msg.obj = responseData.getData().getList();
+                                        msg.obj = responseData.getMessage();
+                                    } else if (responseData.getCode() == 400) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    } else if (responseData.getCode() == 500) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        Log.d(TAG, "putPathWires run: error 500 :" + responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    } else {
+                                        msg.obj = responseData.getMessage(); //后端添加失败时，比如二维码已经存在在该路径中。返回的message会包含这个信息
+                                        Log.e(TAG, "putPathWires Format JSON string to object error!");
+                                    }
+                                }
+
+                                if (success) {
+                                    msg.what = OK;
+                                }
+
+                            } else {
+                                msg.what = NG;
+                                msg.obj = "网络请求错误！";
+                                Log.e(TAG, "putPathWires 网络请求错误");
+                            }
+                            response.close();
+                        } catch (Exception e) {
+                            msg.what = NG;
+                            msg.obj = "Network error!";
+                            Log.d(TAG, "putPathWires run: network error!");
+                        } finally {
+                            handler.sendMessage(msg);
+                            if (response != null) {
+                                response.close();
+                            }
+                        }
+
+                    }
+                });
+            }
+        }
+    }
     //获取某路径的电线列表，不是所有电线
     public void fetchDxListOfLujing(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
         final Message msg = handler.obtainMessage();

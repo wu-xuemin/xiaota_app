@@ -19,8 +19,8 @@ import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
-import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
 
@@ -32,18 +32,22 @@ public class RelateNewDxActivity extends AppCompatActivity {
 
     private static String TAG = "RelateNewDxActivity";
     private ArrayList<DianxianQingCeData> mDianxianTobeSelectList;
-    private Button mOkTobeSelectBt;
-
+    private Button mAddBt;
+    private Button mBackBt;
     private Network mNetwork;
+
     private DianXianQingceAdapter mDianXianToBeSelectedAdapter;
     private  RecyclerView mDxRV;
     private ArrayList<Boolean> checkedList = new ArrayList<>(); //用于记录哪些被选中了
-    // 选中的电线，传回去
+    // 选中的电线，
     private ArrayList<DianxianQingCeData> mCheckedDxList = new ArrayList<>();
+    private LujingData mLujing;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_relate_new_dx);
+        Intent intent = getIntent();
+        mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
         //返回前页按钮
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -80,10 +84,14 @@ public class RelateNewDxActivity extends AppCompatActivity {
         /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
         mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, new GetDxListHandler());///ok
         mDianxianTobeSelectList = new ArrayList<>();
-        mOkTobeSelectBt = (Button) findViewById(R.id.button_OK_to_add_dxTobeSelect22 );
-        mOkTobeSelectBt.setOnClickListener(new View.OnClickListener() {
+        mAddBt = (Button) findViewById(R.id.button_OK_to_add_dxTobeSelect22 ); // 添加 按钮
+        mBackBt = (Button) findViewById(R.id.button4 ); //返回按钮
+        mAddBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /**
+                 * 添加所有选中的电线，如何刷新列表
+                 */
                 for(int k=0; k< checkedList.size(); k++){
                     if(checkedList.get(k)){
                         //该电线由待选 改为 已选
@@ -92,18 +100,40 @@ public class RelateNewDxActivity extends AppCompatActivity {
                     }
 
                 }
-                Intent intent = getIntent();
-                intent.setClass(RelateNewDxActivity.this, RelatedDxActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("mCheckedDxList", (Serializable) mCheckedDxList);
-                intent.putExtras(bundle);
 
-                RelateNewDxActivity.this.setResult(RESULT_OK, intent);
+                /**
+                 * 在本页添加到服务端，不要传回到路径页面去。
+                 */
+                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                String IDs = null;
+                for(int j=0; j<mCheckedDxList.size(); j++) { //  "wires_id":[ 814,815]
+                    if(j == 0) {
+                        IDs = String.valueOf(mCheckedDxList.get(j).getId());
+                    } else {
+                        IDs = IDs + "," + String.valueOf(mCheckedDxList.get(j).getId());
+                    }
+                }
+                mPostValue.put("wires_id", IDs);
+                String theUrl = Constant.putDxOfLujingUrl.replace("{lujingId}", String.valueOf(mLujing.getId()));
+                mNetwork.putPathWires(theUrl, mPostValue, new PutDxHandler());
+
+                ///todo 刷新列表 ？ 否则用户不清楚哪些已经加过了，或者回去电线界面时删除多余的。
+
+            }
+        });
+        mBackBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 RelateNewDxActivity.this.finish();
+
             }
         });
     }
 
+    @SuppressLint("HandlerLeak")
+    class PutDxHandler extends Handler {
+//todo
+    }
     @SuppressLint("HandlerLeak")
     class GetDxListHandler extends Handler {
         @Override

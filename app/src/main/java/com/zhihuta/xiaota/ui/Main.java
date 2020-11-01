@@ -384,7 +384,8 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
                             mLujingToPass.setName(et.getText().toString());
-                            mPostValue.put("name", new Gson().toJson(mLujingToPass.getName()));
+//                            mPostValue.put("name", new Gson().toJson(mLujingToPass.getName()));
+                            mPostValue.put("name",  (mLujingToPass.getName()));
                             mNetwork.addNewLujing(Constant.addNewLujingUrl, mPostValue, new LujingHandler());
                         }
                     })
@@ -402,7 +403,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
                             mLujingToPass.setName(et.getText().toString());
-                            mPostValue.put("name", new Gson().toJson(mLujingToPass.getName()));
+                            mPostValue.put("name", mLujingToPass.getName());
                             mNetwork.addNewLujing(Constant.addNewLujingUrl, mPostValue, new LujingHandler());
                         }
                     })
@@ -502,10 +503,11 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     Toast.makeText(Main.this,"你点击了 删除路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
                     //TODO 警告之后再删除
                     LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-                    mPostValue.put("ids",new Gson().toJson(  "[" + String.valueOf(mLujingList.get(position).getId()) + "]"));
-                    mPostValue.put("ids", "[" + String.valueOf(mLujingList.get(position).getId()) + "]");
+//                    mPostValue.put("ids", "[" + String.valueOf(mLujingList.get(position).getId()) + "]" );
+//                    mPostValue.put("ids", "[" + String.valueOf(mLujingList.get(position).getId()) + "]");
+                    String IDs = "[" + String.valueOf(mLujingList.get(position).getId()) + "]";
                     /// TODO : 删除失败
-                    mNetwork.deleteLujing(Constant.deleteLujingUrl, mPostValue, new DeleteLujingHandler());
+//                    mNetwork.deleteLujing(Constant.deleteLujingUrl, new Gson().toJson(IDs), new DeleteLujingHandler());
 
                     break;
                 default:
