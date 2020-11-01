@@ -55,7 +55,6 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
     private ArrayList<DistanceData> mScanResultDistanceList = new ArrayList<>();
     private Network mNetwork;
 
-    private String putLujingDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.PUT_LUJING_DISTANCE;
 
     //从路径界面传给扫描界面的路径信息，在该路径里添加扫描获得的间距
     private LujingData mLujing;
@@ -174,7 +173,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
          */
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
         mPostValue.put("qr_id", new Gson().toJson(distanceData.getQr_id()));
-        String url = putLujingDistanceUrl.replace("lujingID", String.valueOf(mLujing.getId()));
+        String url = Constant.putLujingDistanceUrl.replace("lujingID", String.valueOf(mLujing.getId()));
         mNetwork.putLujingDistance(url, mPostValue, new PutLujingDistanceHandler());
     }
 

@@ -587,6 +587,84 @@ public class Network {
             }
         }
     }
+    // 删除路径，  ids 如 "1,2,3,4"
+    public void deleteLujing(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
+        final Message msg = handler.obtainMessage();
+        if (!isNetworkConnected()) {
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = mCtx.getString(R.string.network_not_connect);
+            handler.sendMessage(msg);
+        } else {
+            if (url != null && values != null) {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        MediaType type = MediaType.parse("application/json;charset=utf-8");
+                        JSONObject obj = new JSONObject();
+                        try {
+                            obj.put("ids", values.get("ids"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        RequestBody RequestBody2 = RequestBody.create(type, obj.toString());
+
+                        OkHttpClient client =((XiaotaApp) mCtx).getOKHttpClient();;
+                        Request request = new Request.Builder()
+                                .url(url).delete(RequestBody2)
+                                .build();
+                        Response response = null;
+                        try {
+                            //同步网络请求
+                            response = client.newCall(request).execute();
+                            boolean success = false;
+                            if (response.isSuccessful()) {
+                                Gson gson = new Gson();
+                                MsgFailResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken< MsgFailResponseDataWrap >() {}.getType());
+                                if (responseData != null) {
+                                    Log.d(TAG, "deleteLujing run: " + responseData.getCode());
+                                    if (responseData.getCode() == 200) {
+                                        success = true;
+                                        msg.obj = responseData.getData(); //成功时，后端返回路径的ID.  {errorCode=0.0, id=56.0}
+//
+                                    } else if (responseData.getCode() == 400) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    } else if (responseData.getCode() == 500) {
+                                        Log.e(TAG, responseData.getMessage());
+                                        Log.d(TAG, "deleteLujing run: error 500 :" + responseData.getMessage());
+                                        msg.obj = responseData.getMessage();
+                                    } else {
+                                        msg.obj = responseData.getMessage(); //后端添加失败时，比如二维码已经存在在该路径中。返回的message会包含这个信息
+                                        Log.e(TAG, "deleteLujing Format JSON string to object error!");
+                                    }
+                                }
+
+                                if (success) {
+                                    msg.what = OK;
+                                }
+
+                            } else {
+                                msg.what = NG;
+                                msg.obj = "网络请求错误！";
+                            }
+                            response.close();
+                        } catch (Exception e) {
+                            msg.what = NG;
+                            msg.obj = "Network error!";
+                            Log.d(TAG, "deleteLujing run: network error!");
+                        } finally {
+                            handler.sendMessage(msg);
+                            if (response != null) {
+                                response.close();
+                            }
+                        }
+
+                    }
+                });
+            }
+        }
+    }
     /**
      * 修改 路径的名称
      */

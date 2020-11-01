@@ -23,22 +23,17 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
-import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
-import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import static java.nio.file.Paths.get;
 
@@ -60,11 +55,17 @@ public class LujingActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SCAN_QRCODE_START = 1;
     private static final int REQUEST_CODE_RELATEd_DX =2;
 
+    /**
+     * 基于旧路径 新建路径, 需要对新路径赋值一次旧路径的间距
+     */
+    private boolean isDistanceSetted = false; //只要对
+
 //    private LujingData mNewLujing = new LujingData(); //新建的路径
 //    private LujingData mLujingDataToBeModified = new LujingData(); //待修改的路径
 //    private LujingData mOldBasedNewLujing = new LujingData(); //基于旧路径 新建路径
 
     private LujingData mLujing;
+    private int oldLujingID; ///旧路径的ID，在基于旧路径新建路径时，用到旧路径的间距。
 
     TextInputEditText lujingNameTv;
     @Override
@@ -85,7 +86,6 @@ public class LujingActivity extends AppCompatActivity {
         getDataFromPrev();
         showDistanceList();
         initViews();//初始化控件
-
 
     }
     @Override
@@ -112,9 +112,13 @@ public class LujingActivity extends AppCompatActivity {
             this.setTitle("编辑路径");
             getGetLujingDistanceList(intent);
         }
-        // 在基于已有路径 新建路径
+        // 在基于已有路径 新建路径, 要把旧的间距加到新的路径
         else if(mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ){
             getGetLujingDistanceList(intent);
+            oldLujingID = (int) intent.getExtras().getSerializable("oldLujingID");
+            Log.i(TAG,"oldLujingID: " + oldLujingID);
+
+
         }
     }
     private void initViews() {
@@ -125,10 +129,7 @@ public class LujingActivity extends AppCompatActivity {
         mButtonScanToAddXianduan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = getIntent();
                 Intent intent = new Intent(LujingActivity.this, ZxingScanActivity.class);
-
-                Bundle bundle2 = new Bundle();
                 intent.putExtra("mLujing", (Serializable) mLujing);
                 //运行时权限
                 if (ContextCompat.checkSelfPermission(LujingActivity.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
@@ -182,7 +183,12 @@ public class LujingActivity extends AppCompatActivity {
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
         mPostValue.put("account", "z");
         String theUrl;
-        theUrl = Constant.getLujingDistanceListUrl.replace("lujingID", String.valueOf(mLujing.getId()));
+        //如果是基于旧的路径，还需要把旧路径的间距拿来。
+        if(mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
+            theUrl = Constant.getLujingDistanceListUrl.replace("lujingID", String.valueOf(oldLujingID));
+        } else {
+            theUrl = Constant.getLujingDistanceListUrl.replace("lujingID", String.valueOf(mLujing.getId()));
+        }
         mNetwork.fetchDistanceListOfLujing(theUrl, mPostValue, getLujingDistanceListHandler);
 
     }
@@ -232,7 +238,7 @@ public class LujingActivity extends AppCompatActivity {
                     Toast.makeText(LujingActivity.this,"你点击了 Down 按钮"+(position+1),Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.button_distance_delete:
-                    Toast.makeText(LujingActivity.this, "你点击了 删除 jj 按钮" + (position + 1), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LujingActivity.this, "你点击了 删除路径按钮" + (position + 1), Toast.LENGTH_SHORT).show();
                     //TODO 警告之后再删除??
                     mDistanceList.remove(position);
                     mDistanceAdapter.notifyDataSetChanged();
@@ -272,11 +278,49 @@ public class LujingActivity extends AppCompatActivity {
                     mDistanceAdapter.notifyDataSetChanged();
                     // 设置item及item中控件的点击事件
                     mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
+
+                    /**
+                     * 如果是基于旧的新建，还要加间距到新路径中去
+                     */
+                    if( !isDistanceSetted) {
+                        if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
+                            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                            for (int k = 0; k < mDistanceList.size(); k++) {
+                                String url = Constant.putLujingDistanceUrl.replace("lujingID", String.valueOf(oldLujingID));
+                                mNetwork.putLujingDistance(url, mPostValue, new PutLujingDistanceHandler());
+                            }
+                            isDistanceSetted = true;
+                        }
+                    }
+
                 }
             } else {
                 String errorMsg = (String) msg.obj;
                 Log.d(TAG, errorMsg);
                 Toast.makeText(LujingActivity.this, "获取该路径的 间距列表失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    @SuppressLint("HandlerLeak")
+    class PutLujingDistanceHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == Network.OK) {
+                ShowMessage.showToast(LujingActivity.this,"添加间距成功！",ShowMessage.MessageDuring.SHORT);
+//                //把扫码新加的各个间距加入间距列表
+//                mDistanceList.add(list.get(i));
+//                mDistanceAdapter.notifyDataSetChanged();
+
+            }else {
+
+                if( msg.obj != null){
+                    if( msg.obj.toString().equals("PATH_QRCODE_EXIST")){
+                        ShowMessage.showDialog(LujingActivity.this,"异常！该路径已包含了该二维码" ); //
+                    } else {
+                        ShowMessage.showDialog(LujingActivity.this,"出错！" ); //
+                    }
+                }
             }
         }
     }

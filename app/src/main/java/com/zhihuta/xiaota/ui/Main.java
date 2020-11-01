@@ -177,6 +177,27 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             }
         }
     }
+    @SuppressLint("HandlerLeak")
+    class DeleteLujingHandler extends Handler {
+        @Override
+        public void handleMessage(final Message msg) {
+//            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
+//                mLoadingProcessDialog.dismiss();
+//            }
+//删除路径
+
+            if (msg.what == Network.OK) {
+                Log.d("GetLujingListHandler", "OKKK");
+//                mLujingList.remove(position);
+//                mLujingAdapter.notifyDataSetChanged();
+
+            } else {
+                String errorMsg = (String) msg.obj;
+                Log.d("DeleteLujingHandler NG:", errorMsg);
+                Toast.makeText(Main.this, "路径删除失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     @SuppressLint("HandlerLeak")
     class GetDxListHandler extends Handler {
@@ -317,11 +338,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
 
         mLujingShaixuanList = (ArrayList<LujingData>) bundle.getSerializable("mLujingShaixuanList");
-//        if(mLujingShaixuanList !=null) {
-//            Toast.makeText(this, "    得到    筛选的 路径列表 size:" + mLujingShaixuanList.size(), Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(this, "   路径列表为空！！！" , Toast.LENGTH_SHORT).show();
-//        }
+
         //计算路径，扫描筛选得到的路径列表
         RecyclerView mLujingShaixuanRV = (RecyclerView) findViewById(R.id.rv_lujing_compute);
         LinearLayoutManager manager4 = new LinearLayoutManager(this);
@@ -408,6 +425,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                  */
                 String idStr = ((LinkedTreeMap) msg.obj).get("id").toString(); ///  {errorCode=0.0, id=56.0}
                 int lujingID = Double.valueOf(idStr).intValue();
+                int oldLujingID = mLujingToPass.getId();
                 mLujingToPass.setId(lujingID);
                 Intent intent =getIntent();
 //                intent.setClass(Main.this, Main.class);
@@ -416,6 +434,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 intent.putExtra("requestCode", (Serializable) mRequestCode);
                 intent.putExtra("mLujingToPass", (Serializable) mLujingToPass);
 
+                intent.putExtra("oldLujingID", (Serializable) oldLujingID ); ///旧路径的ID
                 startActivityForResult(intent, mRequestCode);
             }else {
                 ShowMessage.showDialog(Main.this,"添加路径出错！");
@@ -482,8 +501,12 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 case R.id.button_delete_lujing:
                     Toast.makeText(Main.this,"你点击了 删除路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
                     //TODO 警告之后再删除
-                    mLujingList.remove(position);
-                    mLujingAdapter.notifyDataSetChanged();
+                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                    mPostValue.put("ids",new Gson().toJson(  "[" + String.valueOf(mLujingList.get(position).getId()) + "]"));
+                    mPostValue.put("ids", "[" + String.valueOf(mLujingList.get(position).getId()) + "]");
+                    /// TODO : 删除失败
+                    mNetwork.deleteLujing(Constant.deleteLujingUrl, mPostValue, new DeleteLujingHandler());
+
                     break;
                 default:
                     Toast.makeText(Main.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();

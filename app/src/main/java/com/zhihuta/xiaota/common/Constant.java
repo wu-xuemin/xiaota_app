@@ -29,6 +29,8 @@ public class Constant {
     public static final String getLujingDistanceListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_DISTANCE_LIST;
     public static final String addNewLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.POST_ADD_NEW_LUJING;
     public static final String modifyLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.PUT_MODIFY_LUJING_NAME;
+    public static final String putLujingDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.PUT_LUJING_DISTANCE;
+    public static final String deleteLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.DELETE_DELETE_LUJING;
 
 // 后端 TODO: 同个用户下，路径名称要唯一
 
