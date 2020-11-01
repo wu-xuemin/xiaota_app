@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -22,10 +24,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
 import com.zhihuta.xiaota.WeixinFragment;
@@ -35,8 +40,8 @@ import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
-import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
+import com.zhihuta.xiaota.util.ShowMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,7 +54,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private static String TAG = "Main";
     //声明3个Tab的布局文件
     private LinearLayout mTabDxQingce;
-//    private LinearLayout mTabFrd;
+    //    private LinearLayout mTabFrd;
     private LinearLayout mTabLujingMoxing;
     private LinearLayout mTabJisuan;
 
@@ -96,6 +101,10 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     private LujingAdapter mLujingAdapter;
     private ArrayList<LujingData> mLujingList = new ArrayList<>();
+    private LujingData mLujingToPass = new LujingData(); //传给下个页面的路径数据
+
+
+    private int mRequestCode = 0;
 
 
     private LujingAdapter mLujingShaixuanAdapter;
@@ -125,7 +134,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         selectTab(1);//默认选中第2个Tab
 
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-        mPostValue.put("account","z");
+        mPostValue.put("account", "z");
         mPostValue.put("password", "a");
         mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
         /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
@@ -146,7 +155,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 Log.d("GetLujingListHandler", "OKKK");
                 mLujingList = (ArrayList<LujingData>) msg.obj;
                 if (mLujingList == null) {
-                    mLujingList = new ArrayList<>(); 
+                    mLujingList = new ArrayList<>();
                     Log.d(TAG, "handleMessage: " + "路径获取异常");
                 } else {
                     if (mLujingList.size() == 0) {
@@ -159,15 +168,16 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 mLujingRV.setAdapter(mLujingAdapter);
                 mLujingAdapter.notifyDataSetChanged();
                 // 设置item及item中控件的点击事件
-                mLujingAdapter.setOnItemClickListener(MyItemClickListener);
+                mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
 
             } else {
-                String errorMsg = (String)msg.obj;
+                String errorMsg = (String) msg.obj;
                 Log.d("GetLujingListHand NG:", errorMsg);
                 Toast.makeText(Main.this, "路径获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
         }
     }
+
     @SuppressLint("HandlerLeak")
     class GetDxListHandler extends Handler {
         @Override
@@ -197,12 +207,13 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 }
 
             } else {
-                String errorMsg = (String)msg.obj;
+                String errorMsg = (String) msg.obj;
                 Log.d("GetDxListHandler NG:", errorMsg);
                 Toast.makeText(Main.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
         }
     }
+
     @SuppressLint("HandlerLeak")
     class GetUserHandler extends Handler {
         @Override
@@ -213,7 +224,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 Log.d("GetUserHandler", "OKKK");
 
             } else {
-                String errorMsg = (String)msg.obj;
+                String errorMsg = (String) msg.obj;
                 Log.d("GetUserHandler NG:", errorMsg);
             }
         }
@@ -272,12 +283,12 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 startActivity(intent);
             }
         });
-        /// 全新路径和基于已有路径 来新建路径，两个是否可以用同个acitivity？？
+        /// 全新路径和基于已有路径 来新建路径
         addTotalNewLujingBt = (Button) findViewById(R.id.button_add_new_lujing);
         addTotalNewLujingBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gotoAddNewLujing(Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING, null);
+                tryGotoLujingActivity(Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING, null);
             }
         });
 
@@ -286,10 +297,10 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         Bundle bundle = intent.getExtras();
         mDianxianQingCeList = (ArrayList<DianxianQingCeData>) bundle.getSerializable("mDianxianQingCeList");
 
-        if(mDianxianQingCeList !=null) {
+        if (mDianxianQingCeList != null) {
             Toast.makeText(this, "得到 电线清单 size:" + mDianxianQingCeList.size(), Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "电线清单 为空！！！" , Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "电线清单 为空！！！", Toast.LENGTH_SHORT).show();
         }
         //电线列表
         mQingceRV = (RecyclerView) findViewById(R.id.rv_dianxian);
@@ -317,36 +328,112 @@ public class Main extends FragmentActivity implements View.OnClickListener {
         manager4.setOrientation(LinearLayoutManager.VERTICAL);
         mLujingShaixuanRV.setLayoutManager(manager4);
 //        mLujingShaixuanAdapter = new LujingAdapter(mLujingShaixuanList);
-        mLujingShaixuanAdapter = new LujingAdapter(mLujingShaixuanList,this);
-        mLujingShaixuanRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        mLujingShaixuanAdapter = new LujingAdapter(mLujingShaixuanList, this);
+        mLujingShaixuanRV.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         mLujingShaixuanRV.setAdapter(mLujingShaixuanAdapter);
 
-        mLayoutQingCe = (LinearLayout)findViewById(R.id.layout_dianxian_qingce_id);
+        mLayoutQingCe = (LinearLayout) findViewById(R.id.layout_dianxian_qingce_id);
 //        mLayoutOrder = (LinearLayout)findViewById(R.id.layout_order_id);
-        mLayoutLujing = (LinearLayout)findViewById(R.id.layout_lujing);
+        mLayoutLujing = (LinearLayout) findViewById(R.id.layout_lujing);
 
-        mLayoutCompute = (LinearLayout)findViewById(R.id.layout_compute);
-        mLayoutComputeDx = (LinearLayout)findViewById(R.id.layout_compute_dianxian);
-        mLayoutComputeDistance = (LinearLayout)findViewById(R.id.layout_compute_dis);
+        mLayoutCompute = (LinearLayout) findViewById(R.id.layout_compute);
+        mLayoutComputeDx = (LinearLayout) findViewById(R.id.layout_compute_dianxian);
+        mLayoutComputeDistance = (LinearLayout) findViewById(R.id.layout_compute_dis);
 
         initViewsCompute();
         initViewsLujing();
     }
-    //
-    private void gotoAddNewLujing(int requestCode, LujingData tobeModifiedOrBasedLujing){
-        Intent intent = new Intent(Main.this, LujingActivity.class);
 
+    /**
+     * 在进入路径界面前，如果是 全新新建、基于旧的新建，包括修改路径， 都应该先让用户设置好路径名称。
+     * 如果在路径界面临时写路径名称，会有很多逻辑。
+     */
+    private void tryGotoLujingActivity(int requestCode, LujingData lujingData) {
+        mRequestCode = requestCode;
+        /**
+         * 在主界面定好路径名称后，无论是哪种模式，都应该确保有路径数据
+         * 新建路径 -- 要创建,创建成功了再跳转
+         * 基于旧路径 新建路径 --要创建,创建成功了再跳转
+         * 修改路径 -- 要更新路径 -->暂时先不修改名称， 直接跳转
+         */
+        if (mRequestCode == Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING ) {
+            final EditText et = new EditText(this);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Main.this);
+            alertDialogBuilder.setTitle("输入路径名称：")
+                    .setView(et)
+                    .setNegativeButton("取消", null)
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                            mLujingToPass.setName(et.getText().toString());
+                            mPostValue.put("name", new Gson().toJson(mLujingToPass.getName()));
+                            mNetwork.addNewLujing(Constant.addNewLujingUrl, mPostValue, new LujingHandler());
+                        }
+                    })
+                    .show();
+        } else if ( mRequestCode == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
 
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("requestCode", (Serializable) requestCode);
-        if(requestCode == Constant.REQUEST_CODE_MODIFY_LUJING || requestCode == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST){
-            //如果是修改路径或者基于旧路径，需要把路径信息传过去
-            bundle.putSerializable("tobeModifiedOrBasedLujing",tobeModifiedOrBasedLujing);
+            mLujingToPass = lujingData;
+            final EditText et = new EditText(this);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Main.this);
+            alertDialogBuilder.setTitle("输入路径名称：")
+                    .setView(et)
+                    .setNegativeButton("取消", null)
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                            mLujingToPass.setName(et.getText().toString());
+                            mPostValue.put("name", new Gson().toJson(mLujingToPass.getName()));
+                            mNetwork.addNewLujing(Constant.addNewLujingUrl, mPostValue, new LujingHandler());
+                        }
+                    })
+                    .show();
+        } else {
+            mLujingToPass = lujingData;
+            FinalGotoLujingActivity(); // 编辑路径
         }
+    }
 
+    @SuppressLint("HandlerLeak")
+    class LujingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == Network.OK) {
+                ShowMessage.showToast(Main.this,"添加路径成功！",ShowMessage.MessageDuring.SHORT);
+                /**
+                 * 解析获取路径的ID ,
+                 */
+                String idStr = ((LinkedTreeMap) msg.obj).get("id").toString(); ///  {errorCode=0.0, id=56.0}
+                int lujingID = Double.valueOf(idStr).intValue();
+                mLujingToPass.setId(lujingID);
+                Intent intent =getIntent();
+//                intent.setClass(Main.this, Main.class);
+                intent.setClass(Main.this, LujingActivity.class);
+
+                intent.putExtra("requestCode", (Serializable) mRequestCode);
+                intent.putExtra("mLujingToPass", (Serializable) mLujingToPass);
+
+                startActivityForResult(intent, mRequestCode);
+            }else {
+                ShowMessage.showDialog(Main.this,"添加路径出错！");
+            }
+        }
+    }
+
+    /**
+     * 真正带着数据切换到路径界面
+     */
+    private void FinalGotoLujingActivity(){
+        Intent intent = new Intent(Main.this, LujingActivity.class);
+        Bundle bundle = new Bundle();
+
+        bundle.putSerializable("requestCode", (Serializable) mRequestCode);
+        bundle.putSerializable("mLujingToPass", mLujingToPass);
         intent.putExtras(bundle);
-//                startActivity(intent);
-        startActivityForResult(intent, requestCode);
+        startActivityForResult(intent, mRequestCode);
     }
     private void initViewsCompute() {
         mComputeScanBt = (Button) findViewById(R.id.button_compute_scan);
@@ -377,7 +464,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     }
 
     /**
-     * item＋item里的控件点击监听事件
+     * 路径Adapter里item的控件点击监听事件
      */
     private LujingAdapter.OnItemClickListener MyItemClickListener = new LujingAdapter.OnItemClickListener() {
 
@@ -387,10 +474,10 @@ public class Main extends FragmentActivity implements View.OnClickListener {
             switch (v.getId()){
                 case R.id.button_modify_lujing:
 //                    Toast.makeText(Main.this,"你点击了 修改路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
-                    gotoAddNewLujing(Constant.REQUEST_CODE_MODIFY_LUJING, mLujingList.get(position)); ///这里的id为000000000
+                    tryGotoLujingActivity(Constant.REQUEST_CODE_MODIFY_LUJING, mLujingList.get(position)); ///这里的id为000000000
                     break;
                 case R.id.button_create_lujing_base_exist:
-                    gotoAddNewLujing(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST, mLujingList.get(position));
+                    tryGotoLujingActivity(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST, mLujingList.get(position));
                     break;
                 case R.id.button_delete_lujing:
                     Toast.makeText(Main.this,"你点击了 删除路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();

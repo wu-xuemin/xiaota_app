@@ -100,25 +100,10 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             });
 
         Intent intent = getIntent();
-        //3种情况
-        if(intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING)) {
-            mLujing = (LujingData) getIntent().getExtras().getSerializable("mNewLujing");
-        } else if (intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_MODIFY_LUJING)) {
-            mLujing = (LujingData) getIntent().getExtras().getSerializable("mLujingDataToBeModified");
-        } else if (intent.getExtras().getSerializable("requestCode").equals(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST)) {
-            mLujing = (LujingData) getIntent().getExtras().getSerializable("mOldBasedNewLujing");
-        }
+        mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
     }
 
-    public void sendQrMsgBack(){
-        Intent intent = getIntent();
-        intent.setClass(ZxingScanActivity.this, LujingActivity.class);
-        intent.putExtra("mScanResultDistanceList", (Serializable) mScanResultDistanceList);
 
-//        intent.putExtra("mScanResultDistanceList", mScanResultDistanceList);
-        ZxingScanActivity.this.setResult(RESULT_OK, intent);
-
-    }
 
     @Override
     protected void onStart() {

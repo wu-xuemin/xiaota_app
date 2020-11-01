@@ -117,13 +117,14 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.LujingView
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(View v) { ///这里的v是item里的Button, 统一传到外部Mian里处理。
         int position = (int) v.getTag();      //getTag()获取数据
         if (mOnItemClickListener != null) {
             switch (v.getId()){
-                case R.id.rv_lujing:
-                    mOnItemClickListener.onItemClick(v, ViewName.PRACTISE, position);
-                    break;
+//                case R.id.rv_lujing:
+//                    mOnItemClickListener.onItemClick(v, ViewName.PRACTISE, position);//
+//                    break;
+
                 default:
                     mOnItemClickListener.onItemClick(v, ViewName.ITEM, position);
                     break;

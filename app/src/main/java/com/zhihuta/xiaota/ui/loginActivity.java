@@ -111,8 +111,10 @@ public class LoginActivity extends AppCompatActivity {
         mLoadingProcessDialog.show();
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
         mPassword=mPasswordText.getText().toString();
-        mPostValue.put("account", mAccountText.getText().toString());
-        mPostValue.put("password", mPassword);
+//        mPostValue.put("account", mAccountText.getText().toString());
+//        mPostValue.put("password", mPassword);
+        mPostValue.put("account", "a");
+        mPostValue.put("password", "a");
 //        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
         Log.d(TAG, "login: IMEI: "+XiaotaApp.getApp().getIMEI());
         if(TextUtils.isEmpty(XiaotaApp.getApp().getServerIP())){
