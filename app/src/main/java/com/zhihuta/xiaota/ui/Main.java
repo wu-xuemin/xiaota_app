@@ -110,7 +110,8 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     private LujingAdapter mLujingShaixuanAdapter;
     private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
 
-    private ArrayList<DistanceData> mDistanceForShaixuanList = new ArrayList<>(); //从扫码筛选获取的间距列表
+//    private ArrayList<DistanceData> mDistanceForShaixuanList = new ArrayList<>(); //从扫码筛选获取的间距列表
+    private boolean isBackFromFilterPath = false;// 是否为从扫码筛选界面返回，如果是，不需要去刷新获取路径
 
     private Network mNetwork;
     private GetUserHandler getUserHandler;
@@ -472,11 +473,16 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(Main.this, ZxingScanActivity.class);
+
 //运行时权限
                     if (ContextCompat.checkSelfPermission(Main.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
                         ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},1);
                     }else {
-                        startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_SHAIXUAN_LUJING);
+                        /**
+                         * requestCode为：
+                         */
+                        intent.putExtra("requestCode", Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING);
+                        startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING);
                     }
                 }
             });
@@ -527,12 +533,25 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     protected void onResume() {
         super.onResume();
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-        mPostValue.put("account","z"); ///TODO
+        mPostValue.put("account", "z"); ///TODO
         mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, getDxListHandler);///ok
-        mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
-
+        /**
+         * 如果是从筛选界面返回，则使用返回的筛选结果，不要去服务器获取。
+         */
+        if (isBackFromFilterPath) {
+            Log.i(TAG, "从筛选返回,不刷新");
+            isBackFromFilterPath = false;
+        } else {
+            Log.i(TAG, "不是从筛选返回,要刷新");
+            mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
+        }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG,"main Destroyed!");
+    }
 
     //处理Tab的点击事件
     @Override
@@ -674,6 +693,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
     }
 
 
+    /// todo 这里只有筛选的要留着，其他的应该可以删除
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -689,17 +709,21 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     mLujingAdapter.notifyDataSetChanged();
                 }
                 break;
-                case Constant.REQUEST_CODE_SCAN_TO_SHAIXUAN_LUJING:
+                case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING:
                 if (resultCode == RESULT_OK) {
-                    // 取出Intent里的  间距信息
-                    List<DistanceData> list = (List<DistanceData>) data.getSerializableExtra("mScanResultDistanceList");
-                    for(int i =0; i<list.size(); i++ ) {
-                        Toast.makeText(this, " 扫码获得的间距信息1：" + list.get(i).getName(), Toast.LENGTH_LONG).show();
-                        //把扫码新加的各个间距加入间距列表
-                        mDistanceForShaixuanList.add(list.get(i));
-                        //todo 根据这些间距 筛选
-//                        mDistanceAdapter.notifyDataSetChanged();
-                    }
+                    isBackFromFilterPath = true;
+                    //把筛选结果返回给主页面
+                    ArrayList<LujingData> list = (ArrayList<LujingData>) data.getSerializableExtra("mFilterLujingList");
+                    mLujingList = (ArrayList<LujingData>) list.clone();
+
+                    Toast.makeText(this, " 筛选得到" + mLujingList.size() + " 条路径", Toast.LENGTH_LONG).show();
+
+                    //要重新绑定adapter 否则界面的路径不会更新
+                    mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
+                    mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                    mLujingRV.setAdapter(mLujingAdapter);
+                    mLujingAdapter.notifyDataSetChanged();
+                    mLujingAdapter.setOnItemClickListener(MyItemClickListener);
                 }
                 break;
 

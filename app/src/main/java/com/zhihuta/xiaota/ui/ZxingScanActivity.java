@@ -52,17 +52,19 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
      * 多次扫码的结果 放到String ArrayList里, 每个String 是一个Json， 包含了二维码里的各项信息
      */
 //    private List<String> mScanResultList = new ArrayList<>();
-    private ArrayList<DistanceData> mScanResultDistanceList = new ArrayList<>();
     private Network mNetwork;
 
 
     //从路径界面传给扫描界面的路径信息，在该路径里添加扫描获得的间距
     private LujingData mLujing;
+    private int mRequestCodeFroPrev; //可能来自主界面，可能来自路径界面
+    private ArrayList<DistanceData> mScanResultDistanceList = new ArrayList<>();
+    private ArrayList<LujingData> mFilterLujingList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zxing_scan);
-
+        getDataFromPrev();
         mNetwork = Network.Instance(getApplication());
         //返回前页按钮
         ActionBar actionBar = getSupportActionBar();
@@ -92,17 +94,45 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "点击了结束按钮");
-                //在扫描页面 已经 保存到了数据库，
-//                sendQrMsgBack();
-                ZxingScanActivity.this.finish();
+
+                if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING) {
+                    Log.i(TAG, "筛选路径");
+                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                    mPostValue.put("account","z"); ///TODO
+
+                    String qrIDs = null;
+                    for(int j=0;j<mScanResultDistanceList.size();j++) {
+                        if(j == 0) {
+                            qrIDs = String.valueOf(mScanResultDistanceList.get(j).getQr_id());
+                        } else {
+                            qrIDs = qrIDs + "," + String.valueOf(mScanResultDistanceList.get(j).getQr_id());
+                        }
+                    }
+                    String  theUrl = Constant.getFilterLujingListUrl.replace("qrIDs",qrIDs); ///paths?qr_ids=qrIDs
+                    mNetwork.fetchLujingListData(theUrl, mPostValue, new FilterPathHandler());//ok
+
+                } else {
+                    /**
+                     * 如果是 添加路径，在扫描页面 已经 保存到了数据库，直接关闭
+                     */
+                    ZxingScanActivity.this.finish();
+                }
             }
             });
 
-        Intent intent = getIntent();
-        mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
     }
 
-
+    private void getDataFromPrev() {
+        Intent intent = getIntent();
+//        mRequestCodeFroPrev = (int) intent.getExtras().getSerializable("requestCode");
+        mRequestCodeFroPrev = intent.getIntExtra("requestCode", 0);
+        if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING) {
+            //如果是从主界面筛选，不需要传路径到本页
+            Log.i(TAG, "筛选路径");
+        } else {
+            mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+        }
+    }
 
     @Override
     protected void onStart() {
@@ -116,11 +146,11 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
         mStopScanTimer.schedule(new Runnable() {
             @Override
             public void run() {
-                ToastUtils.showShort("扫描失败，切换至手动模式！");
+//                ToastUtils.showShort("扫描失败，切换至手动模式！");
                 mQRCodeView.post(new Runnable() {
                     @Override
                     public void run() {
-                        mQRCodeView.stopSpot(); /// 关闭扫描
+//                        mQRCodeView.stopSpot(); /// 关闭扫描
 //                        showDialog(null);
                     }
                 });
@@ -168,13 +198,21 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
         Gson gson = new Gson();
         DistanceData distanceData = gson.fromJson(result, DistanceData.class);
 
-        /**
-         * 每次扫码成功，都尝试把二维码加入到路径
-         */
-        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-        mPostValue.put("qr_id", new Gson().toJson(distanceData.getQr_id()));
-        String url = Constant.putLujingDistanceUrl.replace("lujingID", String.valueOf(mLujing.getId()));
-        mNetwork.putLujingDistance(url, mPostValue, new PutLujingDistanceHandler());
+        if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING) {
+            /**
+             * 把二维码 累积起来，用于退出时筛选路径
+             */
+            mScanResultDistanceList.add(distanceData);
+
+        } else {
+            /**
+             * 每次扫码成功，都尝试把二维码加入到路径
+             */
+            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+            mPostValue.put("qr_id", new Gson().toJson(distanceData.getQr_id()));
+            String url = Constant.putLujingDistanceUrl.replace("lujingID", String.valueOf(mLujing.getId()));
+            mNetwork.putLujingDistance(url, mPostValue, new PutLujingDistanceHandler());
+        }
     }
 
     @SuppressLint("HandlerLeak")
@@ -200,6 +238,37 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             }
         }
     }
+    @SuppressLint("HandlerLeak")
+    class FilterPathHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == Network.OK) {
+                mFilterLujingList = (ArrayList<LujingData>) msg.obj;
+                if (mFilterLujingList == null) {
+                    Log.d(TAG, "筛选 得到路径数量为0或者异常"  );
+                } else {
+                    ShowMessage.showToast(ZxingScanActivity.this, "筛选 得到路径数量：" + mFilterLujingList.size(), ShowMessage.MessageDuring.SHORT);
+                    /**
+                     * 把筛选结果返回给主页面
+                     */
+                    Intent intent = new Intent();
+                    intent.putExtra("mFilterLujingList", mFilterLujingList);
+                    setResult(RESULT_OK, intent);
+                }
+                finish();
+            } else {
+
+                if (msg.obj != null) {
+//                    if( msg.obj.toString().equals("PATH_QRCODE_EXIST")){
+//                        ShowMessage.showDialog(ZxingScanActivity.this,"异常！该路径已包含了该二维码" ); //
+//                    } else {
+                    ShowMessage.showDialog(ZxingScanActivity.this, "筛选路径出错！"); //
+                }
+            }
+        }
+    }
+
     @Override
     public void onScanQRCodeOpenCameraError() {
         Log.e(TAG, "open camera fail!");

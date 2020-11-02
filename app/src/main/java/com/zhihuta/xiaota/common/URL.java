@@ -19,6 +19,7 @@ public class URL {
 
     public static final String GET_DX_OF_LUJING = "/paths/{lujingId}/wires?serial_number={dxSN}&parts_code={dxPartsCode}"; //serial_number:电线编号 parts_code:型号
     public static final String PUT_DX_OF_LUJING = "/paths/{lujingId}/wires"; // 参数为电线ID列表  "wires_id":[ 1,2,3]
+    public static final String GET_FILTER_LUJING_BY_QR ="/paths?qr_ids=qrIDs"; // 筛选路径 /paths?name={}&qr_ids={1,2,3}&order_by={}&try_scope={}&offset={}&limit={}
 
 
 }

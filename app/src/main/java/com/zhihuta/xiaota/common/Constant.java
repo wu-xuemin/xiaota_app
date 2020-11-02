@@ -14,7 +14,7 @@ public class Constant {
     public static String FLAG_QINGCE_DX = "清册中的电线"; // 这个和 候选电线 是一样的，只是显示在清册中。
 
     public static final int REQUEST_CODE_ADD_TOTAL_NEW_LUJING = 1;            //路径中心，添加 全新 新路径
-    public static final int REQUEST_CODE_SCAN_TO_SHAIXUAN_LUJING = 2;    //路径中心，扫码筛选路径
+    public static final int REQUEST_CODE_SCAN_TO_FILTER_LUJING = 2;    //路径中心，扫码筛选路径
 
     public static final int REQUEST_CODE_MODIFY_LUJING = 3;                 //路径中心，修改已有路径
     public static final int REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST = 4;  //路径中心，基于已有路径， 新建路径
@@ -24,6 +24,7 @@ public class Constant {
     public static final String loginUrl8004 = URL.HTTP_HEAD +"172.20.10.3:8004"+ URL.USER_LOGIN;
     public static final String getDxListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_DIANXIAN_QINGCE_LIST;
     public static final String getLujingListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_LIST;
+    public static final String getFilterLujingListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_FILTER_LUJING_BY_QR;
 
     //获取 路径对应的间距列表 (编辑路径时，或 在基于已有路径 新建路径时)
     public static final String getLujingDistanceListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_DISTANCE_LIST;

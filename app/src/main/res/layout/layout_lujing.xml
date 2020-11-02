@@ -23,7 +23,7 @@
                 android:id="@+id/button_scan_lujing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="扫描" />
+                android:text="扫码筛选" />
 
             <SearchView
                 android:layout_width="wrap_content"

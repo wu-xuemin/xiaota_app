@@ -161,7 +161,7 @@ public class LujingActivity extends AppCompatActivity {
         mButtonOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 不用传数据回主界面，每个界面在会自己刷新。
+                // 不用传数据回主界面，每个界面在会自己刷新。--筛选路径界面除外，筛选路径后要把筛选结果返回主界面
                 LujingActivity.this.finish();
                 }
         });

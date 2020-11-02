@@ -151,11 +151,12 @@ public class XiaotaApp extends Application {
             this.role = Integer.valueOf(readValue(PersistentValueType.ROLE, "0"));
         }
         this.ip = readValue(PersistentValueType.SERVICE_IP, "");
-        this.ip = "192.168.31.133:8083";
+//        this.ip = "192.168.31.133:8083";
+//        this.ip = "192.168.1.138:8083";
 //        this.ip = "10.0.2.2:8080";
 //模拟器
 //        this.ip = "10.0.2.2:8004";
-//        this.ip = "172.20.10.3:8083";
+        this.ip = "172.20.10.3:8083";
 //        this.ip = "47.114.157.108:8083";
         String appUserIdStr = readValue(PersistentValueType.USER_ID, "0");
         if ("".equals(appUserIdStr)){
