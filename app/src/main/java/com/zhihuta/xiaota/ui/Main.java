@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,9 +28,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.internal.LinkedTreeMap;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
@@ -37,7 +39,6 @@ import com.zhihuta.xiaota.WeixinFragment;
 import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
-import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
@@ -46,7 +47,6 @@ import com.zhihuta.xiaota.util.ShowMessage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 //public class DianxianQingCe extends AppCompatActivity {
 public class Main extends FragmentActivity implements View.OnClickListener {
@@ -91,6 +91,8 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     private Button mComputeScanBt; //计算中心主界面的扫码按钮
     private Button mLujingScanBt; //路径主界面的扫码按钮，用于 筛选出需要查看或者编辑的路径, 扫的越多码筛选出的路径越精确.
+    private Button mLujingResetBt; //路径主界面的重置按钮
+    private SearchView mSearchView;
 
     private DianXianQingceAdapter mDxQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
@@ -188,7 +190,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 //删除路径
 
             if (msg.what == Network.OK) {
-                Log.d("GetLujingListHandler", "OKKK");
+                Log.d("DeleteLujingHandler", "OKKK");
 //                mLujingList.remove(position);
 //                mLujingAdapter.notifyDataSetChanged();
 
@@ -384,10 +386,15 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-                            mLujingToPass.setName(et.getText().toString());
+                            String name = et.getText().toString();
+                            if (name == null || name.isEmpty()) { //不允许名称为空
+                                Toast.makeText(Main.this, "名称不能为空", Toast.LENGTH_SHORT).show();
+                            } else {
+                                mLujingToPass.setName(et.getText().toString());
 //                            mPostValue.put("name", new Gson().toJson(mLujingToPass.getName()));
-                            mPostValue.put("name",  (mLujingToPass.getName()));
-                            mNetwork.addNewLujing(Constant.addNewLujingUrl, mPostValue, new LujingHandler());
+                                mPostValue.put("name", (mLujingToPass.getName()));
+                                mNetwork.addNewLujing(Constant.addNewLujingUrl, mPostValue, new LujingHandler());
+                            }
                         }
                     })
                     .show();
@@ -486,6 +493,28 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     }
                 }
             });
+        mSearchView = (SearchView) findViewById(R.id.searchLujingByName);
+        mSearchView.setQueryHint("查找"); //按名称
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                mPostValue.put("account", "z");
+                String theUrl = Constant.getFilterLujingListByNameUrl.replace("{LujingName}", query);
+                mNetwork.fetchLujingListData(theUrl, mPostValue, getLujingListHandler);//ok
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+//                if (TextUtils.isEmpty(newText))
+//                    lv.clearTextFilter();
+//                else
+//                    lv.setFilterText(newText);
+                return true;
+            }
+        });
+
 
     }
 

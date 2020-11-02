@@ -24,7 +24,9 @@ public class Constant {
     public static final String loginUrl8004 = URL.HTTP_HEAD +"172.20.10.3:8004"+ URL.USER_LOGIN;
     public static final String getDxListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_DIANXIAN_QINGCE_LIST;
     public static final String getLujingListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_LIST;
-    public static final String getFilterLujingListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_FILTER_LUJING_BY_QR;
+    public static final String getFilterLujingListByQrUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_FILTER_LUJING_BY_QR;
+    public static final String getFilterLujingListByNameUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_FILTER_LUJING_BY_NAME;
+
 
     //获取 路径对应的间距列表 (编辑路径时，或 在基于已有路径 新建路径时)
     public static final String getLujingDistanceListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_DISTANCE_LIST;

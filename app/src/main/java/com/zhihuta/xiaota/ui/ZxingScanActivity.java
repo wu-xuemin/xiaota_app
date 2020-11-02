@@ -15,17 +15,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.Gson;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
-import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -108,7 +105,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                             qrIDs = qrIDs + "," + String.valueOf(mScanResultDistanceList.get(j).getQr_id());
                         }
                     }
-                    String  theUrl = Constant.getFilterLujingListUrl.replace("qrIDs",qrIDs); ///paths?qr_ids=qrIDs
+                    String  theUrl = Constant.getFilterLujingListByQrUrl.replace("qrIDs",qrIDs); ///paths?qr_ids=qrIDs
                     mNetwork.fetchLujingListData(theUrl, mPostValue, new FilterPathHandler());//ok
 
                 } else {
