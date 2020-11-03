@@ -43,7 +43,7 @@ public class RelatedDxActivity extends AppCompatActivity {
     private static final int RELATE_NEW_DX = 1;
 
     private Network mNetwork;
-    String getDxListOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_DX_OF_LUJING;
+    String getDxListOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DX_OF_LUJING;
     //从路径界面传给电线界面的路径信息，在电线界面查看已绑定的电线，也在该路径里添加电线
     private LujingData mLujing;
 

@@ -25,19 +25,18 @@ public class Constant {
 
     public static final String getUserListUrl8004 = URL.HTTP_HEAD + "172.20.10.3:8004"+ URL.GET_USER_LIST;
     public static final String loginUrl8004 = URL.HTTP_HEAD +"172.20.10.3:8004"+ URL.USER_LOGIN;
-    public static final String getDxListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_DIANXIAN_QINGCE_LIST;
-    public static final String getLujingListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_LIST;
-    public static final String getFilterLujingListByQrUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_FILTER_LUJING_BY_QR;
-    public static final String getFilterLujingListByNameUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_FILTER_LUJING_BY_NAME;
-
+    public static final String getDxListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DIANXIAN_QINGCE_LIST;
+    public static final String getLujingListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_LUJING_LIST;
+    public static final String getFilterLujingListByQrUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_FILTER_LUJING_BY_QR;
+    public static final String getFilterLujingListByNameUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_FILTER_LUJING_BY_NAME;
 
     //获取 路径对应的间距列表 (编辑路径时，或 在基于已有路径 新建路径时)
-    public static final String getLujingDistanceListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.GET_LUJING_DISTANCE_LIST;
-    public static final String addNewLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.POST_ADD_NEW_LUJING;
-    public static final String modifyLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.PUT_MODIFY_LUJING_NAME;
-    public static final String putLujingDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.PUT_LUJING_DISTANCE;
-    public static final String deleteLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.DELETE_DELETE_LUJING;
-    public static final String putDxOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.PUT_DX_OF_LUJING;
+    public static final String getLujingDistanceListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_LUJING_DISTANCE_LIST;
+    public static final String addNewLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING;
+    public static final String modifyLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.PUT_MODIFY_LUJING_NAME;
+    public static final String putLujingDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.PUT_LUJING_DISTANCE;
+    public static final String deleteLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.DELETE_DELETE_LUJING;
+    public static final String putDxOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.PUT_DX_OF_LUJING;
 
 // 后端 TODO: 同个用户下，路径名称要唯一
 

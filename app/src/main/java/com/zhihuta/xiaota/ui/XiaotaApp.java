@@ -43,8 +43,9 @@ public class XiaotaApp extends Application {
     private String account;//用户账号
     private String fullname; //用户姓名
     private String password; //用户密码
-    private int role; //用户角色
-    private String ip;
+    private String roles[]; //用户角色
+    private String ip="47.114.157.108";
+    private String port="8083";
     private int appUserId;
     private int groupId;
     private String groupName;
@@ -83,6 +84,7 @@ public class XiaotaApp extends Application {
         IS_LOGIN,   //是否登录
         ROLE,        //角色
         SERVICE_IP,  //服务器地址
+        SERVICE_PORT,  //服务器端口
         USER_ID,     //用户id
         GROUP_ID,
         GROUP_NAME,
@@ -131,33 +133,56 @@ public class XiaotaApp extends Application {
         mSharedPrefs = getSharedPreferences( SHARED_PREFS_FILENAME, 0 );
         mPrefEditor = mSharedPrefs.edit();
 
-        try {
-            String name = readValue(PersistentValueType.FULL_NAME,null);
-            if( name != null ) {
-                fullname = name;
-            }
-        } catch(Exception e) {
-            fullname = null;
-        }
 
         this.isLogined  = Boolean.valueOf(readValue(PersistentValueType.IS_LOGIN, "0"));
         this.account = readValue(PersistentValueType.ACCOUNT, "");
         this.password = readValue(PersistentValueType.PASSWORD, "");
         this.fullname = readValue(PersistentValueType.FULL_NAME, "");
-        String roleStr = readValue(PersistentValueType.ROLE, "1");
-        if("".equals(roleStr)) {
-            this.role = 0;
-        }else {
-            this.role = Integer.valueOf(readValue(PersistentValueType.ROLE, "0"));
+        String strRoles = readValue(PersistentValueType.ROLE, "customer_worker").toLowerCase();
+        //roles = "customer_worker,other else... split by ',' "
+         if (!strRoles.isEmpty())
+        {
+            this.roles = strRoles.split(",");
         }
-        this.ip = readValue(PersistentValueType.SERVICE_IP, "");
+        else
+        {
+            this.roles = new String[1];
+            this.roles[0] = "customer_worker";
+        }
+        //}
+
+        this.ip   = readValue(PersistentValueType.SERVICE_IP, "47.114.157.108");
+        if( this.ip.contains(":") )
+        {
+        	this.ip =  this.ip.split(":")[0];
+            this.port = this.ip.split(":")[1];
+        }
+        else
+        {
+            this.port = readValue(PersistentValueType.SERVICE_PORT, "8083");
+        }
+        if (false)
+        {//for debug purpose
+            this.ip = "192.168.31.133";
+            this.port = "8083";
+//        this.ip = "10.0.2.2:8080";
+//模拟器
+//        this.ip = "10.0.2.2:8004";
+//        this.ip = "172.20.10.3:8083";
+///        this.ip = "47.114.157.108:8083";
+        }
+
+        if (false)
+        {//自己调试时可以打开设为true， 并改下面的ip地址
 //        this.ip = "192.168.31.133:8083";
 //        this.ip = "192.168.1.138:8083";
 //        this.ip = "10.0.2.2:8080";
 //模拟器
 //        this.ip = "10.0.2.2:8004";
-        this.ip = "172.20.10.3:8083";
+            this.ip = "172.20.10.3:8083";
 //        this.ip = "47.114.157.108:8083";
+        }
+
         String appUserIdStr = readValue(PersistentValueType.USER_ID, "0");
         if ("".equals(appUserIdStr)){
             this.appUserId =0;
@@ -179,9 +204,12 @@ public class XiaotaApp extends Application {
         IMEI = null;
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
         if (telephonyManager != null) {
-//           IMEI = telephonyManager.getDeviceId();
+           IMEI = telephonyManager.getDeviceId();
 //模拟器
-                       IMEI = "AVDAVD7890AVDAV";
+            if(false)
+            {
+                IMEI = "AVDAVD7890AVDAV";
+            }
         } else {
             Log.d(TAG, "getIMEI: have some error");
         }
@@ -194,7 +222,7 @@ public class XiaotaApp extends Application {
      * @param account
      * @param fullname
      */
-    public void setIsLogined(boolean isLogined, String account, String fullname, String password, int role, int appUserId, int groupId, String groupName, String groupType) {
+    public void setIsLogined(boolean isLogined, String account, String fullname, String password, String role, int appUserId, int groupId, String groupName, String groupType) {
         writePreferenceValue(PersistentValueType.IS_LOGIN, String.valueOf(isLogined));
         writePreferenceValue(PersistentValueType.ACCOUNT, account);
         writePreferenceValue(PersistentValueType.FULL_NAME, fullname);
@@ -210,7 +238,7 @@ public class XiaotaApp extends Application {
             this.account = account;
             this.fullname = fullname;
             this.password = password;
-            this.role = role;
+            this.roles = role.split(",");
             this.appUserId=appUserId;
             this.groupId=groupId;
             this.groupName=groupName;
@@ -237,7 +265,7 @@ public class XiaotaApp extends Application {
             //this.account = "";
             this.fullname = "";
             this.password = "";
-            this.role = -1;
+            this.roles = new String[0];
             this.appUserId = 0;
             this.groupId = 0;
             this.groupName = "";
@@ -347,8 +375,8 @@ public class XiaotaApp extends Application {
         return password;
     }
 
-    public int getRole() {
-        return role;
+    public String[] getRoles() {
+        return roles;
     }
 
     public int getAppUserId() {
@@ -367,11 +395,11 @@ public class XiaotaApp extends Application {
         return groupType;
     }
 
-    public String getServerIP() {
+    private String getServerIP() {
         return ip;
     }
 
-    public void setServerIP(String ipStr) {
+    private void setServerIP(String ipStr) {
         writePreferenceValue(PersistentValueType.SERVICE_IP, ipStr);
         try {
             commitValues();
@@ -380,6 +408,41 @@ public class XiaotaApp extends Application {
             e.printStackTrace();
         }
     }
+
+    //return string like 127.0.0.1:8083
+    public String getServerIPAndPort() {
+        return ip+":"+port;
+    }
+
+    //string like 127.0.0.1:8083 or 127.0.0.1 or domain likely,it will save to ip and port variables
+    public void setServerIPAndPort(String ipAndPortStr) {
+
+        try {
+
+            if (ipAndPortStr.isEmpty())
+            {
+                return;
+            }
+            if (ipAndPortStr.contains(":"))
+            {
+                this.ip = ipAndPortStr.split(":")[0];
+                this.port = ipAndPortStr.split(":")[1];
+            }
+            else
+            {
+                this.ip = ipAndPortStr;
+                this.port = "8083";//default
+            }
+
+            writePreferenceValue(PersistentValueType.SERVICE_IP, this.ip);
+            writePreferenceValue(PersistentValueType.SERVICE_IP, this.port);
+            commitValues();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public CacheUtils getCache() {
         return mCache;

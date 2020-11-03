@@ -117,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
         mPostValue.put("password", "a");
 //        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
         Log.d(TAG, "login: IMEI: "+XiaotaApp.getApp().getIMEI());
-        if(TextUtils.isEmpty(XiaotaApp.getApp().getServerIP())){
+        if(TextUtils.isEmpty(XiaotaApp.getApp().getServerIPAndPort())){
             if(mLoadingProcessDialog.isShowing()) {
                 mLoadingProcessDialog.dismiss();
             }
@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "login: 未获取到手机IMEI");
         }
         else {
-            String loginUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIP() + URL.USER_LOGIN;
+            String loginUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_LOGIN;
             ///test
             mNetwork.fetchLoginData(loginUrl, mPostValue, mLoginHandler);
 //            onLoginSuccess(null);
@@ -323,7 +323,7 @@ public class LoginActivity extends AppCompatActivity {
                 LinearLayout layout = (LinearLayout) View.inflate(LoginActivity.this, R.layout.dialog_ip_setting, null);
                 final EditText editText = (EditText)layout.findViewById(R.id.ip_value);
                 //读取保存的IP地址
-                String temp = XiaotaApp.getApp().getServerIP();
+                String temp = XiaotaApp.getApp().getServerIPAndPort();
                 Log.d(TAG, "onOptionsItemSelected: "+temp);
                 mIPSettngDialog = new AlertDialog.Builder(LoginActivity.this).create();
                 mIPSettngDialog.setTitle("服务端IP设置");
@@ -342,7 +342,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         try {
                             Log.d(TAG, "onClick: 输入ip："+editText.getText().toString());
-                            XiaotaApp.getApp().setServerIP(editText.getText().toString());
+                            XiaotaApp.getApp().setServerIPAndPort(editText.getText().toString());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
