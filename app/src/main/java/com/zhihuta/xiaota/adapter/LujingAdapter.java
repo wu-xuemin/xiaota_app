@@ -13,12 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.LujingData;
+import com.zhihuta.xiaota.common.Constant;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 //MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyViewHolder> implements View.OnClickListener{
 
-public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.LujingViewHolder> implements View.OnClickListener {
+public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLujingViewHolder> implements View.OnClickListener {
     private SimpleDateFormat sf3 = new SimpleDateFormat("yy/MM/dd");
     private static String TAG = "LujingAdapter";
 //    private ArrayList<LujingData> mLujingAdapter;
@@ -26,34 +27,56 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.LujingView
 //        mLujingAdapter = list;
 //    }
 
-    private List<LujingData> list;//数据源
+    private List<LujingData> dataList;//数据源
     private Context context;//上下文
 
     /// 这里，传数据
     public LujingAdapter(List<LujingData> list, Context context) {
-        this.list = list;
+        this.dataList = list;
         this.context = context;
     }
 
     @NonNull
     @Override
-    public LujingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ItemViewLujingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_lujing,parent,false);
-        return new LujingViewHolder(view);
+        return new ItemViewLujingViewHolder(view);
     }
 
     //绑定数据
     @Override
-    public void onBindViewHolder(@NonNull LujingViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ItemViewLujingViewHolder holder, int position) {
 
-        LujingData data = list.get(position);
+        LujingData data = dataList.get(position);
         holder.lujingNameTv.setText(data.getName());
         holder.lujingCreatedDateTv.setText(sf3.format(data.getCreate_time()));// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
         holder.lujingCreaterTv.setText(data.getCreator());
         holder.modifyLujingBt.setTag(position);
         holder.createLujingBaseOnExistBt.setTag(position);
         holder.deleteLujingBt.setTag(position);
+        holder.calculateWireLengthBt.setTag(position);
+        holder.wiresListBt.setTag(position);
+        holder.exportAccordModelBt.setTag(position);
 
+        final LujingAdapter.ItemViewLujingViewHolder itemView = (LujingAdapter.ItemViewLujingViewHolder) holder;
+
+        if(dataList.get(position).getFlag().equals(Constant.FLAG_LUJING_IN_LUJING)) { //路径模型中
+            itemView.modifyLujingBt.setVisibility(View.VISIBLE);
+            itemView.createLujingBaseOnExistBt.setVisibility(View.VISIBLE);
+            itemView.deleteLujingBt.setVisibility(View.VISIBLE);
+
+            itemView.calculateWireLengthBt.setVisibility(View.GONE);
+            itemView.exportAccordModelBt.setVisibility(View.GONE);
+            itemView.wiresListBt.setVisibility(View.GONE);
+        } else if (dataList.get(position).getFlag().equals(Constant.FLAG_LUJING_IN_CALCULATE)){  //计算模型中
+            itemView.modifyLujingBt.setVisibility(View.GONE);
+            itemView.createLujingBaseOnExistBt.setVisibility(View.GONE);
+            itemView.deleteLujingBt.setVisibility(View.GONE);
+
+            itemView.calculateWireLengthBt.setVisibility(View.VISIBLE);
+            itemView.exportAccordModelBt.setVisibility(View.VISIBLE);
+            itemView.wiresListBt.setVisibility(View.VISIBLE);
+        }
     }
 
 //    @Override
@@ -67,11 +90,11 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.LujingView
     //有多少个item？
     @Override
     public int getItemCount() {
-        return list.size();
+        return dataList.size();
     }
 
     //创建LujingViewHolder继承RecyclerView.ViewHolder
-    public class LujingViewHolder extends RecyclerView.ViewHolder{
+    public class ItemViewLujingViewHolder extends RecyclerView.ViewHolder{
         TextView lujingNameTv;
         TextView lujingCreatedDateTv;
         TextView lujingCreaterTv;
@@ -79,7 +102,12 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.LujingView
         Button createLujingBaseOnExistBt;
         Button deleteLujingBt;
 
-        LujingViewHolder(View itemView) {
+        //计算界面的路径，包括 “电线长度”、“电线清册”、“按型号汇总”3个按钮
+        Button calculateWireLengthBt;
+        Button wiresListBt;
+        Button exportAccordModelBt;
+
+        ItemViewLujingViewHolder(View itemView) {
             super(itemView);
             lujingNameTv = itemView.findViewById(R.id.lujingMingChenTextView);
             lujingCreatedDateTv = itemView.findViewById(R.id.lujingCreateDateTextView);
@@ -87,11 +115,17 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.LujingView
             modifyLujingBt = itemView.findViewById(R.id.button_modify_lujing);
             createLujingBaseOnExistBt = itemView.findViewById(R.id.button_create_lujing_base_exist);
             deleteLujingBt = itemView.findViewById(R.id.button_delete_lujing);
+            calculateWireLengthBt = itemView.findViewById(R.id.calculateWireLengthBt);
+            wiresListBt = itemView.findViewById(R.id.wiresListBt);
+            exportAccordModelBt = itemView.findViewById(R.id.exportAccordModelBt);
 
             // 为ItemView添加点击事件
             modifyLujingBt.setOnClickListener(LujingAdapter.this);
             createLujingBaseOnExistBt.setOnClickListener(LujingAdapter.this);
             deleteLujingBt.setOnClickListener(LujingAdapter.this);
+            calculateWireLengthBt.setOnClickListener(LujingAdapter.this);
+            wiresListBt.setOnClickListener(LujingAdapter.this);
+            exportAccordModelBt.setOnClickListener(LujingAdapter.this);
 
         }
     }

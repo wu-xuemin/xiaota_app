@@ -19,7 +19,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,18 +27,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
 import com.zhihuta.xiaota.WeixinFragment;
+import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
+import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
@@ -48,11 +49,16 @@ import com.zhihuta.xiaota.util.ShowMessage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import cn.bingoogolapple.qrcode.core.QRCodeView;
+import cn.bingoogolapple.qrcode.zxing.ZXingView;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 
 //public class DianxianQingCe extends AppCompatActivity {
-public class Main extends FragmentActivity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate {
+public class Main extends FragmentActivity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate, QRCodeView.Delegate {
 
     private static String TAG = "Main";
     //声明3个Tab的布局文件
@@ -78,11 +84,13 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     // 计算路径的电线长度
     private LinearLayout mLayoutComputeDx;
     // 计算两点的间距长度
-    private LinearLayout mLayoutComputeDistance;
+    private RelativeLayout mLayoutComputeDistance;
     // "计算路径的电线长度" 的按钮
     private Button mComputeDxBt;
     // "计算两点间距" 的按钮
     private Button mComputeDistanceBt;
+    // 计算中心的 扫码按钮
+    private Button mScanInCalculateBt;
 
     // 电线 "手动添加" 按钮
     private Button addDxByHandBt;
@@ -101,10 +109,12 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
     private RecyclerView mQingceRV;
     private RecyclerView mLujingRV;
+    private RecyclerView mLujingInCalculateRV;
 //    private OrderAdapter mOrderAdapter;
 //    private ArrayList<OrderData> mOrderList = new ArrayList<>();
 
-    private LujingAdapter mLujingAdapter;
+    private LujingAdapter mLujingAdapter;               //路径模型的路径的Adapter
+    private LujingAdapter mLujingInCalculateAdapter;    //计算中心的路径的Adapter
     private ArrayList<LujingData> mLujingList = new ArrayList<>();
     private LujingData mLujingToPass = new LujingData(); //传给下个页面的路径数据
 
@@ -112,16 +122,28 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private int mRequestCode = 0;
 
 
-    private LujingAdapter mLujingShaixuanAdapter;
-    private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
+//    private LujingAdapter mLujingShaixuanAdapter;
+//    private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
 
-//    private ArrayList<DistanceData> mDistanceForShaixuanList = new ArrayList<>(); //从扫码筛选获取的间距列表
     private boolean isBackFromFilterPath = false;// 是否为从扫码筛选界面返回，如果是，不需要去刷新获取路径
 
     private Network mNetwork;
     private GetUserHandler getUserHandler;
     private GetDxListHandler getDxListHandler;
     private GetLujingListHandler getLujingListHandler;
+
+
+    private ArrayList<DistanceData> mDistanceListForCalculate = new ArrayList<>(); //从扫码筛选获取的间距列表, 在计算中心
+    private DistanceAdapter mDistanceCalculateAdapter;
+
+    /**
+     * 以下，主界面-计算中心-计算两点距离
+     */
+    private ZXingView mQRCodeView;
+    private ScheduledExecutorService mStopScanTimer;
+    private Button mContinueScanBt;
+    private Button mFinishScanBt;
+    private TextView mDisplayScanResultTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,8 +168,47 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
         mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, getDxListHandler);///ok
         mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
+        initComputeScan();
+    }
+    //计算两点距离 的界面初始化
+    private void initComputeScan(){
+
+        mQRCodeView = (ZXingView) findViewById(R.id.zxingview_in_calculate);
+        mQRCodeView.setDelegate(this);
+        mDisplayScanResultTv = (TextView) findViewById(R.id.textView_display_scan_result_in_calculate);
+        mContinueScanBt = (Button) findViewById(R.id.button_continue_scan_in_calculate);
+        mContinueScanBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mQRCodeView.startCamera();
+                mQRCodeView.showScanRect();
+                Log.d(TAG, "继续扫描");
+                mQRCodeView.startSpot(); ///开启扫描  --要重新开启扫描，否则扫描不出下一个新的二维码
+            }
+        });
+
+        mFinishScanBt = (Button) findViewById(R.id.button_scan_again);
+        mFinishScanBt.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "点击了结束按钮");
+
+            }
+        });
+    }
+
+    @Override
+    public void onScanQRCodeSuccess(String result) {
 
     }
+
+    @Override
+    public void onScanQRCodeOpenCameraError() {
+
+    }
+
 
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
@@ -160,6 +221,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
         return false;
     }
+
 
     @SuppressLint("HandlerLeak")
     class GetLujingListHandler extends Handler {
@@ -178,7 +240,10 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 } else {
                     if (mLujingList.size() == 0) {
                         Toast.makeText(Main.this, "路径数量为0！", Toast.LENGTH_SHORT).show();
-//                    } else {
+                    } else {
+                        for (int k = 0; k < mLujingList.size(); k++) {
+                            mLujingList.get(k).setFlag(Constant.FLAG_LUJING_IN_LUJING);
+                        }
                     }
                 }
                 mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
@@ -187,6 +252,15 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 mLujingAdapter.notifyDataSetChanged();
                 // 设置item及item中控件的点击事件
                 mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+
+                /**
+                 * 计算中心
+                 */
+                mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this);
+                mLujingInCalculateRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
+                mLujingInCalculateAdapter.notifyDataSetChanged();
+                mLujingInCalculateAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
 
             } else {
                 String errorMsg = (String) msg.obj;
@@ -332,16 +406,16 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
             }
         });
 
-        //获取传递过来的信息
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        mDianxianQingCeList = (ArrayList<DianxianQingCeData>) bundle.getSerializable("mDianxianQingCeList");
-
-        if (mDianxianQingCeList != null) {
-            Toast.makeText(this, "得到 电线清单 size:" + mDianxianQingCeList.size(), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "电线清单 为空！！！", Toast.LENGTH_SHORT).show();
-        }
+//        //获取传递过来的信息
+//        Intent intent = getIntent();
+//        Bundle bundle = intent.getExtras();
+//        mDianxianQingCeList = (ArrayList<DianxianQingCeData>) bundle.getSerializable("mDianxianQingCeList");
+//
+//        if (mDianxianQingCeList != null) {
+//            Toast.makeText(this, "得到 电线清单 size:" + mDianxianQingCeList.size(), Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(this, "电线清单 为空！！！", Toast.LENGTH_SHORT).show();
+//        }
         //电线列表
         mQingceRV = (RecyclerView) findViewById(R.id.rv_dianxian);
         LinearLayoutManager manager = new LinearLayoutManager(this);
@@ -353,20 +427,24 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         LinearLayoutManager manager3 = new LinearLayoutManager(this);
         manager3.setOrientation(LinearLayoutManager.VERTICAL);
         mLujingRV.setLayoutManager(manager3);
-//
 
-
-        mLujingShaixuanList = (ArrayList<LujingData>) bundle.getSerializable("mLujingShaixuanList");
-
-        //计算路径，扫描筛选得到的路径列表
-        RecyclerView mLujingShaixuanRV = (RecyclerView) findViewById(R.id.rv_lujing_compute);
+        mLujingInCalculateRV = (RecyclerView) findViewById(R.id.rv_lujing_compute);
         LinearLayoutManager manager4 = new LinearLayoutManager(this);
         manager4.setOrientation(LinearLayoutManager.VERTICAL);
-        mLujingShaixuanRV.setLayoutManager(manager4);
+        mLujingInCalculateRV.setLayoutManager(manager4); //manager4必须有
+
+//
+//        mLujingShaixuanList = (ArrayList<LujingData>) bundle.getSerializable("mLujingShaixuanList");
+
+        //计算路径，扫描筛选得到的路径列表
+//        RecyclerView mLujingShaixuanRV = (RecyclerView) findViewById(R.id.rv_lujing_compute);
+//        LinearLayoutManager manager4 = new LinearLayoutManager(this);
+//        manager4.setOrientation(LinearLayoutManager.VERTICAL);
+//        mLujingShaixuanRV.setLayoutManager(manager4);
 //        mLujingShaixuanAdapter = new LujingAdapter(mLujingShaixuanList);
-        mLujingShaixuanAdapter = new LujingAdapter(mLujingShaixuanList, this);
-        mLujingShaixuanRV.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        mLujingShaixuanRV.setAdapter(mLujingShaixuanAdapter);
+//        mLujingShaixuanAdapter = new LujingAdapter(mLujingShaixuanList, this);
+//        mLujingShaixuanRV.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+//        mLujingShaixuanRV.setAdapter(mLujingShaixuanAdapter);
 
         mLayoutQingCe = (LinearLayout) findViewById(R.id.layout_dianxian_qingce_id);
 //        mLayoutOrder = (LinearLayout)findViewById(R.id.layout_order_id);
@@ -374,7 +452,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
         mLayoutCompute = (LinearLayout) findViewById(R.id.layout_compute);
         mLayoutComputeDx = (LinearLayout) findViewById(R.id.layout_compute_dianxian);
-        mLayoutComputeDistance = (LinearLayout) findViewById(R.id.layout_compute_dis);
+        mLayoutComputeDistance = (RelativeLayout) findViewById(R.id.layout_compute_dis);
 
         initViewsCompute();
         initViewsLujing();
@@ -530,8 +608,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 return true;
             }
         });
-
-
     }
 
     /**
@@ -601,7 +677,10 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
     @Override
     protected void onDestroy() {
+
+        mQRCodeView.onDestroy();
         super.onDestroy();
+
         Log.i(TAG,"main Destroyed!");
     }
 
@@ -614,22 +693,17 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
             case R.id.id_tab_weixin:
                 selectTab(0);//当点击Tab就选中该的Tab
                 break;
-//            case R.id.id_tab_frd:
-//                selectTab(1);
-//                break;
             case R.id.id_tab_lujing_moxing:
                 selectTab(1);
-                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-                mPostValue.put("account","z");
-                mPostValue.put("password", "a");
-                mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
-//                mNetwork.getUserList(getUserListUrl, mPostValue, getUserHandler);
-//                mNetwork.fetchLoginData(loginUrl8004, mPostValue, getUserHandler);          /// OK
-//                mNetwork.fetchUserListData(getUserListUrl8004, mPostValue, getUserHandler); /// oK
-//                mNetwork.fetchDxListData(getDxListUrl8083, mPostValue, getDxListHandler);///ok
-//                mNetwork.fetchLujingListData(getLujingListUrl8083, mPostValue, getLujingListHandler);///ok
-
-
+//                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+//                mPostValue.put("account","z");
+//                mPostValue.put("password", "a");
+//                mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
+////                mNetwork.getUserList(getUserListUrl, mPostValue, getUserHandler);
+////                mNetwork.fetchLoginData(loginUrl8004, mPostValue, getUserHandler);          /// OK
+////                mNetwork.fetchUserListData(getUserListUrl8004, mPostValue, getUserHandler); /// oK
+////                mNetwork.fetchDxListData(getDxListUrl8083, mPostValue, getDxListHandler);///ok
+////                mNetwork.fetchLujingListData(getLujingListUrl8083, mPostValue, getLujingListHandler);///ok
 
 //                mNetwork.getDxList(getDxListUrl, mPostValue, getUserHandler);
 
@@ -650,12 +724,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         //先隐藏所有的Fragment
         hideFragments(transaction);
 
-//        Button addDianxianQinCeButton = (Button) findViewById(R.id.button5);///
-//        Button showDianxianQinCeButton = (Button) findViewById(R.id.button6);///
-//        Button addLujinMoxingButton = (Button) findViewById(R.id.button4);///
-//        Button showLujingMoxingButton = (Button) findViewById(R.id.button7);///
-//        Button calculateDianXianLengthButton = (Button) findViewById(R.id.button8);///
-//        Button showDianXianLengthButton = (Button) findViewById(R.id.button9);///
         switch (i) {
             //当选中点击的是微信的Tab时
             case 0:
@@ -674,6 +742,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 //                mLayoutOrder.setVisibility(View.GONE);
                 mLayoutLujing.setVisibility(View.GONE);
                 mLayoutCompute.setVisibility(View.GONE);
+                stopScan();
                 break;
             case 1:
                 mLayoutQingCe.setVisibility(View.GONE);
@@ -686,7 +755,10 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 } else {
                     transaction.show(mFragLujingMoxing);
                 }
-//                Toast.makeText(this, "按下路径模型", Toast.LENGTH_SHORT).show();
+                for (int k = 0; k < mLujingList.size(); k++) {
+                    mLujingList.get(k).setFlag(Constant.FLAG_LUJING_IN_LUJING);
+                }
+                stopScan();
                 break;
             case 2:
                 mLayoutQingCe.setVisibility(View.GONE);
@@ -702,13 +774,46 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 } else {
                     transaction.show(mFragJisuan);
                 }
-//                Toast.makeText(this, "按下路径计算", Toast.LENGTH_SHORT).show();
+                for (int k = 0; k < mLujingList.size(); k++) {
+                    mLujingList.get(k).setFlag(Constant.FLAG_LUJING_IN_CALCULATE);
+                }
+                startScan();
                 break;
         }
         //不要忘记提交事务
         transaction.commit();
     }
 
+    private void  startScan(){
+
+        if(mQRCodeView != null) {
+            mQRCodeView.startCamera();
+            mQRCodeView.showScanRect();
+            Log.d(TAG, "onStart: startCamera");
+            mQRCodeView.startSpot(); ///开启扫描
+            //org.apache.commons.lang3.concurrent.BasicThreadFactory
+//            mStopScanTimer = new ScheduledThreadPoolExecutor(1);
+//            mStopScanTimer.schedule(new Runnable() {
+//                @Override
+//                public void run() {
+////                ToastUtils.showShort("扫描失败，切换至手动模式！");
+//                    mQRCodeView.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+////                        mQRCodeView.stopSpot(); /// 关闭扫描
+////                        showDialog(null);
+//                        }
+//                    });
+//                }
+//            }, 10, TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopScan(){
+        if(mQRCodeView != null) {
+            mQRCodeView.stopCamera();
+        }
+    }
     //将3个的Fragment隐藏
     private void hideFragments(FragmentTransaction transaction) {
         if (mFragDxQingce != null) {
@@ -744,23 +849,10 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         return super.onOptionsItemSelected(item);
     }
 
-
-    /// todo 这里只有筛选的要留着，其他的应该可以删除
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
-            case Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING:
-                if (resultCode == RESULT_OK) {
-                    // 取出Intent里的新路径信息
-                    LujingData lujingData = (LujingData) data.getSerializableExtra("mNewLujing");
-
-                    Toast.makeText(this, " 新路径名称：" + lujingData.getName(), Toast.LENGTH_LONG).show();
-
-                    mLujingList.add(lujingData);
-                    mLujingAdapter.notifyDataSetChanged();
-                }
-                break;
                 case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING:
                 if (resultCode == RESULT_OK) {
                     isBackFromFilterPath = true;
@@ -779,26 +871,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 }
                 break;
 
-            case Constant.REQUEST_CODE_MODIFY_LUJING:
-                if (resultCode == RESULT_OK) {
-                    // 取出Intent里的新路径信息
-                    LujingData lujingData = (LujingData) data.getSerializableExtra("mLujingDataToBeModified");
-
-                    Toast.makeText(this, " 被修改路径：" + lujingData.getName(), Toast.LENGTH_LONG).show();
-                    mLujingAdapter.notifyDataSetChanged();
-                }
-                break;
-            case Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST:
-                if (resultCode == RESULT_OK) {
-                    // 取出Intent里的新路径信息
-                    LujingData lujingData = (LujingData) data.getSerializableExtra("mOldBasedNewLujing");
-                    //保存到服务器
-                    Toast.makeText(this, " 基于已有路径，新建的新路径名称：" + lujingData.getName(), Toast.LENGTH_LONG).show();
-
-                    mLujingList.add(lujingData);
-                    mLujingAdapter.notifyDataSetChanged();
-                }
-                break;
             default:
                 break;
         }

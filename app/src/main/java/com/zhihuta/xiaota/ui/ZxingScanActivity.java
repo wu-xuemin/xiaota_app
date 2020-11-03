@@ -98,16 +98,20 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                     mPostValue.put("account","z"); ///TODO
 
                     String qrIDs = null;
-                    for(int j=0;j<mScanResultDistanceList.size();j++) {
-                        if(j == 0) {
-                            qrIDs = String.valueOf(mScanResultDistanceList.get(j).getQr_id());
-                        } else {
-                            qrIDs = qrIDs + "," + String.valueOf(mScanResultDistanceList.get(j).getQr_id());
+                    if(mScanResultDistanceList.size() ==0){
+                        //如果没有扫成功，没有任何二维码被累积，则直接返回
+                        finish();
+                    } else {
+                        for (int j = 0; j < mScanResultDistanceList.size(); j++) {
+                            if (j == 0) {
+                                qrIDs = String.valueOf(mScanResultDistanceList.get(j).getQr_id());
+                            } else {
+                                qrIDs = qrIDs + "," + String.valueOf(mScanResultDistanceList.get(j).getQr_id());
+                            }
                         }
+                        String theUrl = Constant.getFilterLujingListByQrUrl.replace("qrIDs", qrIDs); ///paths?qr_ids=qrIDs
+                        mNetwork.fetchLujingListData(theUrl, mPostValue, new FilterPathHandler());//ok
                     }
-                    String  theUrl = Constant.getFilterLujingListByQrUrl.replace("qrIDs",qrIDs); ///paths?qr_ids=qrIDs
-                    mNetwork.fetchLujingListData(theUrl, mPostValue, new FilterPathHandler());//ok
-
                 } else {
                     /**
                      * 如果是 添加路径，在扫描页面 已经 保存到了数据库，直接关闭

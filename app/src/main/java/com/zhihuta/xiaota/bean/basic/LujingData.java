@@ -9,6 +9,22 @@ public class LujingData implements Serializable {
     private String creator; //路径的创建人
     private Date create_time; // 创建日期
 
+    /**
+     * 用于标记不同的场合
+     * 不同的场合 显示不同的图标/按钮等
+     * "InLujingTab"            -- 在路径界面  -- 要显示  修改、新建、删除
+     * "InCalculateTab"         -- 在计算界面   -- 要显示 电线长度等按钮
+     */
+    private String flag; ///
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
+    }
+
     public String getLujingCaozuo() {
         return LujingCaozuo;
     }
