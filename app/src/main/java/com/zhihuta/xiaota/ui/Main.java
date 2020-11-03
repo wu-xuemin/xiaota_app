@@ -32,6 +32,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
@@ -48,8 +49,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
+
 //public class DianxianQingCe extends AppCompatActivity {
-public class Main extends FragmentActivity implements View.OnClickListener {
+public class Main extends FragmentActivity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate {
 
     private static String TAG = "Main";
     //声明3个Tab的布局文件
@@ -146,6 +149,18 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
     }
 
+    @Override
+    public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
+        /**
+         * 每次登录都最新，切从其他页面返回也会刷新，暂时没必要下拉刷新了
+         */
+    }
+
+    @Override
+    public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
+        return false;
+    }
+
     @SuppressLint("HandlerLeak")
     class GetLujingListHandler extends Handler {
         @Override
@@ -191,9 +206,10 @@ public class Main extends FragmentActivity implements View.OnClickListener {
 
             if (msg.what == Network.OK) {
                 Log.d("DeleteLujingHandler", "OKKK");
-//                mLujingList.remove(position);
-//                mLujingAdapter.notifyDataSetChanged();
-
+                //删除后真实刷新列表
+                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                mPostValue.put("account", "z");
+                mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
             } else {
                 String errorMsg = (String) msg.obj;
                 Log.d("DeleteLujingHandler NG:", errorMsg);
@@ -523,6 +539,7 @@ public class Main extends FragmentActivity implements View.OnClickListener {
      */
     private LujingAdapter.OnItemClickListener MyItemClickListener = new LujingAdapter.OnItemClickListener() {
 
+        int positionPass;
         @Override
         public void onItemClick(View v, LujingAdapter.ViewName viewName, int position) {
             //viewName可区分item及item内部控件
@@ -536,14 +553,20 @@ public class Main extends FragmentActivity implements View.OnClickListener {
                     break;
                 case R.id.button_delete_lujing:
                     Toast.makeText(Main.this,"你点击了 删除路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
-                    //TODO 警告之后再删除
-                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-//                    mPostValue.put("ids", "[" + String.valueOf(mLujingList.get(position).getId()) + "]" );
-//                    mPostValue.put("ids", "[" + String.valueOf(mLujingList.get(position).getId()) + "]");
-                    String IDs = "[" + String.valueOf(mLujingList.get(position).getId()) + "]";
-                    /// TODO : 删除失败
-//                    mNetwork.deleteLujing(Constant.deleteLujingUrl, new Gson().toJson(IDs), new DeleteLujingHandler());
-
+                    // 警告之后再删除
+//                    final EditText et = new EditText(Main.this);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Main.this);
+                    alertDialogBuilder.setTitle("确认删除路径 " + mLujingList.get(position).getName() + "吗？" )
+//                            .setView(et)
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    String IDs =  "{ids:[" + String.valueOf(mLujingList.get(positionPass).getId())  + "]}"; /// {ids:[91]}
+                                    mNetwork.deleteLujing(Constant.deleteLujingUrl, IDs, new DeleteLujingHandler());
+                                }
+                            })
+                            .show();
                     break;
                 default:
                     Toast.makeText(Main.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();

@@ -588,7 +588,7 @@ public class Network {
         }
     }
     // 删除路径，  ids 如 "1,2,3,4"
-    public void deleteLujing(final String url, final JSONObject  IDs, final Handler handler) {
+    public void deleteLujing(final String url, final String IDs, final Handler handler) {
         final Message msg = handler.obtainMessage();
         if (!isNetworkConnected()) {
             ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
@@ -600,9 +600,14 @@ public class Network {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        JSONObject obj = new JSONObject();
 
-                        RequestBody RequestBody2 = RequestBody.create(typeJSON, IDs.toString());
+//                        JSONObject obj = new JSONObject();
+//                        try {
+//                            obj.put("ids", IDs.get("ids"));
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+                        RequestBody RequestBody2 = RequestBody.create(typeJSON, IDs);
 
                         OkHttpClient client =((XiaotaApp) mCtx).getOKHttpClient();;
                         Request request = new Request.Builder()
