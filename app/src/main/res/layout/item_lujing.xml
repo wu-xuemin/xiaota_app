@@ -28,7 +28,7 @@
         android:id="@+id/lujingCreateDateTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="4"
+        android:layout_weight="3"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:text="日期" />
@@ -55,26 +55,26 @@
         android:layout_weight="3"
         android:text="删除" />
 
-    <Button
-        android:id="@+id/calculateWireLengthBt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:text="电线长度" />
+<!--    <Button-->
+<!--        android:id="@+id/calculateWireLengthBt"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_weight="3"-->
+<!--        android:text="电线长度" />-->
 
     <Button
         android:id="@+id/wiresListBt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"
-        android:text="电线清册" />
+        android:text="电线" />
 
     <Button
         android:id="@+id/exportAccordModelBt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"
-        android:text="电线型号" />
+        android:text="导出" />
 
 
 </LinearLayout>

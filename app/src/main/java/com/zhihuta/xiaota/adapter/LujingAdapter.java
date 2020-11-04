@@ -54,7 +54,6 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
         holder.modifyLujingBt.setTag(position);
         holder.createLujingBaseOnExistBt.setTag(position);
         holder.deleteLujingBt.setTag(position);
-        holder.calculateWireLengthBt.setTag(position);
         holder.wiresListBt.setTag(position);
         holder.exportAccordModelBt.setTag(position);
 
@@ -65,7 +64,6 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
             itemView.createLujingBaseOnExistBt.setVisibility(View.VISIBLE);
             itemView.deleteLujingBt.setVisibility(View.VISIBLE);
 
-            itemView.calculateWireLengthBt.setVisibility(View.GONE);
             itemView.exportAccordModelBt.setVisibility(View.GONE);
             itemView.wiresListBt.setVisibility(View.GONE);
         } else if (dataList.get(position).getFlag().equals(Constant.FLAG_LUJING_IN_CALCULATE)){  //计算模型中
@@ -73,7 +71,6 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
             itemView.createLujingBaseOnExistBt.setVisibility(View.GONE);
             itemView.deleteLujingBt.setVisibility(View.GONE);
 
-            itemView.calculateWireLengthBt.setVisibility(View.VISIBLE);
             itemView.exportAccordModelBt.setVisibility(View.VISIBLE);
             itemView.wiresListBt.setVisibility(View.VISIBLE);
         }
@@ -102,8 +99,7 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
         Button createLujingBaseOnExistBt;
         Button deleteLujingBt;
 
-        //计算界面的路径，包括 “电线长度”、“电线清册”、“按型号汇总”3个按钮
-        Button calculateWireLengthBt;
+        //计算界面的路径，包括 “电线信息”、“按型号汇总”2个按钮
         Button wiresListBt;
         Button exportAccordModelBt;
 
@@ -115,7 +111,6 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
             modifyLujingBt = itemView.findViewById(R.id.button_modify_lujing);
             createLujingBaseOnExistBt = itemView.findViewById(R.id.button_create_lujing_base_exist);
             deleteLujingBt = itemView.findViewById(R.id.button_delete_lujing);
-            calculateWireLengthBt = itemView.findViewById(R.id.calculateWireLengthBt);
             wiresListBt = itemView.findViewById(R.id.wiresListBt);
             exportAccordModelBt = itemView.findViewById(R.id.exportAccordModelBt);
 
@@ -123,7 +118,6 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
             modifyLujingBt.setOnClickListener(LujingAdapter.this);
             createLujingBaseOnExistBt.setOnClickListener(LujingAdapter.this);
             deleteLujingBt.setOnClickListener(LujingAdapter.this);
-            calculateWireLengthBt.setOnClickListener(LujingAdapter.this);
             wiresListBt.setOnClickListener(LujingAdapter.this);
             exportAccordModelBt.setOnClickListener(LujingAdapter.this);
 

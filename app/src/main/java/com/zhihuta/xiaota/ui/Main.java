@@ -664,6 +664,13 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                             })
                             .show();
                     break;
+
+                case R.id.wiresListBt:
+                    Log.i(TAG,"电线信息" +(position+1));
+                    break;
+                case R.id.exportAccordModelBt:
+                    Log.i(TAG,"电线型号" +(position+1));
+                    break;
                 default:
                     Toast.makeText(Main.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();
                     break;
