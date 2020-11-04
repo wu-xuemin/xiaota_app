@@ -50,8 +50,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import cn.bingoogolapple.qrcode.core.QRCodeView;
 import cn.bingoogolapple.qrcode.zxing.ZXingView;
@@ -144,6 +142,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private Button mContinueScanBt;
     private Button mFinishScanBt;
     private TextView mDisplayScanResultTv;
+    private Button mResetInCaculateBt;          //计算中心-重置按钮
+    private SearchView mSearchViewInCalculate;  //计算中心-按名称查找按钮
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -548,6 +548,28 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private void initViewsCompute() {
         mComputeScanBt = (Button) findViewById(R.id.button_compute_scan);
         mComputeScanBt.setOnClickListener(new MyOnclickListenrOnScanBts());
+
+        mSearchViewInCalculate = (SearchView) findViewById(R.id.searchViewInCalculate);
+        mSearchViewInCalculate.setQueryHint("查找"); //按名称
+        mSearchViewInCalculate.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                mPostValue.put("account", "z");
+                String theUrl = Constant.getFilterLujingListByNameUrl.replace("{LujingName}", query);
+                mNetwork.fetchLujingListData(theUrl, mPostValue, getLujingListHandler);//ok
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+//                if (TextUtils.isEmpty(newText))
+//                    lv.clearTextFilter();
+//                else
+//                    lv.setFilterText(newText);
+                return true;
+            }
+        });
     }
 
     /**
@@ -595,6 +617,15 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 //                else
 //                    lv.setFilterText(newText);
                 return true;
+            }
+        });
+        mResetInCaculateBt = (Button) findViewById(R.id.button_reset_in_calculate);
+        mResetInCaculateBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                mPostValue.put("account", "z");
+                mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);
             }
         });
     }
@@ -684,18 +715,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 break;
             case R.id.id_tab_lujing_moxing:
                 selectTab(1);
-//                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-//                mPostValue.put("account","z");
-//                mPostValue.put("password", "a");
-//                mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
-////                mNetwork.getUserList(getUserListUrl, mPostValue, getUserHandler);
-////                mNetwork.fetchLoginData(loginUrl8004, mPostValue, getUserHandler);          /// OK
-////                mNetwork.fetchUserListData(getUserListUrl8004, mPostValue, getUserHandler); /// oK
-////                mNetwork.fetchDxListData(getDxListUrl8083, mPostValue, getDxListHandler);///ok
-////                mNetwork.fetchLujingListData(getLujingListUrl8083, mPostValue, getLujingListHandler);///ok
-
-//                mNetwork.getDxList(getDxListUrl, mPostValue, getUserHandler);
-
                 break;
             case R.id.id_tab_setting:
                 selectTab(2);

@@ -23,12 +23,13 @@
             android:text="扫描" />
 
         <Button
-            android:id="@+id/button_reset"
+            android:id="@+id/button_reset_in_calculate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="重置" />
 
         <SearchView
+            android:id="@+id/searchViewInCalculate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1" />
