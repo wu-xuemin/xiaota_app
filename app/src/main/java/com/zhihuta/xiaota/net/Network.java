@@ -173,7 +173,7 @@ public class Network {
             msg.obj = mCtx.getString(R.string.network_not_connect);
             handler.sendMessage(msg);
         } else {
-            Log.d(TAG, "fetchLujingListData: 有网络");
+            Log.d(TAG, "获取路径list: 有网络");
             if (url != null && values != null) {
                 Log.d(TAG, "fetchLujingListData: not null");
                 executor.execute(new Runnable() {
@@ -294,7 +294,7 @@ public class Network {
                                         for (int k = 0; k < responseData.getData().getWires().size(); k++) {
 //                                            success = true;
                                             String serial_number = responseData.getData().getWires().get(k).getSerial_number();
-                                            Log.i("aaa", "serial_number is " + serial_number);
+//                                            Log.i("aaa", "serial_number is " + serial_number);
                                             msg.obj = responseData.getData().getWires();
                                         }
                                         success = true;//
@@ -933,7 +933,7 @@ public class Network {
                                         for (int k = 0; k < responseData.getData().getWires().size(); k++) {
 //                                            success = true;
                                             String serial_number = responseData.getData().getWires().get(k).getSerial_number();
-                                            Log.i("aaa", "serial_number is " + serial_number);
+//                                            Log.i("aaa", "serial_number is " + serial_number);
                                             msg.obj = responseData.getData().getWires();
                                         }
                                         success = true;//
