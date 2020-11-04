@@ -135,8 +135,8 @@ public class XiaotaApp extends Application {
 
 
         this.isLogined  = Boolean.valueOf(readValue(PersistentValueType.IS_LOGIN, "0"));
-        this.account = readValue(PersistentValueType.ACCOUNT, "");
-        this.password = readValue(PersistentValueType.PASSWORD, "");
+        this.account = readValue(PersistentValueType.ACCOUNT, "a");
+        this.password = readValue(PersistentValueType.PASSWORD, "a");
         this.fullname = readValue(PersistentValueType.FULL_NAME, "");
         String strRoles = readValue(PersistentValueType.ROLE, "customer_worker").toLowerCase();
         //roles = "customer_worker,other else... split by ',' "
@@ -355,6 +355,12 @@ public class XiaotaApp extends Application {
         return account;
     }
 
+    public void setAccount(String account) {
+         this.account = account;
+
+        writePreferenceValue(PersistentValueType.ACCOUNT, account);
+    }
+
     public String getFullName() {
         return fullname;
     }
@@ -363,6 +369,10 @@ public class XiaotaApp extends Application {
         return password;
     }
 
+    public void setPassword(String password) {
+       this.password = password;
+       writePreferenceValue(PersistentValueType.PASSWORD, password);
+    }
     public String[] getRoles() {
         return roles;
     }

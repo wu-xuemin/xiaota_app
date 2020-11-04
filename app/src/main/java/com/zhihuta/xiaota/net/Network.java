@@ -9,10 +9,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.GsonBuilder;
 import com.zhihuta.xiaota.R;
+import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.DistanceResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.LoginResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.DxResponseDataWrap;
@@ -420,6 +422,7 @@ public class Network {
      */
     public void fetchLoginData(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
         final Message msg = handler.obtainMessage();
+
         if (!isNetworkConnected()) {
             Log.d(TAG, "fetchLoginData: 没网络");
             ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
@@ -435,7 +438,6 @@ public class Network {
                     public void run() {
 
                         RequestBody requestBody;
-                        FormBody.Builder builder = new FormBody.Builder();
 
                         JSONObject obj = new JSONObject();
                         try {
@@ -458,47 +460,55 @@ public class Network {
                         try {
                             //同步网络请求
                             response = client.newCall(request).execute();
-                            boolean success = false;
+
+                            //by default, set the msg status to ng.
+                            msg.what = NG;
+
                             if (response.isSuccessful()) {
                                 Log.d(TAG, "fetchLoginData run: response success");
-                                Gson gson = new Gson();
-                                LoginResponseDataWrap responseData = gson.fromJson(response.body().string(), new TypeToken<LoginResponseDataWrap>() {
-                                }.getType());
-                                if (responseData != null) {
-                                    Log.d(TAG, "fetchLoginData run: responseData：" + responseData.getCode());
-                                    if (responseData.getCode() == 200) {
 
-                                        success = true;
-                                        msg.obj = responseData.getData();
-                                    } else if (responseData.getCode() == 400) {
-                                        Log.e(TAG, responseData.getMessage());
-                                        Log.d(TAG, "fetchLoginData run: error 400 :" + responseData.getMessage());
-                                        msg.obj = responseData.getMessage();
-                                    } else if (responseData.getCode() == 500) {
-                                        Log.e(TAG, responseData.getMessage());
-                                        Log.d(TAG, "fetchLoginData run: error 500 :" + responseData.getMessage());
-                                        msg.obj = responseData.getMessage();
+                                Result result = JSONObject.parseObject(response.body().string(), Result.class);
+
+                                if (result != null) {
+                                    Log.d(TAG, "fetchLoginData run: responseData：" + result.getCode());
+                                    if (result.getCode() == 200) {
+                                        msg.obj = result.getData();
+                                        msg.what = OK;
+                                    } else if (result.getCode() == 400) {
+                                        Log.e(TAG, result.getMessage());
+                                        Log.d(TAG, "fetchLoginData run: error 400 :" + result.getMessage());
+                                        msg.obj = result.getMessage();
+                                    } else if (result.getCode() == 500) {
+                                        Log.e(TAG, result.getMessage());
+                                        Log.d(TAG, "fetchLoginData run: error 500 :" + result.getMessage());
+                                        msg.obj = result.getMessage();
                                     } else {
-                                        Log.e(TAG, "fetchLoginData Format JSON string to object error!");
+                                        Log.e(TAG, "fetchLoginData unknown issues!");
+                                        msg.obj = result.getMessage();
                                     }
                                 }
-                                if (success) {
-                                    msg.what = OK;
+                                else
+                                {
+                                    Log.e(TAG, "fetchLoginData Format JSON string to object error!");
+                                    msg.obj = "返回数据格式不对";
                                 }
+
                             } else {
-                                msg.what = NG;
+                                msg.obj = "网路请求失败";
                             }
-                            response.close();
+
                         } catch (Exception e) {
                             msg.what = NG;
-                            msg.obj = "Network error!";
+                            msg.obj = "网路异常";
                             Log.d(TAG, "fetchLoginData run: catch " + e);
                         } finally {
-                            handler.sendMessage(msg);
+
                             Log.d(TAG, "fetchLoginData run: finally");
                             if (response != null) {
                                 response.close();
                             }
+
+                            handler.sendMessage(msg);
                         }
                     }
                 });

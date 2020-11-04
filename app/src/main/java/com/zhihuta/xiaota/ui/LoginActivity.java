@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginHandler mLoginHandler;
     private XiaotaApp mApp;
     private AlertDialog mIPSettngDialog = null;
-    private String mPassword=null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +67,15 @@ public class LoginActivity extends AppCompatActivity {
         mLoginButton = (Button) findViewById(R.id.btn_login);
         mPasswordText = (EditText) findViewById(R.id.input_password);
         mAccountText = (EditText) findViewById(R.id.input_account);
+
+        //show the default account and password in login UI.
         if(XiaotaApp.getApp().getAccount() != null && !"".equals(XiaotaApp.getApp().getAccount())) {
             mAccountText.setText(XiaotaApp.getApp().getAccount());
         }
+        if(XiaotaApp.getApp().getPassword() != null && !"".equals(XiaotaApp.getApp().getPassword())) {
+            mAccountText.setText(XiaotaApp.getApp().getPassword());
+        }
+
         mSystemVersionTv = findViewById(R.id.system_version);
         mSystemVersionTv.setText(getVersion());
 
@@ -77,6 +83,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+
                 login();
             }
         });
@@ -109,36 +116,57 @@ public class LoginActivity extends AppCompatActivity {
             mLoadingProcessDialog.setMessage("登录中...");
         }
         mLoadingProcessDialog.show();
-        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-        mPassword=mPasswordText.getText().toString();
-//        mPostValue.put("account", mAccountText.getText().toString());
-//        mPostValue.put("password", mPassword);
-        mPostValue.put("account", "a");
-        mPostValue.put("password", "a");
-//        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
-        Log.d(TAG, "login: IMEI: "+XiaotaApp.getApp().getIMEI());
-        if(TextUtils.isEmpty(XiaotaApp.getApp().getServerIPAndPort())){
-            if(mLoadingProcessDialog.isShowing()) {
-                mLoadingProcessDialog.dismiss();
-            }
-            mLoginButton.setEnabled(true);
-            ToastUtils.showShort("服务端IP为空，请设置IP地址");
-            Log.d(TAG, "login: 服务端IP为空，请设置IP地址");
-        } else if (XiaotaApp.getApp().getIMEI()==null){
-            if(mLoadingProcessDialog.isShowing()) {
-                mLoadingProcessDialog.dismiss();
-            }
-            mLoginButton.setEnabled(true);
-            ToastUtils.showShort("未获取到手机识别码,请重启软件");
+
+        try {
+            Log.d(TAG, "login: IMEI: "+XiaotaApp.getApp().getIMEI());
+        }
+        catch (Exception ex)
+        {
             Log.d(TAG, "login: 未获取到手机IMEI");
         }
-        else {
-            String loginUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_LOGIN;
-            ///test
-            mNetwork.fetchLoginData(loginUrl, mPostValue, mLoginHandler);
-//            onLoginSuccess(null);
-        }
 
+        String account  = mAccountText.getText().toString().trim();
+        String password = mPasswordText.getText().toString();
+
+        if (account.isEmpty() || password.isEmpty())
+        {
+            ToastUtils.showShort("用户名和密码不能为空");
+            Log.d(TAG, "用户名和密码不能为空");
+        }
+        else {
+
+            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+            mPostValue.put("account", account);
+            mPostValue.put("password",password );
+
+            if(TextUtils.isEmpty(XiaotaApp.getApp().getServerIPAndPort())){
+                if(mLoadingProcessDialog.isShowing()) {
+                    mLoadingProcessDialog.dismiss();
+                }
+                mLoginButton.setEnabled(true);
+                ToastUtils.showShort("服务端IP为空，请设置IP地址");
+                Log.d(TAG, "login: 服务端IP为空，请设置IP地址");
+            }
+            else {
+
+                //if (XiaotaApp.getApp().getIMEI()==null)
+                //{
+        //            if(mLoadingProcessDialog.isShowing()) {
+        //                mLoadingProcessDialog.dismiss();
+        //            }
+        //            mLoginButton.setEnabled(true);
+                    //ToastUtils.showShort("未获取到手机识别码,请重启软件");
+                //}
+
+                //save the config
+                XiaotaApp.getApp().setAccount(account);
+                XiaotaApp.getApp().setPassword(password);
+
+                String loginUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_LOGIN;
+                ///test
+                mNetwork.fetchLoginData(loginUrl, mPostValue, mLoginHandler);
+            }
+        }
     }
 
     @SuppressLint("HandlerLeak")
@@ -149,9 +177,9 @@ public class LoginActivity extends AppCompatActivity {
             if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
                 mLoadingProcessDialog.dismiss();
             }
-
+            LoginResponseData loginResponseData = (LoginResponseData)msg.obj;
             if (msg.what == Network.OK) {
-                onLoginSuccess((LoginResponseData)msg.obj);
+                onLoginSuccess(loginResponseData);
             } else {
                 String errorMsg = (String)msg.obj;
                 onLoginFailed(errorMsg);
@@ -161,148 +189,17 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess(LoginResponseData data) {
         /// test
-        String name = "a";
-        String password = "b";
-        if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(password)) {
-//            ArrayList<User> data = mDBOpenHelper.getAllData();
-            boolean match = false;
-//            for (int i = 0; i < data.size(); i++) {
-//                User user = data.get(i);
-//                if (name.equals(user.getName()) && password.equals(user.getPassword())) {
-//                    match = true;
-//                    break;
-//                } else {
-//                    match = false;
-//                }
-//            }
 
-            /// test
-            match = true;
-            if (match) {
-                Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(this, MainActivity.class);
-                Intent intent = new Intent(this, Main.class);
+        if (data.errorCode == 0) {
 
-//                SimpleDateFormat sf3=new SimpleDateFormat("yy/MM/dd");
-                ArrayList<DianxianQingCeData> mDianxianQingCeList;
-                ArrayList<OrderData> mOrderList;
-                ArrayList<LujingData> mLujingList;
-                ArrayList<LujingData> mLujingShaixuanList;
+            Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, Main.class);
 
-
-                mDianxianQingCeList = new ArrayList<>();
-                for(int k=1;k<16; k++) {
-                    DianxianQingCeData dianxianQingCeData1 = new DianxianQingCeData();
-                    dianxianQingCeData1.setId(1);
-                    dianxianQingCeData1.setSerial_number("dx_0000" + k);
-                    dianxianQingCeData1.setParts_code("型号00" + k);
-                    dianxianQingCeData1.setStart_point("杭州A00" + k);
-                    dianxianQingCeData1.setEnd_point("上海B001"  + k);
-                    dianxianQingCeData1.setSteel_redundancy("20M");
-                    dianxianQingCeData1.setHose_redundancy("6M");
-                    dianxianQingCeData1.setFlag(Constant.FLAG_QINGCE_DX);
-
-                    mDianxianQingCeList.add(dianxianQingCeData1);
-                }
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("mDianxianQingCeList", (Serializable) mDianxianQingCeList);
-                intent.putExtras(bundle);
-
-                OrderData mOrderData1 = new OrderData();
-                mOrderData1.setId(1);
-                mOrderData1.setOrderNumber("订单_001");
-                mOrderData1.setCreatedDate(new Date());
-                mOrderData1.setOrderCreater("魏武");
-                mOrderData1.setOrderStatus("正常");
-                OrderData mOrderData2 = new OrderData();
-                mOrderData2.setId(2);
-                mOrderData2.setOrderNumber("订单_002");
-                mOrderData2.setCreatedDate(new Date());
-                mOrderData2.setOrderCreater("小王");
-                mOrderData2.setOrderStatus("正常");
-
-                mOrderList = new ArrayList<>();
-                mOrderList.add(mOrderData1);
-                mOrderList.add(mOrderData2);
-                bundle.putSerializable("mOrderList", (Serializable) mOrderList);
-
-                LujingData mLujingData1 = new LujingData();
-                mLujingData1.setId(1);
-                mLujingData1.setName("路径_abc1");
-//                String sDate = sf3.format(new Date());
-//                try {
-                    mLujingData1.setCreate_time(new Date());
-//                } catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
-                mLujingData1.setCreator("路小凡");
-                mLujingData1.setLujingCaozuo("cccc");
-
-                LujingData mLujingData2 = new LujingData();
-                mLujingData2.setId(2);
-                mLujingData2.setName("路径_bbb2");
-                mLujingData2.setCreate_time(new Date());
-                mLujingData2.setCreator("张三");
-
-                LujingData mLujingData3 = new LujingData();
-                mLujingData3.setId(3);
-                mLujingData3.setName("上海南京1");
-                mLujingData3.setCreate_time(new Date());
-                mLujingData3.setCreator("张三丰");
-                LujingData mLujingData4 = new LujingData();
-                mLujingData4.setId(4);
-                mLujingData4.setName("北京南京12");
-                mLujingData4.setCreate_time(new Date());
-                mLujingData4.setCreator("小王");
-                LujingData mLujingData5 = new LujingData();
-                mLujingData5.setId(5);
-                mLujingData5.setName("杭州太原88");
-                mLujingData5.setCreate_time(new Date());
-                mLujingData5.setCreator("张小明");
-                LujingData mLujingData6 = new LujingData();
-                mLujingData6.setId(5);
-                mLujingData6.setName("沿海888A");
-                mLujingData6.setCreate_time(new Date());
-                mLujingData6.setCreator("杨晓阳");
-                LujingData mLujingData7 = new LujingData();
-                mLujingData7.setId(5);
-                mLujingData7.setName("秦岭淮河790");
-                mLujingData7.setCreate_time(new Date());
-                mLujingData7.setCreator("秦始皇");
-
-                mLujingList = new ArrayList<>();
-                mLujingList.add(mLujingData1);
-                mLujingList.add(mLujingData2);
-                mLujingList.add(mLujingData3);
-                mLujingList.add(mLujingData4);
-                mLujingList.add(mLujingData5);
-                mLujingList.add(mLujingData5);
-                mLujingList.add(mLujingData6);
-                mLujingList.add(mLujingData7);
-                bundle.putSerializable("mLujingList", (Serializable) mLujingList);
-                intent.putExtras(bundle);
-
-                mLujingShaixuanList = new ArrayList<>();
-                mLujingShaixuanList.add(mLujingData1);
-                mLujingShaixuanList.add(mLujingData2);
-                bundle.putSerializable("mLujingShaixuanList", (Serializable) mLujingShaixuanList);
-                intent.putExtras(bundle);
-
-
-
-                mLujingShaixuanList = new ArrayList<>();
-                mLujingShaixuanList.add(mLujingData1);
-                mLujingShaixuanList.add(mLujingData2);
-                bundle.putSerializable("mLujingShaixuanList", (Serializable) mLujingShaixuanList);
-                intent.putExtras(bundle);
-
-                startActivity(intent);
-                finish();//销毁此Activity
-            } else {
-                Toast.makeText(this, "用户名或密码不正确，请重新输入", Toast.LENGTH_SHORT).show();
-            }
+            startActivity(intent);
+            finish();//销毁此Activity
         } else {
-            Toast.makeText(this, "请输入你的用户名或密码", Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(this, "用户名或密码不正确，请重新输入", Toast.LENGTH_SHORT).show();
         }
 
     }
