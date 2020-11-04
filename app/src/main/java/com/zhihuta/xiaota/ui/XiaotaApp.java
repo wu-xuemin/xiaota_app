@@ -168,21 +168,9 @@ public class XiaotaApp extends Application {
 //        this.ip = "10.0.2.2:8080";
 //模拟器
 //        this.ip = "10.0.2.2:8004";
-//        this.ip = "172.20.10.3:8083";
+        this.ip = "172.20.10.3";
 ///        this.ip = "47.114.157.108:8083";
         }
-
-        if (false)
-        {//自己调试时可以打开设为true， 并改下面的ip地址
-//        this.ip = "192.168.31.133:8083";
-//        this.ip = "192.168.1.138:8083";
-//        this.ip = "10.0.2.2:8080";
-//模拟器
-//        this.ip = "10.0.2.2:8004";
-            this.ip = "172.20.10.3:8083";
-//        this.ip = "47.114.157.108:8083";
-        }
-
         String appUserIdStr = readValue(PersistentValueType.USER_ID, "0");
         if ("".equals(appUserIdStr)){
             this.appUserId =0;

@@ -116,6 +116,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private LujingAdapter mLujingAdapter;               //路径模型的路径的Adapter
     private LujingAdapter mLujingInCalculateAdapter;    //计算中心的路径的Adapter
     private ArrayList<LujingData> mLujingList = new ArrayList<>();
+//    private ArrayList<LujingData> mLujingListInCalculate = new ArrayList<>(); //不需要用不同list,只要有不同adapter
     private LujingData mLujingToPass = new LujingData(); //传给下个页面的路径数据
 
 
@@ -862,6 +863,10 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
                     Toast.makeText(this, " 筛选得到" + mLujingList.size() + " 条路径", Toast.LENGTH_LONG).show();
 
+                    //要设定flag
+                    for(int k=0;k<mLujingList.size();k++){
+                        mLujingList.get(k).setFlag(Constant.FLAG_LUJING_IN_LUJING);
+                    }
                     //要重新绑定adapter 否则界面的路径不会更新
                     mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
                     mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
