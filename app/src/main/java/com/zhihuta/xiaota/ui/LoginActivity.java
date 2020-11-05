@@ -28,6 +28,7 @@ import com.blankj.utilcode.util.ToastUtils;
 
 //import com.google.gson.JsonObject;
 import com.zhihuta.xiaota.R;
+import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
@@ -182,13 +183,16 @@ public class LoginActivity extends AppCompatActivity {
 
             if (msg.what == Network.OK) {
                 Result result= (Result)(msg.obj);
-                if ( result.getCode() ==200 )
+
+                LoginResponseData responseData = CommonUtility.objectToJavaObject(result.getData(),LoginResponseData.class);
+
+                if (responseData != null &&responseData.errorCode == 0)
                 {
-                    onLoginSuccess( (LoginResponseData)(result.getData()));
-                 }
+                    onLoginSuccess( responseData);
+                }
                 else
                 {
-                    errorMsg =  "failed:"+ result.getCode() + result.getMessage();
+                    errorMsg =  "登录失败:"+ result.getCode() + result.getMessage();
                 }
             }
             else

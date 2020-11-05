@@ -27,6 +27,10 @@ import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
+import com.zhihuta.xiaota.bean.basic.Result;
+import com.zhihuta.xiaota.bean.response.DistanceQRsResponse;
+import com.zhihuta.xiaota.bean.response.LoginResponseData;
+import com.zhihuta.xiaota.bean.response.PathGetDistanceQr;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
@@ -181,7 +185,7 @@ public class LujingActivity extends AppCompatActivity {
     private void getGetLujingDistanceList(Intent intent) {
         //获取 路径对应的间距列表
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-        mPostValue.put("account", "z");
+//        mPostValue.put("account", "z");
         String theUrl;
         //如果是基于旧的路径，还需要把旧路径的间距拿来。
         if(mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
@@ -189,8 +193,13 @@ public class LujingActivity extends AppCompatActivity {
         } else {
             theUrl = Constant.getLujingDistanceListUrl.replace("lujingID", String.valueOf(mLujing.getId()));
         }
-        mNetwork.fetchDistanceListOfLujing(theUrl, mPostValue, getLujingDistanceListHandler);
 
+        //mNetwork.fetchDistanceListOfLujing(theUrl, mPostValue, getLujingDistanceListHandler);
+        //获取路径的间距列表
+        mNetwork.get(theUrl,null,getLujingDistanceListHandler,
+                (handler, msg)->{
+                        handler.sendMessage(msg);
+                });
     }
     private void showDistanceList(){
         //间距列表
@@ -263,15 +272,34 @@ public class LujingActivity extends AppCompatActivity {
 //                mLoadingProcessDialog.dismiss();
 //            }
 
+            String errorMsg = "";
+
             if (msg.what == Network.OK) {
-                mDistanceList = (ArrayList<DistanceData>) msg.obj;
-                if (mDistanceList == null) {
-                    Log.d(TAG, "获取路径: " + "间距获取异常"  );
-                } else {
+                Result result= (Result)(msg.obj);
+
+                DistanceQRsResponse responseData =  (DistanceQRsResponse)(result.getData());
+
+                if ( result.getCode() ==200 && responseData!= null && responseData.errorCode==0)
+                {
+                    mDistanceList = new ArrayList<>();
+
+                    for (PathGetDistanceQr distance_qr : responseData.distance_qrs) {
+
+                        DistanceData distanceData = new DistanceData();
+                        distanceData.setDistance( Double.toString(distance_qr.distance));
+                        distanceData.setName(distance_qr.name);
+                        distanceData.setQr_id(distance_qr.qrId);
+                        distanceData.setQr_sequence(distance_qr.qrSequence);
+                        distanceData.setSerial_number(distance_qr.serialNumber);
+
+                        mDistanceList.add( distanceData);
+                    }
+
                     Log.d(TAG, "获取路径: size: " + mDistanceList.size());
                     if (mDistanceList.size() == 0) {
                         Toast.makeText(LujingActivity.this, "该路径的间距数量为0！", Toast.LENGTH_SHORT).show();
                     }
+
                     mDistanceAdapter = new DistanceAdapter(mDistanceList, LujingActivity.this);
                     mDistanceRV.addItemDecoration(new DividerItemDecoration(LujingActivity.this, DividerItemDecoration.VERTICAL));
                     mDistanceRV.setAdapter(mDistanceAdapter);
@@ -294,11 +322,23 @@ public class LujingActivity extends AppCompatActivity {
                     }
 
                 }
-            } else {
-                String errorMsg = (String) msg.obj;
+                else
+                {
+                    errorMsg =  "获取路径间距点获取异常:"+ result.getCode() + result.getMessage();
+                    Log.d(TAG, errorMsg );
+                }
+            }
+            else
+            {
+                errorMsg = (String) msg.obj;
+            }
+
+            if (!errorMsg.isEmpty())
+            {
                 Log.d(TAG, errorMsg);
                 Toast.makeText(LujingActivity.this, "获取该路径的 间距列表失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
+
         }
     }
     @SuppressLint("HandlerLeak")
