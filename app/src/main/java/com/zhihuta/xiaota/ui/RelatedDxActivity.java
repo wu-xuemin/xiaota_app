@@ -43,7 +43,6 @@ public class RelatedDxActivity extends AppCompatActivity {
     private static final int RELATE_NEW_DX = 1;
 
     private Network mNetwork;
-    String getDxListOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DX_OF_LUJING;
     //从路径界面传给电线界面的路径信息，在电线界面查看已绑定的电线，也在该路径里添加电线
     private LujingData mLujing;
 
@@ -85,7 +84,7 @@ public class RelatedDxActivity extends AppCompatActivity {
          */
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
         mPostValue.put("account","NO USE"); //paths/{lujingId}/wires?serial_number={dxSN}&parts_code={dxPartsCode}
-        String theUrl = getDxListOfLujingUrl.replace("{lujingId}", String.valueOf(mLujing.getId()));
+        String theUrl = Constant.getDxListOfLujingUrl.replace("{lujingId}", String.valueOf(mLujing.getId()));
         theUrl = theUrl.replace("{dxSN}","").replace("{dxPartsCode}","");
         Log.i(TAG,"获取该路径的电线列表 " + theUrl);
         mNetwork.fetchDxListOfLujing(theUrl, mPostValue, new GetDxListOfLujingHandler());///

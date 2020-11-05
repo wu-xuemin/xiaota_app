@@ -22,4 +22,6 @@ public class URL {
     public static final String GET_FILTER_LUJING_BY_QR ="/paths?qr_ids=qrIDs"; // 二维码筛选路径 /paths?name={}&qr_ids={1,2,3}&order_by={}&try_scope={}&offset={}&limit={}
     public static final String GET_FILTER_LUJING_BY_NAME ="/paths?name={LujingName}"; // 名称筛选路径
 
+    public static final String GET_CAL_WIRES_OF_LUJING ="/caculate/{path_id}/wires"; //计算中心 获取路径的电线
+
 }

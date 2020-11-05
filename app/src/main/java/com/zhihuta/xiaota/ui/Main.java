@@ -504,6 +504,18 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         }
     }
 
+    /**
+     *  把路径传给电线计算页面，电线页面再去查询电线列表
+     */
+    private void gotoWiresCalculateActivity(int requestCode, LujingData lujingData) {
+        Intent intent = new Intent(Main.this, WiresInCalculateActivity.class);
+        Bundle bundle = new Bundle();
+
+        bundle.putSerializable("requestCode", (Serializable) requestCode);
+        bundle.putSerializable("mLujingToPass", lujingData);
+        intent.putExtras(bundle);
+        startActivityForResult(intent, requestCode);
+    }
     @SuppressLint("HandlerLeak")
     class LujingHandler extends Handler {
         @Override
@@ -666,10 +678,11 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     break;
 
                 case R.id.wiresListBt:
-                    Log.i(TAG,"电线信息" +(position+1));
+                    Log.i(TAG,"电线清单 按钮" +(position+1) + mLujingList.get(position).getName());
+                    gotoWiresCalculateActivity(Constant.REQUEST_CODE_CALCULATE_WIRES, mLujingList.get(position));
                     break;
                 case R.id.exportAccordModelBt:
-                    Log.i(TAG,"电线型号" +(position+1));
+                    Log.i(TAG,"型号导出 按钮" +(position+1));
                     break;
                 default:
                     Toast.makeText(Main.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();
@@ -807,6 +820,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 mLujingList.get(k).setFlag(Constant.FLAG_LUJING_IN_LUJING);
             }
 
+            Log.i(TAG,"--> 路径模型中的路径");
             mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
             mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
             mLujingRV.setAdapter(mLujingAdapter);
@@ -817,6 +831,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 mLujingList.get(k).setFlag(Constant.FLAG_LUJING_IN_CALCULATE);
             }
 
+            Log.i(TAG,"--> 计算中心中的路径");
             mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this);
             mLujingInCalculateRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
             mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
