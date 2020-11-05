@@ -7,7 +7,7 @@ public class LujingData implements Serializable {
     private int id;
     private String name; // 路径名称
     private String creator; //路径的创建人
-    private Date create_time; // 创建日期
+    private String create_time; // 创建日期
 
     /**
      * 用于标记不同的场合
@@ -25,15 +25,15 @@ public class LujingData implements Serializable {
         this.flag = flag;
     }
 
-    public String getLujingCaozuo() {
-        return LujingCaozuo;
-    }
+//    public String getLujingCaozuo() {
+//        return LujingCaozuo;
+//    }
+//
+//    public void setLujingCaozuo(String lujingCaozuo) {
+//        LujingCaozuo = lujingCaozuo;
+//    }
 
-    public void setLujingCaozuo(String lujingCaozuo) {
-        LujingCaozuo = lujingCaozuo;
-    }
-
-    private String LujingCaozuo; // 操作
+//    private String LujingCaozuo; // 操作
 
     public int getId() {
         return id;
@@ -59,11 +59,11 @@ public class LujingData implements Serializable {
         this.creator = creator;
     }
 
-    public Date getCreate_time() {
+    public String getCreate_time() {
         return create_time;
     }
 
-    public void setCreate_time(Date create_time) {
+    public void setCreate_time(String create_time) {
         this.create_time = create_time;
     }
 }

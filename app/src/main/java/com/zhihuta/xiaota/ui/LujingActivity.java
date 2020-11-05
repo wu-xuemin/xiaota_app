@@ -297,7 +297,7 @@ public class LujingActivity extends AppCompatActivity {
                         mDistanceList.add( distanceData);
                     }
 
-                    Log.d(TAG, "获取路径: size: " + mDistanceList.size());
+                    Log.d(TAG, "获取路径间距: size: " + mDistanceList.size());
                     if (mDistanceList.size() == 0) {
                         Toast.makeText(LujingActivity.this, "该路径的间距数量为0！", Toast.LENGTH_SHORT).show();
                     }
@@ -337,7 +337,7 @@ public class LujingActivity extends AppCompatActivity {
             if (!errorMsg.isEmpty())
             {
                 Log.d(TAG, errorMsg);
-                Toast.makeText(LujingActivity.this, "获取该路径的 间距列表失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LujingActivity.this, "获取该路径的间距列表失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
 
         }

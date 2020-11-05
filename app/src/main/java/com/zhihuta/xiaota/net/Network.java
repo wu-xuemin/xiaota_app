@@ -98,7 +98,12 @@ public class Network {
 
         if (url == null || url.trim().isEmpty())
         {
+            msg.what = NG;
+            msg.obj =  "http get: empty url";
+
             Log.d(TAG, "http get: empty url");
+
+            handler.sendMessage(msg);
             return false;
         }
 
@@ -121,11 +126,11 @@ public class Network {
             @Override
             public void run() {
 
-
-                Request request = new Request.Builder().url(requestUrl).get().build();
-                OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
                 Response response = null;
                 try {
+                    Request request = new Request.Builder().url(requestUrl).get().build();
+                    OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+
                     //同步网络请求
                     response = client.newCall(request).execute();
                     msg.what = NG;

@@ -16,6 +16,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -39,9 +40,15 @@ import com.zhihuta.xiaota.WeixinFragment;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
+import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
+import com.zhihuta.xiaota.bean.basic.Result;
+import com.zhihuta.xiaota.bean.response.DistanceQRsResponse;
+import com.zhihuta.xiaota.bean.response.PathGetDistanceQr;
+import com.zhihuta.xiaota.bean.response.PathGetObject;
+import com.zhihuta.xiaota.bean.response.PathsResponse;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
@@ -160,17 +167,25 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         initViews();//初始化控件
         initEvents();//初始化事件
 
-//        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-//        mPostValue.put("account", "z");
-//        mPostValue.put("password", "a");
+        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+        mPostValue.put("account", "z");
+        mPostValue.put("password", "a");
 //        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
         /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
 //        mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, getDxListHandler);///ok
-//        mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
+
+
         initComputeScan();
 
         //after init ,select the default tab
         selectTab(R.id.id_tab_lujing_moxing);//默认选中第2个Tab
+		
+	   getLujingListHandler.setIsGetting(true);
+        mNetwork.get(Constant.getLujingListUrl8083,mPostValue,getLujingListHandler,
+                (handler, msg)->{
+                    getLujingListHandler.sendMessage(msg);
+                });
+
     }
     //计算两点距离 的界面初始化
     private void initComputeScan(){
@@ -227,49 +242,83 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
     @SuppressLint("HandlerLeak")
     class GetLujingListHandler extends Handler {
+
+        private boolean bIsGetting = false;
+
+        public boolean getIsGetting()
+        {
+            return bIsGetting;
+        }
+
+        public void setIsGetting(boolean getting)
+        {
+            bIsGetting = getting;
+        }
+
         @Override
         public void handleMessage(final Message msg) {
 //            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
 //                mLoadingProcessDialog.dismiss();
 //            }
 
+            String errorMsg = "";
+
             if (msg.what == Network.OK) {
-                Log.d("GetLujingListHandler", "OKKK");
-                mLujingList = (ArrayList<LujingData>) msg.obj;
-                if (mLujingList == null) {
+                Result result= (Result)(msg.obj);
+
+                PathsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), PathsResponse.class);
+
+                if (responseData != null &&responseData.errorCode == 0)
+                {
                     mLujingList = new ArrayList<>();
-                    Log.d(TAG, "handleMessage: " + "路径获取异常");
-                } else {
+
+                    for (PathGetObject pathObj : responseData.paths) {
+
+                        LujingData lujingData = new LujingData();
+                        lujingData.setId( pathObj.id );
+                        lujingData.setName(pathObj.name);
+                        lujingData.setCreator(pathObj.creator);
+                        //lujingData.setLujingCaozuo(pathObj.);
+                        lujingData.setCreate_time(pathObj.createTime);
+
+                        mLujingList.add( lujingData);
+                    }
+
+                    Log.d(TAG, "获取路径: size: " + mLujingList.size());
+
                     if (mLujingList.size() == 0) {
                         Toast.makeText(Main.this, "路径数量为0！", Toast.LENGTH_SHORT).show();
-                    } else {
-                        for (int k = 0; k < mLujingList.size(); k++) {
-                            mLujingList.get(k).setFlag(Constant.FLAG_LUJING_IN_LUJING);
-                        }
                     }
+
+                    for (int k = 0; k < mLujingList.size(); k++) {
+                        mLujingList.get(k).setFlag(Constant.FLAG_LUJING_IN_LUJING);
+                    }
+
+                    mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
+                    mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                    mLujingRV.setAdapter(mLujingAdapter);
+                    mLujingAdapter.notifyDataSetChanged();
+                    // 设置item及item中控件的点击事件
+                    mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
                 }
-                mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
-                mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
-                mLujingRV.setAdapter(mLujingAdapter);
-                mLujingAdapter.notifyDataSetChanged();
-                // 设置item及item中控件的点击事件
-                mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
-
-                /**
-                 * 计算中心
-                 */
-//                mLujingListInCalculate = (ArrayList<LujingData>) mLujingList.clone();
-                mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this);
-                mLujingInCalculateRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
-                mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
-                mLujingInCalculateAdapter.notifyDataSetChanged();
-                mLujingInCalculateAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
-
-            } else {
-                String errorMsg = (String) msg.obj;
-                Log.d("GetLujingListHand NG:", errorMsg);
-                Toast.makeText(Main.this, "路径获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                else
+                {
+                    errorMsg =  "路径获取异常:"+ result.getCode() + result.getMessage();
+                    Log.d(TAG, errorMsg );
+                }
             }
+            else
+            {
+                errorMsg = (String) msg.obj;
+            }
+
+            if (!errorMsg.isEmpty())
+            {
+                Log.d("路径获取 NG:", errorMsg);
+                Toast.makeText(Main.this, "路径获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+             }
+
+            setIsGetting(false);
         }
     }
     @SuppressLint("HandlerLeak")
@@ -286,7 +335,14 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 //删除后真实刷新列表
                 LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
                 mPostValue.put("account", "z");
-                mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);
+
+                if (!getLujingListHandler.getIsGetting())
+                {
+                    getLujingListHandler.setIsGetting(true);
+                    mNetwork.get(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler,(handler,msg2)->{
+                        handler.sendMessage(msg2);
+                    });
+                 }
             } else {
                 String errorMsg = (String) msg.obj;
                 Log.d("DeleteLujingHandler NG:", errorMsg);
@@ -649,8 +705,15 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
             public void onClick(View view) {
                 LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
                 mPostValue.put("account", "z");
-                mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);
-            }
+
+                if (!getLujingListHandler.getIsGetting())
+                {
+                    getLujingListHandler.setIsGetting(true);
+                    mNetwork.get(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler,(handler,msg)->{
+                        handler.sendMessage(msg);
+                    });
+                }
+             }
         });
     }
 
@@ -724,7 +787,15 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
             isBackFromFilterPath = false;
         } else {
             Log.i(TAG, "不是从筛选返回,要刷新");
-            mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);
+
+            if (!getLujingListHandler.getIsGetting()) {
+                getLujingListHandler.setIsGetting( true );
+
+                mNetwork.get(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler,
+                        (handler, msg) -> {
+                            getLujingListHandler.sendMessage(msg);
+                        });
+            }
         }
     }
 
