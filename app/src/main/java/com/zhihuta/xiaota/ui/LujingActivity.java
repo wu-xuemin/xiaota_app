@@ -25,6 +25,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
+import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.Result;
@@ -277,10 +278,11 @@ public class LujingActivity extends AppCompatActivity {
             if (msg.what == Network.OK) {
                 Result result= (Result)(msg.obj);
 
-                DistanceQRsResponse responseData =  (DistanceQRsResponse)(result.getData());
+                DistanceQRsResponse responseData = CommonUtility.objectToJavaObject(result.getData(),DistanceQRsResponse.class);
 
-                if ( result.getCode() ==200 && responseData!= null && responseData.errorCode==0)
+                if (responseData != null &&responseData.errorCode == 0)
                 {
+
                     mDistanceList = new ArrayList<>();
 
                     for (PathGetDistanceQr distance_qr : responseData.distance_qrs) {
@@ -320,7 +322,6 @@ public class LujingActivity extends AppCompatActivity {
                             isDistanceSetted = true;
                         }
                     }
-
                 }
                 else
                 {

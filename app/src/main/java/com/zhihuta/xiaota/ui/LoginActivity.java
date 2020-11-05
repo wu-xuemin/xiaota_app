@@ -110,14 +110,6 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginButton.setEnabled(false);
 
-        try {
-            Log.d(TAG, "login: IMEI: "+XiaotaApp.getApp().getIMEI());
-        }
-        catch (Exception ex)
-        {
-            Log.d(TAG, "login: 未获取到手机IMEI");
-        }
-
         String account  = mAccountText.getText().toString().trim();
         String password = mPasswordText.getText().toString();
 

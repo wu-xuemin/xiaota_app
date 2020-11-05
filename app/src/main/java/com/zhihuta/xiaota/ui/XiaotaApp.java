@@ -51,7 +51,7 @@ public class XiaotaApp extends Application {
     private String groupName;
     private String groupType;
 
-    private String IMEI;
+    private String mIMEI = null;
     private static XiaotaApp mApp;
 
 
@@ -99,6 +99,9 @@ public class XiaotaApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        mIMEI = null;
+
         mApp = this;
         //start log
         LogUtils.logInit(true);
@@ -189,19 +192,34 @@ public class XiaotaApp extends Application {
 
     @SuppressLint({"MissingPermission", "HardwareIds"})
     public String getIMEI() {
-        IMEI = null;
-        TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
-        if (telephonyManager != null) {
-           IMEI = telephonyManager.getDeviceId();
-//模拟器
-            if(false)
-            {
-                IMEI = "AVDAVD7890AVDAV";
-            }
-        } else {
-            Log.d(TAG, "getIMEI: have some error");
+
+        if (mIMEI!=null)
+        {
+            return mIMEI;
         }
-        return IMEI;
+
+        try {
+
+            mIMEI = "";
+
+            TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
+            if (telephonyManager != null) {
+                mIMEI = telephonyManager.getDeviceId();
+//模拟器
+                if(false)
+                {
+                    mIMEI = "AVDAVD7890AVDAV";
+                }
+            } else {
+                Log.d(TAG, "getIMEI: have some error");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.d(TAG, "getIMEI: have some error exception");
+
+        }
+        return mIMEI;
     }
     /**
      * 由片段调用，设置登录信息

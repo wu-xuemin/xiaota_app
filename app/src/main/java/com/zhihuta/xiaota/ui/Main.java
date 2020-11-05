@@ -164,7 +164,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
         mPostValue.put("account", "z");
         mPostValue.put("password", "a");
-        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
+//        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
         /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
         mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, getDxListHandler);///ok
         mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
