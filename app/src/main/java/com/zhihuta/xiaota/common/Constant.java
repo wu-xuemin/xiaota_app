@@ -6,12 +6,14 @@ public class Constant {
     /**
      * 用于标记不同的场合
      * 不同的场合 显示不同的图标/按钮等
-     * "ToBeSelectDx"   -- 候选电线界面 （在 新增路径-关联电线） -- 要显示  checkBox
-     * "RelatedDx"      -- 已选电线界面 （在 新增路径-关联电线） -- 要显示 删除按钮
+     *  -- 候选电线界面 （在 新增路径-关联电线） -- 要显示  checkBox
+     *  -- 已选电线界面 （在 新增路径-关联电线） -- 要显示 删除按钮
+     *  -- 导出界面                           -- 只显示 型号、芯数截面、长度
      */
     public static String FLAG_TOBE_SELECT_DX = "候选电线";
     public static String FLAG_RELATED_DX = "已选电线";
     public static String FLAG_QINGCE_DX = "清册中的电线"; // 这个和 候选电线 是一样的，只是显示在清册中。
+    public static String FLAG_EXPORT_DX = "按型号导出的电线";
 
     public static String FLAG_LUJING_IN_LUJING = "路径模型中的路径";
     public static String FLAG_LUJING_IN_CALCULATE = "计算中心中的路径";
@@ -41,7 +43,7 @@ public class Constant {
     public static final String getDxOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_CAL_WIRES_OF_LUJING;
 
     public static final String getDxListOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DX_OF_LUJING;
-
+    public static final String getExportWiresOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_EXPORT_WIRES_OF_LUJING;
 // 后端 TODO: 同个用户下，路径名称要唯一
 
 }

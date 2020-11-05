@@ -516,6 +516,16 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         intent.putExtras(bundle);
         startActivityForResult(intent, requestCode);
     }
+
+    private void gotoWiresExportActivity(int requestCode, LujingData lujingData) {
+        Intent intent = new Intent(Main.this, WiresExportActivity.class);
+        Bundle bundle = new Bundle();
+
+        bundle.putSerializable("requestCode", (Serializable) requestCode);
+        bundle.putSerializable("mLujingToPass", lujingData);
+        intent.putExtras(bundle);
+        startActivityForResult(intent, requestCode);
+    }
     @SuppressLint("HandlerLeak")
     class LujingHandler extends Handler {
         @Override
@@ -683,6 +693,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     break;
                 case R.id.exportAccordModelBt:
                     Log.i(TAG,"型号导出 按钮" +(position+1));
+                    gotoWiresExportActivity(Constant.REQUEST_CODE_CALCULATE_WIRES, mLujingList.get(position));
                     break;
                 default:
                     Toast.makeText(Main.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();

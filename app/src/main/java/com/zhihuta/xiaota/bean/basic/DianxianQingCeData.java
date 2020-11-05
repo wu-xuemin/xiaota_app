@@ -10,6 +10,7 @@ public class DianxianQingCeData implements Serializable {
     private String parts_code; // 型号
     private String wickes_cross_section; // 芯数X截面
     private String length; //电线长度
+//    private String calculatedLength; //电线长度
     private String steel_redundancy;  //钢冗
     private String hose_redundancy;  //皮冗
 

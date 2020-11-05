@@ -86,6 +86,18 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
             itemView.steelHoseRedundancyTv.setVisibility(View.GONE);
             itemView.xinshuJiemianTv.setVisibility(View.GONE);
             itemView.dxLengthTv.setVisibility(View.GONE);
+        } else if (dataList.get(position).getFlag().equals(Constant.FLAG_EXPORT_DX)) { //按型号导出
+            itemView.dianxianBianhaoTv.setVisibility(View.GONE);
+            itemView.qidianTv.setVisibility(View.GONE);
+            itemView.zhongdianTv.setVisibility(View.GONE);
+            itemView.deleteBt.setVisibility(View.GONE);
+            itemView.dxTobeSelectCheckBox.setVisibility(View.GONE);
+            itemView.steelHoseRedundancyTv.setVisibility(View.GONE);
+
+
+            itemView.modelTv.setVisibility(View.VISIBLE);
+            itemView.xinshuJiemianTv.setVisibility(View.VISIBLE);
+            itemView.dxLengthTv.setVisibility(View.VISIBLE);
         }
     }
 

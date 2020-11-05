@@ -33,7 +33,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.WiresInCalculateActivity"></activity>
+        <activity android:name=".ui.WiresExportActivity"></activity>
+        <activity android:name=".ui.WiresInCalculateActivity" />
         <activity
             android:name=".ui.RelateNewDxActivity"
             android:label="候选电线" />

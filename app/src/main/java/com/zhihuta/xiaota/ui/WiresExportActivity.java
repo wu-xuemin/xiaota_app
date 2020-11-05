@@ -13,15 +13,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
-import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
@@ -30,9 +25,8 @@ import com.zhihuta.xiaota.net.Network;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-public class WiresInCalculateActivity extends AppCompatActivity {
-
-    private static String TAG = "WiresInCalculateActivity";
+public class WiresExportActivity extends AppCompatActivity {
+    private static String TAG = "WiresExportActivity";
 
     private Network mNetwork;
     private LujingData mLujing;
@@ -42,7 +36,7 @@ public class WiresInCalculateActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wires_in_calculate);
+        setContentView(R.layout.activity_wires_export);
 
         mNetwork = Network.Instance(getApplication());
         //返回前页按钮
@@ -75,22 +69,21 @@ public class WiresInCalculateActivity extends AppCompatActivity {
 
     private void initViews() {
 
-        mDxRV = (RecyclerView) findViewById(R.id.rv_wires_in_cal);
+        mDxRV = (RecyclerView) findViewById(R.id.rv_wires_in_export);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mDxRV.setLayoutManager(manager);
-        getWiresOftheLujing();
-          }
-    private void getWiresOftheLujing(){
-        /**
-         * 获取该路径的电线列表
-         */
+        getExportDataOfTheLujing();
+    }
+
+    //根据路径查询该路径的导出数据（按电线型号）
+    private void getExportDataOfTheLujing(){
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
         mPostValue.put("account","NO USE"); //paths/{lujingId}/wires?serial_number={dxSN}&parts_code={dxPartsCode}
-        String theUrl = Constant.getDxListOfLujingUrl.replace("{lujingId}", String.valueOf(mLujing.getId()));
-        theUrl = theUrl.replace("{dxSN}","").replace("{dxPartsCode}","");
-        Log.i(TAG,"获取该路径的电线列表 " + theUrl);
-        mNetwork.fetchDxListOfLujing(theUrl, mPostValue, new GetDxListOfLujingHandler());///
+        String theUrl = Constant.getExportWiresOfLujingUrl.replace("{path_id}", String.valueOf(mLujing.getId()));
+//        theUrl = theUrl.replace("{dxSN}","").replace("{dxPartsCode}","");
+        Log.i(TAG,"按型号导出该路径的数据 " + theUrl);
+        mNetwork.fetchExportDataOfLujing(theUrl, mPostValue, new GetDxListOfLujingHandler());///
     }
 
     @SuppressLint("HandlerLeak")
@@ -100,40 +93,29 @@ public class WiresInCalculateActivity extends AppCompatActivity {
 
             if (msg.what == Network.OK) {
                 Log.d("GetDxListOfLujingHand", "OKKK");
-                mDianxianList = (ArrayList<DianxianQingCeData>)msg.obj;
+                mDianxianList = (ArrayList<DianxianQingCeData>) msg.obj;
 
                 if (mDianxianList == null) {
-                    Log.d(TAG, "handleMessage: " + "路径的电线数量为0或异常"  );
+                    Log.d(TAG, "handleMessage: " + "路径的电线数量为0或异常");
                     mDianxianList = new ArrayList<>();
                 } else {
                     if (mDianxianList.size() == 0) {
-                        Toast.makeText(WiresInCalculateActivity.this, "已关联的电线数量为0！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(WiresExportActivity.this, "已关联的电线数量为0！", Toast.LENGTH_SHORT).show();
                     } else {
                         for (int k = 0; k < mDianxianList.size(); k++) {
-                            mDianxianList.get(k).setFlag(Constant.FLAG_RELATED_DX);
+                            mDianxianList.get(k).setFlag(Constant.FLAG_EXPORT_DX);
                         }
-                        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, WiresInCalculateActivity.this);
-                        mDxRV.addItemDecoration(new DividerItemDecoration(WiresInCalculateActivity.this, DividerItemDecoration.VERTICAL));
+                        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, WiresExportActivity.this);
+                        mDxRV.addItemDecoration(new DividerItemDecoration(WiresExportActivity.this, DividerItemDecoration.VERTICAL));
                         mDxRV.setAdapter(mDianXianAdapter);
                         mDianXianAdapter.notifyDataSetChanged();
                     }
                 }
             } else {
-                String errorMsg = (String)msg.obj;
+                String errorMsg = (String) msg.obj;
                 Log.d("GetDxListOfLujingHd NG:", errorMsg);
-                Toast.makeText(WiresInCalculateActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(WiresExportActivity.this, "按型号导出失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    private void showDxList(){
-        //电线列表
-        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList,this);
-        mDxRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        mDxRV.setAdapter(mDianXianAdapter);
-
-        // 设置item及item中控件的点击事件
-//        mDianXianAdapter.setOnItemClickListener(MyItemClickListener);
-
     }
 }

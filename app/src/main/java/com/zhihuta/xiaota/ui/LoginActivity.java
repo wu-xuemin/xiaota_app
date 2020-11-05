@@ -23,6 +23,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.ToastUtils;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
@@ -132,6 +133,8 @@ public class LoginActivity extends AppCompatActivity {
         {
             ToastUtils.showShort("用户名和密码不能为空");
             Log.d(TAG, "用户名和密码不能为空");
+            mLoadingProcessDialog.dismiss();
+            mLoginButton.setEnabled(true);
         }
         else {
 
@@ -177,8 +180,11 @@ public class LoginActivity extends AppCompatActivity {
             if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
                 mLoadingProcessDialog.dismiss();
             }
-            LoginResponseData loginResponseData = (LoginResponseData)msg.obj;
+
+
+            //(LoginResponseData)msg.obj;
             if (msg.what == Network.OK) {
+                LoginResponseData loginResponseData = ((JSONObject) msg.obj).toJavaObject(LoginResponseData.class);
                 onLoginSuccess(loginResponseData);
             } else {
                 String errorMsg = (String)msg.obj;
