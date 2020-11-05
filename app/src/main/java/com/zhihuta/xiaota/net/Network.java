@@ -14,9 +14,9 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.GsonBuilder;
 import com.zhihuta.xiaota.R;
+import com.zhihuta.xiaota.bean.basic.HttpResponseHandler;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.DistanceResponseDataWrap;
-import com.zhihuta.xiaota.bean.response.LoginResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.DxResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.LujingResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.MsgFailResponseDataWrap;
@@ -82,6 +82,390 @@ public class Network {
         return false;
     }
 
+
+    public boolean get(String url, final LinkedHashMap<String, String> values, final Handler handler, final HttpResponseHandler httpResponseHandlerHandler)
+    {
+        final Message msg = handler.obtainMessage();
+        if (!isNetworkConnected()) {
+            Log.d(TAG, "fhttp get: 没网络");
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = mCtx.getString(R.string.network_not_connect);
+            handler.sendMessage(msg);
+
+            return false;
+        }
+
+        if (url == null || url.trim().isEmpty())
+        {
+            Log.d(TAG, "http get: empty url");
+            return false;
+        }
+
+        //continue process.
+
+        if (!values.isEmpty()) {
+            url += "?";
+
+            for (Object o : values.entrySet()) {
+                HashMap.Entry entry = (HashMap.Entry) o;
+
+                url += (String) entry.getKey() + "=" + (String) entry.getValue();
+            }
+        }
+
+        final String requestUrl = url;
+        Log.d(TAG, "http get: " + requestUrl);
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+
+                Request request = new Request.Builder().url(requestUrl).get().build();
+                OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+                Response response = null;
+                try {
+                    //同步网络请求
+                    response = client.newCall(request).execute();
+                    msg.what = NG;
+
+                    if (response.isSuccessful()) {
+                        Log.d(TAG, "http get :: response success");
+
+                        Result result = JSONObject.parseObject(response.body().string(), Result.class);
+
+                        if (result != null) {
+
+                            Log.d(TAG, "http get :" +result.getCode() + " message:" +result.getMessage()  );
+
+                            msg.obj =  result;
+                            msg.what = OK;
+                        }
+                        else
+                        {
+                            msg.obj =  "http get : invalid result JSON  ";
+                            msg.what = NG;
+                        }
+                    }
+                    else
+                    {
+                        msg.obj =  "http get :net work request cannot reach!";
+                    }
+
+                } catch (Exception e) {
+
+                    msg.what = NG;
+                    msg.obj = "Network error!";
+                    Log.d(TAG, "http get : " + e + e.getMessage() + e.getCause());
+                } finally {
+
+                    if (response != null) {
+                        response.close();
+                    }
+
+                    //handler.sendMessage(msg);
+                    httpResponseHandlerHandler.processResponse(handler, msg);
+                }
+            }
+        });
+
+        return true;
+    }
+
+    public boolean post(final String url, final LinkedHashMap<String, String> values, final Handler handler, final HttpResponseHandler httpResponseHandler)
+    {
+        final Message msg = handler.obtainMessage();
+
+        if (!isNetworkConnected()) {
+            Log.d(TAG, "http post: 没网络");
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = mCtx.getString(R.string.network_not_connect);
+            handler.sendMessage(msg);
+        }
+
+        if (url == null || url.trim().isEmpty())
+        {
+            Log.d(TAG, "http post:  empty url");
+            return false;
+        }
+
+        Log.d(TAG, "http post:"+url);
+
+        JSONObject obj =  new JSONObject();
+
+        if (values != null)
+        {
+            try {
+                for (Object o : values.entrySet()) {
+                    HashMap.Entry entry = (HashMap.Entry) o;
+                    obj.put((String) entry.getKey(), (String) entry.getValue());
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        final JSONObject JsonBody = obj;
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                RequestBody requestBody;
+                requestBody = RequestBody.create(typeJSON, JsonBody.toString());
+
+                //Post method
+                Request request = new Request.Builder().url(url).post(requestBody).build();
+                OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+                Response response = null;
+                try {
+                    //同步网络请求
+                    response = client.newCall(request).execute();
+
+                    //by default, set the msg status to ng.
+                    msg.what = NG;
+
+                    if (response.isSuccessful()) {
+                        Log.d(TAG, "http post: response success");
+
+                        Result result = JSONObject.parseObject(response.body().string(), Result.class);
+
+                        if (result != null) {
+
+                            msg.obj = result;
+                            msg.what = OK;
+                        }
+                        else
+                        {
+                            msg.obj =  "http post: 返回结果JSON格式不对 ";
+                            msg.what = NG;
+                        }
+
+                    } else {
+                        msg.obj = "网路请求失败";
+                    }
+
+                } catch (Exception e) {
+                    msg.what = NG;
+                    msg.obj = "网路异常";
+                    Log.d(TAG, "http post:  catch " + e);
+                } finally {
+
+                    Log.d(TAG, "http post: finally");
+                    if (response != null) {
+                        response.close();
+                    }
+
+                    httpResponseHandler.processResponse(handler,msg);
+                }
+            }
+        });//executor
+
+        return true;
+    }
+
+    public boolean put(final String url,final LinkedHashMap<String, String> values,final Handler handler, final HttpResponseHandler httpResponseHandler)
+    {
+        final Message msg = handler.obtainMessage();
+
+        if (!isNetworkConnected()) {
+            Log.d(TAG, "http put: 没网络");
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = mCtx.getString(R.string.network_not_connect);
+            handler.sendMessage(msg);
+
+            return false;
+        }
+
+        if (url == null || url.trim().isEmpty())
+        {
+            Log.d(TAG, "http put:  empty url");
+            return false;
+        }
+
+        Log.d(TAG, "http put:" + url);
+
+
+        JSONObject obj =  new JSONObject();
+
+        if (values != null)
+        {
+            try {
+                for (Object o : values.entrySet()) {
+                    HashMap.Entry entry = (HashMap.Entry) o;
+                    obj.put((String) entry.getKey(), (String) entry.getValue());
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        final JSONObject JsonBody = obj;
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                RequestBody requestBody;
+                requestBody = RequestBody.create(typeJSON, JsonBody.toString());
+
+                //Post method
+                Request request = new Request.Builder().url(url).put(requestBody).build();
+                OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+                Response response = null;
+                try {
+                    //同步网络请求
+                    response = client.newCall(request).execute();
+
+                    //by default, set the msg status to ng.
+                    msg.what = NG;
+
+                    if (response.isSuccessful()) {
+                        Log.d(TAG, "http put: response success");
+
+                        Result result = JSONObject.parseObject(response.body().string(), Result.class);
+
+                        if (result != null) {
+
+                            msg.obj = result;
+                            msg.what = OK;
+                        }
+                        else
+                        {
+                            msg.obj =  "http put: 返回结果JSON格式不对 ";
+                            msg.what = NG;
+                        }
+
+                    } else {
+                        msg.obj = "网路请求失败";
+                    }
+
+                } catch (Exception e) {
+                    msg.what = NG;
+                    msg.obj = "网路异常";
+                    Log.d(TAG, "http put:  catch " + e);
+                } finally {
+
+                    Log.d(TAG, "http put: finally");
+                    if (response != null) {
+                        response.close();
+                    }
+
+                    httpResponseHandler.processResponse(handler,msg);
+                }
+            }
+        });//executor
+
+        return true;
+    }
+
+    public boolean delete(final String url,final LinkedHashMap<String, String> values,final Handler handler, HttpResponseHandler httpResponseHandler)
+    {
+        final Message msg = handler.obtainMessage();
+
+        if (!isNetworkConnected()) {
+            Log.d(TAG, "http put: 没网络");
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = mCtx.getString(R.string.network_not_connect);
+            handler.sendMessage(msg);
+
+            return false;
+        }
+
+        if (url == null || url.trim().isEmpty())
+        {
+            Log.d(TAG, "http delete:  empty url");
+            return false;
+        }
+
+        Log.d(TAG, "http delete:" + url);
+
+        JSONObject obj =  new JSONObject();
+
+        if (values != null)
+        {
+            try {
+                for (Object o : values.entrySet()) {
+                    HashMap.Entry entry = (HashMap.Entry) o;
+                    obj.put((String) entry.getKey(), (String) entry.getValue());
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        final JSONObject JsonBody = obj;
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                Request request = null;
+                if (JsonBody.isEmpty())
+                {
+                    request = new Request.Builder().url(url).delete().build();
+                }
+                else {
+                    RequestBody requestBody;
+                    requestBody = RequestBody.create(typeJSON, JsonBody.toString());
+
+                    request = new Request.Builder().url(url).delete(requestBody).build();
+                }
+
+                OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+                Response response = null;
+                try {
+                    //同步网络请求
+                    response = client.newCall(request).execute();
+
+                    //by default, set the msg status to ng.
+                    msg.what = NG;
+
+                    if (response.isSuccessful()) {
+                        Log.d(TAG, "http delete: response success");
+
+                        Result result = JSONObject.parseObject(response.body().string(), Result.class);
+
+                        if (result != null) {
+
+                            msg.obj = result;
+                            msg.what = OK;
+                        }
+                        else
+                        {
+                            msg.obj =  "http delete: 返回结果JSON格式不对 ";
+                            msg.what = NG;
+                        }
+
+                    } else {
+                        msg.obj = "网路请求失败";
+                    }
+
+                } catch (Exception e) {
+                    msg.what = NG;
+                    msg.obj = "网路异常";
+                    Log.d(TAG, "http delete:  catch " + e);
+                } finally {
+
+                    Log.d(TAG, "http delete: finally");
+                    if (response != null) {
+                        response.close();
+                    }
+
+                    httpResponseHandler.processResponse(handler,msg);
+                }
+            }
+        });//executor
+
+        return true;
+    }
     //获取路径的间距列表
     public void fetchDistanceListOfLujing(final String url, final LinkedHashMap<String, String> values, final Handler handler) {
         final Message msg = handler.obtainMessage();

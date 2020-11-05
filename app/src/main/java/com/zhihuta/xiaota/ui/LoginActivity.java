@@ -25,16 +25,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.ToastUtils;
+
+//import com.google.gson.JsonObject;
 import com.zhihuta.xiaota.R;
-import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
-import com.zhihuta.xiaota.bean.basic.LujingData;
-import com.zhihuta.xiaota.bean.basic.OrderData;
-import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
-
+import com.alibaba.fastjson.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -110,14 +109,6 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginButton.setEnabled(false);
 
-        if( mLoadingProcessDialog == null) {
-            mLoadingProcessDialog = new ProgressDialog(com.zhihuta.xiaota.ui.LoginActivity.this);
-            mLoadingProcessDialog.setCancelable(false);
-            mLoadingProcessDialog.setCanceledOnTouchOutside(false);
-            mLoadingProcessDialog.setMessage("登录中...");
-        }
-        mLoadingProcessDialog.show();
-
         try {
             Log.d(TAG, "login: IMEI: "+XiaotaApp.getApp().getIMEI());
         }
@@ -143,31 +134,37 @@ public class LoginActivity extends AppCompatActivity {
             mPostValue.put("password",password );
 
             if(TextUtils.isEmpty(XiaotaApp.getApp().getServerIPAndPort())){
-                if(mLoadingProcessDialog.isShowing()) {
-                    mLoadingProcessDialog.dismiss();
-                }
+
                 mLoginButton.setEnabled(true);
                 ToastUtils.showShort("服务端IP为空，请设置IP地址");
                 Log.d(TAG, "login: 服务端IP为空，请设置IP地址");
             }
             else {
 
-                //if (XiaotaApp.getApp().getIMEI()==null)
-                //{
-        //            if(mLoadingProcessDialog.isShowing()) {
-        //                mLoadingProcessDialog.dismiss();
-        //            }
-        //            mLoginButton.setEnabled(true);
-                    //ToastUtils.showShort("未获取到手机识别码,请重启软件");
-                //}
-
                 //save the config
                 XiaotaApp.getApp().setAccount(account);
                 XiaotaApp.getApp().setPassword(password);
 
                 String loginUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_LOGIN;
-                ///test
-                mNetwork.fetchLoginData(loginUrl, mPostValue, mLoginHandler);
+
+                if( mLoadingProcessDialog == null) {
+                    mLoadingProcessDialog = new ProgressDialog(com.zhihuta.xiaota.ui.LoginActivity.this);
+                    mLoadingProcessDialog.setCancelable(false);
+                    mLoadingProcessDialog.setCanceledOnTouchOutside(false);
+                    mLoadingProcessDialog.setMessage("登录中...");
+                }
+                mLoadingProcessDialog.show();
+
+
+                boolean bsend = mNetwork.post( loginUrl,mPostValue,mLoginHandler,
+                        (handler,msg)->{
+                         handler.sendMessage(msg);
+                        });
+
+                if (bsend)
+                {
+                    mLoadingProcessDialog.dismiss();
+                }
             }
         }
     }
@@ -181,14 +178,27 @@ public class LoginActivity extends AppCompatActivity {
                 mLoadingProcessDialog.dismiss();
             }
 
+            String errorMsg = "";
 
-            //(LoginResponseData)msg.obj;
             if (msg.what == Network.OK) {
-                LoginResponseData loginResponseData = ((JSONObject) msg.obj).toJavaObject(LoginResponseData.class);
-                onLoginSuccess(loginResponseData);
-            } else {
-                String errorMsg = (String)msg.obj;
-                onLoginFailed(errorMsg);
+                Result result= (Result)(msg.obj);
+                if ( result.getCode() ==200 )
+                {
+                    onLoginSuccess( (LoginResponseData)(result.getData()));
+                 }
+                else
+                {
+                    errorMsg =  "failed:"+ result.getCode() + result.getMessage();
+                }
+            }
+            else
+            {
+                errorMsg = (String) msg.obj;
+            }
+
+            if (!errorMsg.isEmpty())
+            { 
+			     onLoginFailed(errorMsg);
             }
         }
     }
