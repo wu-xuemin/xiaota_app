@@ -309,19 +309,19 @@ public class LujingActivity extends AppCompatActivity {
                     // 设置item及item中控件的点击事件
                     mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
 
-                    /**
-                     * 如果是基于旧的新建，还要加间距到新路径中去
-                     */
-                    if( !isDistanceSetted) {
-                        if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
-                            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-                            for (int k = 0; k < mDistanceList.size(); k++) {
-                                String url = Constant.putLujingDistanceUrl.replace("lujingID", String.valueOf(oldLujingID));
-                                mNetwork.putLujingDistance(url, mPostValue, new PutLujingDistanceHandler());
-                            }
-                            isDistanceSetted = true;
-                        }
-                    }
+//                    /**
+//                     * 如果是基于旧的新建，还要加间距到新路径中去, 基于旧的新建 后台api会将旧的路径上截取的节点自动返回给调用者
+//                     */
+//                    if( !isDistanceSetted) {
+//                        if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
+//                            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+//                            for (int k = 0; k < mDistanceList.size(); k++) {
+//                                String url = Constant.putLujingDistanceUrl.replace("lujingID", String.valueOf(oldLujingID));
+//                                mNetwork.putLujingDistance(url, mPostValue, new PutLujingDistanceHandler());
+//                            }
+//                            isDistanceSetted = true;
+//                        }
+//                    }
                 }
                 else
                 {

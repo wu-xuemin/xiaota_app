@@ -159,16 +159,18 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         getLujingListHandler = new GetLujingListHandler();
         initViews();//初始化控件
         initEvents();//初始化事件
-        selectTab(1);//默认选中第2个Tab
 
-        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-        mPostValue.put("account", "z");
-        mPostValue.put("password", "a");
+//        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+//        mPostValue.put("account", "z");
+//        mPostValue.put("password", "a");
 //        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
         /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
-        mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, getDxListHandler);///ok
-        mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
+//        mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, getDxListHandler);///ok
+//        mNetwork.fetchLujingListData(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler);//ok
         initComputeScan();
+
+        //after init ,select the default tab
+        selectTab(R.id.id_tab_lujing_moxing);//默认选中第2个Tab
     }
     //计算两点距离 的界面初始化
     private void initComputeScan(){
@@ -354,9 +356,9 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
     private void initViews() {
         //初始化3个Tab的布局文件
-        mTabDxQingce = (LinearLayout) findViewById(R.id.id_tab_weixin);
+        mTabDxQingce = (LinearLayout) findViewById(R.id.id_tab_wirelist);
         mTabLujingMoxing = (LinearLayout) findViewById(R.id.id_tab_lujing_moxing);
-        mTabJisuan = (LinearLayout) findViewById(R.id.id_tab_setting);
+        mTabJisuan = (LinearLayout) findViewById(R.id.id_tab_caculatecenter);
 
         //初始化3个ImageButton
         mQingceImg = (ImageButton) findViewById(R.id.id_tab_cx_qingce_img);
@@ -741,14 +743,11 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         //先将3个ImageButton置为灰色
         resetImgs();
         switch (v.getId()) {
-            case R.id.id_tab_weixin:
-                selectTab(0);//当点击Tab就选中该的Tab
-                break;
+            case R.id.id_tab_wirelist:
             case R.id.id_tab_lujing_moxing:
-                selectTab(1);
-                break;
-            case R.id.id_tab_setting:
-                selectTab(2);
+            case R.id.id_tab_caculatecenter:
+
+                selectTab(v.getId());
                 break;
         }
 
@@ -764,8 +763,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         hideFragments(transaction);
 
         switch (i) {
-            //当选中点击的是微信的Tab时
-            case 0:
+
+            case R.id.id_tab_wirelist:
                 tabFlag = "在电线清册";
                 //设置微信的ImageButton为绿色
                 mQingceImg.setImageResource(R.mipmap.tab_dx_qingce_pressed);
@@ -784,7 +783,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 mLayoutCompute.setVisibility(View.GONE);
                 stopScan();
                 break;
-            case 1:
+            case R.id.id_tab_lujing_moxing:
                 tabFlag = "在路径模型";
                 setLujingListFlag();
                 mLayoutQingCe.setVisibility(View.GONE);
@@ -800,7 +799,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
                 stopScan();
                 break;
-            case 2:
+            case R.id.id_tab_caculatecenter:
                 tabFlag = "在计算中心";
                 setLujingListFlag();
                 mLayoutQingCe.setVisibility(View.GONE);

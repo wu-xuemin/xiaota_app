@@ -91,6 +91,23 @@ public class XiaotaApp extends Application {
         GROUP_TYPE
     }
 
+    public enum TabPageIndex {
+        ACCOUNT,    //账号
+        PASSWORD,   //密码
+        FULL_NAME,  //名字
+        IS_LOGIN,   //是否登录
+        ROLE,        //角色
+        SERVICE_IP,  //服务器地址
+        SERVICE_PORT,  //服务器端口
+        USER_ID,     //用户id
+        GROUP_ID,
+        GROUP_NAME,
+        GROUP_TYPE
+    }
+
+
+
+
     public static XiaotaApp getApp() {
         return mApp;
     }
