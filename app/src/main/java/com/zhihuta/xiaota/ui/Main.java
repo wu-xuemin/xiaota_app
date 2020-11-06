@@ -49,6 +49,9 @@ import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.basic.Wires;
 import com.zhihuta.xiaota.bean.response.DistanceQRsResponse;
+
+import com.zhihuta.xiaota.bean.response.DistanceResponseData;
+import com.zhihuta.xiaota.bean.response.GetDistanceResponse;
 import com.zhihuta.xiaota.bean.response.GetWiresResponse;
 import com.zhihuta.xiaota.bean.response.PathGetDistanceQr;
 import com.zhihuta.xiaota.bean.response.PathGetObject;
@@ -140,6 +143,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private GetUserHandler getUserHandler;
     private GetDxListHandler getDxListHandler;
     private GetLujingListHandler getLujingListHandler;
+    private GetDistanceListHandler  getDistanceListHandler;
 
 
     private ArrayList<DistanceData> mDistanceListForCalculate = new ArrayList<>(); //从扫码筛选获取的间距列表, 在计算中心
@@ -158,8 +162,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
     private RecyclerView mDistanceRV;
     private DistanceAdapter mDistanceAdapter;
-    private ArrayList<DistanceData> mDistanceList = new ArrayList<>();
-    private ArrayList<DistanceData> mScanResultDistanceList = new ArrayList<>();
+    private ArrayList<DistanceData> mDistanceList = new ArrayList<>();           //计算两点距离时，扫码所得的间距
+    private ArrayList<DistanceData> mScanResultDistanceList = new ArrayList<>(); //路径中心，筛选路径所用
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,6 +176,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         getUserHandler = new Main.GetUserHandler();
         getDxListHandler = new GetDxListHandler();
         getLujingListHandler = new GetLujingListHandler();
+        getDistanceListHandler = new GetDistanceListHandler();
         initViews();//初始化控件
         initEvents();//初始化事件
 
@@ -184,7 +189,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
 
         initComputeScan();
-
+        showDistanceList();
         //after init ,select the default tab
         tabFlag = "";
         selectTab(R.id.id_tab_lujing_moxing);//默认选中第2个Tab
@@ -230,17 +235,31 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
         mDisplayScanResultTv.setText(result);
 
-//        // 解析数据，并填入
-//        JSON gson = new JSONObject();
-//        DistanceData distanceData = gson.(result, DistanceData.class);
-//        /**
-//         * 把二维码 累积起来，用于退出时筛选路径
-//         */
-//        mScanResultDistanceList.add(distanceData);
-//        if(mScanResultDistanceList.size() >1){
-//            //扫到第二个码时,程序自动将两个码之间所有的码自动添加进列表, 方便查看
-////            mNetwork.();
-//        }
+        // 解析数据，并填入
+        DistanceData distanceData = JSONObject.parseObject(result, DistanceData.class);
+        if(distanceData == null){
+            Log.i(TAG, "二维码解析异常");
+            return;
+        }
+        /**
+         * 把二维码 累积起来，用于退出时筛选路径
+         */
+        mScanResultDistanceList.add(distanceData);
+        if(mScanResultDistanceList.size() >1){
+            //扫到第二个码时,程序自动将两个码之间所有的码自动添加进列表, 方便查看
+//            mNetwork.();
+
+
+            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+
+            String url = Constant.getDistanceListByTwoDistanceUrl.replace("qrId1",String.valueOf( mScanResultDistanceList.get(0).getQr_id()));//"caculate/distance?qr_id=qrId1,qrId2";
+            url = url.replace("qrId2",String.valueOf( mScanResultDistanceList.get(1).getQr_id()));
+            mNetwork.get(url,mPostValue,getDistanceListHandler,
+                    (handler, msg)->{
+                        getDistanceListHandler.sendMessage(msg);
+                    });
+
+        }
     }
 
     @Override
@@ -248,6 +267,20 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
     }
 
+    //计算中心-计算两点距离-扫描的结果
+    private void showDistanceList(){
+        //间距列表
+        mDistanceRV = (RecyclerView) findViewById(R.id.rv_distance_in_calculate);
+        LinearLayoutManager manager5 = new LinearLayoutManager(this);
+        manager5.setOrientation(LinearLayoutManager.VERTICAL);
+        mDistanceRV.setLayoutManager(manager5);
+        mDistanceAdapter = new DistanceAdapter(mDistanceList, this);
+        mDistanceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        mDistanceRV.setAdapter(mDistanceAdapter);
+
+        // 设置item及item中控件的点击事件
+//        mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
+    }
 
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
@@ -260,7 +293,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
         return false;
     }
-
 
     @SuppressLint("HandlerLeak")
     class GetLujingListHandler extends Handler {
@@ -339,6 +371,80 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 Log.d("路径获取 NG:", errorMsg);
                 Toast.makeText(Main.this, "路径获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
              }
+
+            setIsGetting(false);
+        }
+    }
+
+    //计算两点距离-扫2个码，得到两个码之间所有的码，如果两个码在不同路径上，返回为空
+    @SuppressLint("HandlerLeak")
+    class GetDistanceListHandler extends Handler {
+
+        private boolean bIsGetting = false;
+
+        public boolean getIsGetting()
+        {
+            return bIsGetting;
+        }
+
+        public void setIsGetting(boolean getting)
+        {
+            bIsGetting = getting;
+        }
+
+        @Override
+        public void handleMessage(final Message msg) {
+//            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
+//                mLoadingProcessDialog.dismiss();
+//            }
+
+            String errorMsg = "";
+
+            if (msg.what == Network.OK) {
+                Result result= (Result)(msg.obj);
+
+                GetDistanceResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetDistanceResponse.class);
+
+                if (responseData != null && responseData.errorCode == 0)
+                {
+                    mDistanceList = new ArrayList<>();
+                    for (PathGetDistanceQr distanceObj : responseData.qr_list) {
+                        DistanceData distanceData = new DistanceData();
+                        distanceData.setQr_id( distanceObj.qrId );
+                        distanceData.setDistance(String.valueOf(distanceObj.distance));
+                        distanceData.setName(distanceObj.name);
+
+                        mDistanceList.add( distanceData);
+                    }
+
+                    if (mDistanceList.size() == 0) {
+                        Toast.makeText(Main.this, "间距数量为0！", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                    mDistanceAdapter = new DistanceAdapter(mDistanceList, Main.this);
+                    mDistanceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                    mDistanceRV.setAdapter(mDistanceAdapter);
+                    mDistanceAdapter.notifyDataSetChanged();
+                    // 设置item及item中控件的点击事件
+//                    mDistanceAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                }
+                else
+                {
+                    errorMsg =  "间距获取异常:"+ result.getCode() + result.getMessage();
+                    Log.d(TAG, errorMsg );
+                }
+            }
+            else
+            {
+                errorMsg = (String) msg.obj;
+            }
+
+            if (!errorMsg.isEmpty())
+            {
+                Log.d("路径获取 NG:", errorMsg);
+                Toast.makeText(Main.this, "路径获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+            }
 
             setIsGetting(false);
         }

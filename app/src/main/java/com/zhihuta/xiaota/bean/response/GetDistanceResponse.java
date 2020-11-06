@@ -2,6 +2,8 @@ package com.zhihuta.xiaota.bean.response;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import java.util.List;
+
 public class GetDistanceResponse extends BaseResponse
 {
     @JSONField(name = "path_id")
@@ -15,4 +17,7 @@ public class GetDistanceResponse extends BaseResponse
 
     @JSONField(name = "length")
     public double length;
+
+    @JSONField(name = "qr_list")
+    public List<PathGetDistanceQr> qr_list;
 }

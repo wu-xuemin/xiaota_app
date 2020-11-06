@@ -44,6 +44,7 @@ public class Constant {
 
     public static final String getDxListOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DX_OF_LUJING;
     public static final String getExportWiresOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_EXPORT_WIRES_OF_LUJING;
+    public static final String getDistanceListByTwoDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DISTANCE_LIST_BY_TWO_DISTANCE;
 // 后端 TODO: 同个用户下，路径名称要唯一
 
 }
