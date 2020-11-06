@@ -36,6 +36,12 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
         this.context = context;
     }
 
+    public void updateDataSource(List<LujingData> list)
+    {
+        this.dataList = list;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ItemViewLujingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

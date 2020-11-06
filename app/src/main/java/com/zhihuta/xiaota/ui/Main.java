@@ -348,12 +348,17 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                         mLujingList.get(k).setFlag(Constant.FLAG_LUJING_IN_LUJING);
                     }
 
-                    mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
-                    mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
-                    mLujingRV.setAdapter(mLujingAdapter);
-                    mLujingAdapter.notifyDataSetChanged();
-                    // 设置item及item中控件的点击事件
-                    mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                    if (mLujingAdapter == null)
+                    {
+                        mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
+                        mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                        mLujingRV.setAdapter(mLujingAdapter);
+
+                        // 设置item及item中控件的点击事件
+                        mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                    }
+
+                    mLujingAdapter.updateDataSource(mLujingList);
                 }
                 else
                 {
@@ -1107,17 +1112,17 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
                     stopScan();
 
-//                    if (!getLujingListHandler.getIsGetting())
-//                    {
-//                        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-//                        mPostValue.put("account", "z");
-//                        mPostValue.put("password", "a");
-//
-//                        getLujingListHandler.setIsGetting(true);
-//                        mNetwork.get(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler,(handler,msg2)->{
-//                            handler.sendMessage(msg2);
-//                        });
-//                    }
+                    if (!getLujingListHandler.getIsGetting())
+                    {
+                        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                        mPostValue.put("account", "z");
+                        mPostValue.put("password", "a");
+
+                        getLujingListHandler.setIsGetting(true);
+                        mNetwork.get(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler,(handler,msg2)->{
+                            handler.sendMessage(msg2);
+                        });
+                    }
                 }
 
                 break;
