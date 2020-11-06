@@ -128,10 +128,10 @@ dependencies {
 
 //    compile 'me.dm7.barcodescanner:zbar:1.7.2'
 
-    compile ('me.dm7.barcodescanner:zxing:1.9.8'){//compile 可以替换为implementation
+    implementation ('me.dm7.barcodescanner:zxing:1.9.8'){//compile 可以替换为implementation
         exclude group:"com.google.zxing"
     }
-    compile 'com.alibaba:fastjson:1.2.6'
+    implementation 'com.alibaba:fastjson:1.2.6'
     implementation 'com.alibaba:fastjson:1.1.70.android'
     implementation 'com.alibaba:fastjson:1.2.55'
 }

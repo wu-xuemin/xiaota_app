@@ -33,6 +33,8 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.internal.LinkedTreeMap;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
@@ -152,6 +154,10 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private Button mResetInCaculateBt;          //计算中心-重置按钮
     private SearchView mSearchViewInCalculate;  //计算中心-按名称查找按钮
 
+    private RecyclerView mDistanceRV;
+    private DistanceAdapter mDistanceAdapter;
+    private ArrayList<DistanceData> mDistanceList = new ArrayList<>();
+    private ArrayList<DistanceData> mScanResultDistanceList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -219,6 +225,19 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     @Override
     public void onScanQRCodeSuccess(String result) {
 
+        mDisplayScanResultTv.setText(result);
+
+//        // 解析数据，并填入
+//        JSON gson = new JSONObject();
+//        DistanceData distanceData = gson.(result, DistanceData.class);
+//        /**
+//         * 把二维码 累积起来，用于退出时筛选路径
+//         */
+//        mScanResultDistanceList.add(distanceData);
+//        if(mScanResultDistanceList.size() >1){
+//            //扫到第二个码时,程序自动将两个码之间所有的码自动添加进列表, 方便查看
+////            mNetwork.();
+//        }
     }
 
     @Override

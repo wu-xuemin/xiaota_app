@@ -115,9 +115,13 @@ public class LoginActivity extends AppCompatActivity {
 
         if (account.isEmpty() || password.isEmpty())
         {
+            ToastUtils.setMsgColor(0x77000000);
+            ToastUtils.setBgColor(0xAAFFFFFF);
             ToastUtils.showShort("用户名和密码不能为空");
             Log.d(TAG, "用户名和密码不能为空");
-            mLoadingProcessDialog.dismiss();
+            if( mLoadingProcessDialog != null) {
+                mLoadingProcessDialog.dismiss();
+            }
             mLoginButton.setEnabled(true);
         }
         else {
