@@ -46,6 +46,7 @@ public class RelatedDxActivity extends AppCompatActivity {
     //从路径界面传给电线界面的路径信息，在电线界面查看已绑定的电线，也在该路径里添加电线
     private LujingData mLujing;
 
+    private GetDxListOfLujingHandler getDxListOfLujingHandler;
     private int mRequestCodeFromMain =0 ; //标记, 来自Main界面， 是 全新新建/修改/基于旧的新建
 
     @Override
@@ -66,6 +67,7 @@ public class RelatedDxActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        getDxList();///
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -83,22 +85,11 @@ public class RelatedDxActivity extends AppCompatActivity {
         Intent intent = getIntent();
         mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
 
-
-        /**
-         * 获取该路径的电线列表
-         */
-        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-        mPostValue.put("account","NO USE"); //paths/{lujingId}/wires?serial_number={dxSN}&parts_code={dxPartsCode}
-        String theUrl = Constant.getDxListOfLujingUrl.replace("{lujingId}", String.valueOf(mLujing.getId()));
-        theUrl = theUrl.replace("{dxSN}","").replace("{dxPartsCode}","");
-        Log.i(TAG,"获取该路径的电线列表 " + theUrl);
-        mNetwork.fetchDxListOfLujing(theUrl, mPostValue, new GetDxListOfLujingHandler());///
-
         TextView textViewTitle = findViewById(R.id.textView_lujingNameShow);
         textViewTitle.setText(mLujing.getName());
 
         mDianxianList = new ArrayList<>();
-
+        getDxList();
         mAddNewDxBt = (Button) findViewById(R.id.button_to_add_new_Dx);
         mAddNewDxBt.setOnClickListener(new View.OnClickListener() {
                                          @Override
@@ -116,6 +107,19 @@ public class RelatedDxActivity extends AppCompatActivity {
                 RelatedDxActivity.this.finish();
             }
         });
+    }
+
+    private void getDxList(){
+        /**
+         * 获取该路径的电线列表
+         */
+            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+            mPostValue.put("account", "NO USE"); //paths/{lujingId}/wires?serial_number={dxSN}&parts_code={dxPartsCode}
+            String theUrl = Constant.getDxListOfLujingUrl.replace("{lujingId}", String.valueOf(mLujing.getId()));
+            theUrl = theUrl.replace("{dxSN}", "").replace("{dxPartsCode}", "");
+            Log.i(TAG, "获取该路径的电线列表 " + theUrl);
+            mNetwork.fetchDxListOfLujing(theUrl, mPostValue, new GetDxListOfLujingHandler());///
+
     }
 
     private void showDxList(){
@@ -184,6 +188,8 @@ public class RelatedDxActivity extends AppCompatActivity {
 
     @SuppressLint("HandlerLeak")
     class GetDxListOfLujingHandler extends Handler {
+
+
         @Override
         public void handleMessage(final Message msg) {
 //            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {

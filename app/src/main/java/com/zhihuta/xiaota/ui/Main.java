@@ -16,6 +16,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -164,6 +165,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private DistanceAdapter mDistanceAdapter;
     private ArrayList<DistanceData> mDistanceList = new ArrayList<>();           //计算两点距离时，扫码所得的间距
     private ArrayList<DistanceData> mScanResultDistanceList = new ArrayList<>(); //路径中心，筛选路径所用
+    private TextView textViewShowSumOfDistances; // 总长
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -228,6 +230,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
             }
         });
+
+        textViewShowSumOfDistances = (TextView)findViewById(R.id.textView11);
     }
 
     @Override
@@ -413,6 +417,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 if (responseData != null && responseData.errorCode == 0)
                 {
                     mDistanceList = new ArrayList<>();
+                    int sumOfDistances = 0;
                     for (PathGetDistanceQr distanceObj : responseData.qr_list) {
                         DistanceData distanceData = new DistanceData();
                         distanceData.setQr_id( distanceObj.qrId );
@@ -420,17 +425,20 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                         distanceData.setName(distanceObj.name);
 
                         mDistanceList.add( distanceData);
+                        sumOfDistances =   (int) (sumOfDistances + distanceObj.distance);
                     }
 
                     if (mDistanceList.size() == 0) {
                         Toast.makeText(Main.this, "间距数量为0！", Toast.LENGTH_SHORT).show();
                     }
 
-
                     mDistanceAdapter = new DistanceAdapter(mDistanceList, Main.this);
                     mDistanceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
                     mDistanceRV.setAdapter(mDistanceAdapter);
                     mDistanceAdapter.notifyDataSetChanged();
+
+                    textViewShowSumOfDistances.setText(String.valueOf(sumOfDistances));
+                    textViewShowSumOfDistances.setTextColor(Color.rgb(255, 0, 0));
                     // 设置item及item中控件的点击事件
 //                    mDistanceAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
                 }
@@ -1145,7 +1153,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 //                        transaction.show(mFragJisuan);
 //                    }
                 }
-            //    startScan();
+                startScan();
                 break;
         }
         //不要忘记提交事务
