@@ -540,10 +540,14 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                             mDianxianQingCeList.get(k).setFlag(Constant.FLAG_QINGCE_DX);
                         }
 
-                        mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this);
-                        mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
-                        mQingceRV.setAdapter(mDxQingceAdapter);
-                        mDxQingceAdapter.notifyDataSetChanged();
+                        if (mDxQingceAdapter == null)
+                        {
+                            mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this);
+                            mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                            mQingceRV.setAdapter(mDxQingceAdapter);
+                        }
+
+                        mDxQingceAdapter.updateDataSoruce(mDianxianQingCeList);
 
                     }
                     else
@@ -1036,9 +1040,9 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         //获取FragmentManager对象
         FragmentManager manager = getSupportFragmentManager();
         //获取FragmentTransaction对象
-        FragmentTransaction transaction = manager.beginTransaction();
+//        FragmentTransaction transaction = manager.beginTransaction();
         //先隐藏所有的Fragment
-        hideFragments(transaction);
+//        hideFragments(transaction);
 
         String oldTabTag = tabFlag;
 
@@ -1055,14 +1059,14 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     //设置微信的ImageButton为绿色
                     mQingceImg.setImageResource(R.mipmap.tab_dx_qingce_pressed);
                     //如果微信对应的Fragment没有实例化，则进行实例化，并显示出来
-                    if (mFragDxQingce == null) {
-                        mFragDxQingce = new WeixinFragment();
-//                    transaction.add(R.id.layout_dianxian_qingce_id, mFragWeinxin);
-                        transaction.add(R.id.layout_dianxian_qingce_id, mFragDxQingce);
-                    } else {
-                        //如果微信对应的Fragment已经实例化，则直接显示出来
-                        transaction.show(mFragDxQingce);
-                    }
+//                    if (mFragDxQingce == null) {
+//                        mFragDxQingce = new WeixinFragment();
+////                    transaction.add(R.id.layout_dianxian_qingce_id, mFragWeinxin);
+//                        transaction.add(R.id.layout_dianxian_qingce_id, mFragDxQingce);
+//                    } else {
+//                        //如果微信对应的Fragment已经实例化，则直接显示出来
+//                        transaction.show(mFragDxQingce);
+//                    }
                     mLayoutQingCe.setVisibility(View.VISIBLE);
 //                mLayoutOrder.setVisibility(View.GONE);
                     mLayoutLujing.setVisibility(View.GONE);
@@ -1094,12 +1098,12 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     mLayoutLujing.setVisibility(View.VISIBLE);
                     mLayoutCompute.setVisibility(View.GONE);
                     mLujingMoxingImg.setImageResource(R.mipmap.tab_lujing_moxing_pressed);
-                    if (mFragLujingMoxing == null) {
-                        mFragLujingMoxing = new AddressFragment();
-                        transaction.add(R.id.layout_dianxian_qingce_id, mFragLujingMoxing);
-                    } else {
-                        transaction.show(mFragLujingMoxing);
-                    }
+//                    if (mFragLujingMoxing == null) {
+//                        mFragLujingMoxing = new AddressFragment();
+//                        transaction.add(R.id.layout_dianxian_qingce_id, mFragLujingMoxing);
+//                    } else {
+//                        transaction.show(mFragLujingMoxing);
+//                    }
 
                     stopScan();
 
@@ -1129,18 +1133,18 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     // 在计算tab 默认看到的是计算路径电线长度，隐藏两点间距的
                     mLayoutComputeDistance.setVisibility(View.GONE);
                     mJisuanImg.setImageResource(R.mipmap.tab_compute_pressed);
-                    if (mFragJisuan == null) {
-                        mFragJisuan = new SettingFragment();
-                        transaction.add(R.id.layout_dianxian_qingce_id, mFragJisuan);
-                    } else {
-                        transaction.show(mFragJisuan);
-                    }
+//                    if (mFragJisuan == null) {
+//                        mFragJisuan = new SettingFragment();
+//                        transaction.add(R.id.layout_dianxian_qingce_id, mFragJisuan);
+//                    } else {
+//                        transaction.show(mFragJisuan);
+//                    }
                 }
             //    startScan();
                 break;
         }
         //不要忘记提交事务
-        transaction.commit();
+//        transaction.commit();
     }
 
     private void setLujingListFlag(){
