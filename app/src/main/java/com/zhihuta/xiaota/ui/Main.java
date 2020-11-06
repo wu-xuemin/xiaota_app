@@ -47,7 +47,9 @@ import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.Result;
+import com.zhihuta.xiaota.bean.basic.Wires;
 import com.zhihuta.xiaota.bean.response.DistanceQRsResponse;
+import com.zhihuta.xiaota.bean.response.GetWiresResponse;
 import com.zhihuta.xiaota.bean.response.PathGetDistanceQr;
 import com.zhihuta.xiaota.bean.response.PathGetObject;
 import com.zhihuta.xiaota.bean.response.PathsResponse;
@@ -184,6 +186,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         initComputeScan();
 
         //after init ,select the default tab
+        tabFlag = "";
         selectTab(R.id.id_tab_lujing_moxing);//默认选中第2个Tab
 		
 	   getLujingListHandler.setIsGetting(true);
@@ -372,38 +375,97 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
     @SuppressLint("HandlerLeak")
     class GetDxListHandler extends Handler {
+
+        private boolean bIsGetting = false;
+
+        public boolean getIsGetting()
+        {
+            return bIsGetting;
+        }
+
+        public void setIsGetting(boolean getting)
+        {
+            bIsGetting = getting;
+        }
+
         @Override
         public void handleMessage(final Message msg) {
 //            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
 //                mLoadingProcessDialog.dismiss();
 //            }
 
-            if (msg.what == Network.OK) {
-                Log.d("GetDxListHandler", "OKKK");
-                mDianxianQingCeList = (ArrayList<DianxianQingCeData>) msg.obj;
+            //////////////////////
+            String errorMsg = "";
 
-                if (mDianxianQingCeList == null) {
-                    Log.d(TAG, "handleMessage: " + "电线 获取异常");
-                } else {
-                    if (mDianxianQingCeList.size() == 0) {
-                        Toast.makeText(Main.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
-                    } else {
+            try {
+
+                if (msg.what == Network.OK) {
+                    Result result= (Result)(msg.obj);
+
+                    GetWiresResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetWiresResponse.class);
+
+                    if (responseData != null &&responseData.errorCode == 0)
+                    {
+                        mDianxianQingCeList = new ArrayList<>();
+
+                        for (Wires wire : responseData.wires) {
+
+                            DianxianQingCeData dianxianQingCeData = new DianxianQingCeData();
+                            dianxianQingCeData.setId(wire.getId());
+                            dianxianQingCeData.setEnd_point(wire.getEndPoint());
+                            dianxianQingCeData.setHose_redundancy(Double.toString(wire.getHoseRedundancy()));
+                            dianxianQingCeData.setLength(wire.getLength());
+                            dianxianQingCeData.setParts_code(wire.getPartsCode());
+                            dianxianQingCeData.setSerial_number(wire.getSerialNumber());
+                            dianxianQingCeData.setStart_point(wire.getStartPoint());
+                            dianxianQingCeData.setSteel_redundancy(Double.toString(wire.getSteelRedundancy()));
+                            dianxianQingCeData.setWickes_cross_section(wire.getWickesCrossSection());
+
+                            mDianxianQingCeList.add( dianxianQingCeData);
+                        }
+
+                        Log.d(TAG, "电线数量: size: " + mDianxianQingCeList.size());
+
+                        if (mDianxianQingCeList.size() == 0) {
+                            Toast.makeText(Main.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
+                        }
+
                         for (int k = 0; k < mDianxianQingCeList.size(); k++) {
                             mDianxianQingCeList.get(k).setFlag(Constant.FLAG_QINGCE_DX);
                         }
+
+                        mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this);
+                        mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                        mQingceRV.setAdapter(mDxQingceAdapter);
+                        mDxQingceAdapter.notifyDataSetChanged();
+
                     }
-                    mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this);
-                    mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
-                    mQingceRV.setAdapter(mDxQingceAdapter);
-                    mDxQingceAdapter.notifyDataSetChanged();
+                    else
+                    {
+                        errorMsg =  "电线获取异常:"+ result.getCode() + result.getMessage();
+                        Log.d(TAG, errorMsg );
+                    }
+                }
+                else
+                {
+                    errorMsg = (String) msg.obj;
                 }
 
-            } else {
-                String errorMsg = (String) msg.obj;
-                Log.d("GetDxListHandler NG:", errorMsg);
-                Toast.makeText(Main.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                if (!errorMsg.isEmpty())
+                {
+                    Log.d("电线获取 NG:", errorMsg);
+                    Toast.makeText(Main.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                }
             }
-        }
+            catch (Exception ex)
+            {
+                Log.d("电线获取 NG:", ex.getMessage());
+            }
+            finally {
+                setIsGetting(false);
+            }
+        }//handle message
+
     }
 
     @SuppressLint("HandlerLeak")
@@ -795,26 +857,46 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     @Override
     protected void onResume() {
         super.onResume();
-        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-        mPostValue.put("account", "z"); ///TODO
-        mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, getDxListHandler);///ok
-        /**
-         * 如果是从筛选界面返回，则使用返回的筛选结果，不要去服务器获取。
-         */
-        if (isBackFromFilterPath) {
-            Log.i(TAG, "从筛选返回,不刷新");
-            isBackFromFilterPath = false;
-        } else {
-            Log.i(TAG, "不是从筛选返回,要刷新");
 
-            if (!getLujingListHandler.getIsGetting()) {
-                getLujingListHandler.setIsGetting( true );
+        if (tabFlag.equals("在电线清册") )
+        {
+            if (!getDxListHandler.getIsGetting())
+            {
+                getDxListHandler.setIsGetting(true);
+                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                mPostValue.put("account", "z"); ///TODO
 
-                mNetwork.get(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler,
-                        (handler, msg) -> {
-                            getLujingListHandler.sendMessage(msg);
-                        });
+                mNetwork.get(Constant.getDxListUrl8083, mPostValue, getDxListHandler,(handler, msg)->{
+                    handler.sendMessage(msg);
+                });
             }
+        }
+        else if (tabFlag.equals("在路径模型") )
+        {
+            /**
+             * 如果是从筛选界面返回，则使用返回的筛选结果，不要去服务器获取。
+             */
+            if (isBackFromFilterPath) {
+                Log.i(TAG, "从筛选返回,不刷新");
+                isBackFromFilterPath = false;
+            } else {
+                Log.i(TAG, "不是从筛选返回,要刷新");
+
+                if (!getLujingListHandler.getIsGetting()) {
+                    getLujingListHandler.setIsGetting( true );
+
+                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+
+                    mNetwork.get(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler,
+                            (handler, msg) -> {
+                                getLujingListHandler.sendMessage(msg);
+                            });
+                }
+            }
+        }
+        else if (tabFlag.equals("在计算中心"))
+        {
+
         }
     }
 
@@ -852,60 +934,102 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         //先隐藏所有的Fragment
         hideFragments(transaction);
 
+        String oldTabTag = tabFlag;
+
         switch (i) {
 
             case R.id.id_tab_wirelist:
+
+
                 tabFlag = "在电线清册";
-                //设置微信的ImageButton为绿色
-                mQingceImg.setImageResource(R.mipmap.tab_dx_qingce_pressed);
-                //如果微信对应的Fragment没有实例化，则进行实例化，并显示出来
-                if (mFragDxQingce == null) {
-                    mFragDxQingce = new WeixinFragment();
+
+                if(!oldTabTag.equals(tabFlag) )
+                {
+
+                    //设置微信的ImageButton为绿色
+                    mQingceImg.setImageResource(R.mipmap.tab_dx_qingce_pressed);
+                    //如果微信对应的Fragment没有实例化，则进行实例化，并显示出来
+                    if (mFragDxQingce == null) {
+                        mFragDxQingce = new WeixinFragment();
 //                    transaction.add(R.id.layout_dianxian_qingce_id, mFragWeinxin);
-                    transaction.add(R.id.layout_dianxian_qingce_id, mFragDxQingce);
-                } else {
-                    //如果微信对应的Fragment已经实例化，则直接显示出来
-                    transaction.show(mFragDxQingce);
-                }
-                mLayoutQingCe.setVisibility(View.VISIBLE);
+                        transaction.add(R.id.layout_dianxian_qingce_id, mFragDxQingce);
+                    } else {
+                        //如果微信对应的Fragment已经实例化，则直接显示出来
+                        transaction.show(mFragDxQingce);
+                    }
+                    mLayoutQingCe.setVisibility(View.VISIBLE);
 //                mLayoutOrder.setVisibility(View.GONE);
-                mLayoutLujing.setVisibility(View.GONE);
-                mLayoutCompute.setVisibility(View.GONE);
-                stopScan();
-                break;
-            case R.id.id_tab_lujing_moxing:
-                tabFlag = "在路径模型";
-                setLujingListFlag();
-                mLayoutQingCe.setVisibility(View.GONE);
-                mLayoutLujing.setVisibility(View.VISIBLE);
-                mLayoutCompute.setVisibility(View.GONE);
-                mLujingMoxingImg.setImageResource(R.mipmap.tab_lujing_moxing_pressed);
-                if (mFragLujingMoxing == null) {
-                    mFragLujingMoxing = new AddressFragment();
-                    transaction.add(R.id.layout_dianxian_qingce_id, mFragLujingMoxing);
-                } else {
-                    transaction.show(mFragLujingMoxing);
+                    mLayoutLujing.setVisibility(View.GONE);
+                    mLayoutCompute.setVisibility(View.GONE);
+                    stopScan();
+
+                    //get list
+                    if (!getDxListHandler.getIsGetting())
+                    {
+                        getDxListHandler.setIsGetting(true);
+                        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                        mPostValue.put("account", "z"); ///TODO
+
+                        mNetwork.get(Constant.getDxListUrl8083, mPostValue, getDxListHandler,(handler, msg)->{
+                            handler.sendMessage(msg);
+                        });
+                    }
                 }
 
-                stopScan();
+                break;
+            case R.id.id_tab_lujing_moxing:
+
+                tabFlag = "在路径模型";
+
+                if(!oldTabTag.equals(tabFlag) )
+                {
+                    setLujingListFlag();
+                    mLayoutQingCe.setVisibility(View.GONE);
+                    mLayoutLujing.setVisibility(View.VISIBLE);
+                    mLayoutCompute.setVisibility(View.GONE);
+                    mLujingMoxingImg.setImageResource(R.mipmap.tab_lujing_moxing_pressed);
+                    if (mFragLujingMoxing == null) {
+                        mFragLujingMoxing = new AddressFragment();
+                        transaction.add(R.id.layout_dianxian_qingce_id, mFragLujingMoxing);
+                    } else {
+                        transaction.show(mFragLujingMoxing);
+                    }
+
+                    stopScan();
+
+//                    if (!getLujingListHandler.getIsGetting())
+//                    {
+//                        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+//                        mPostValue.put("account", "z");
+//                        mPostValue.put("password", "a");
+//
+//                        getLujingListHandler.setIsGetting(true);
+//                        mNetwork.get(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler,(handler,msg2)->{
+//                            handler.sendMessage(msg2);
+//                        });
+//                    }
+                }
+
                 break;
             case R.id.id_tab_caculatecenter:
                 tabFlag = "在计算中心";
-                setLujingListFlag();
-                mLayoutQingCe.setVisibility(View.GONE);
-                mLayoutLujing.setVisibility(View.GONE);
-                mLayoutCompute.setVisibility(View.VISIBLE);
+                if(!oldTabTag.equals(tabFlag) )
+                {
+                    setLujingListFlag();
+                    mLayoutQingCe.setVisibility(View.GONE);
+                    mLayoutLujing.setVisibility(View.GONE);
+                    mLayoutCompute.setVisibility(View.VISIBLE);
 
-                // 在计算tab 默认看到的是计算路径电线长度，隐藏两点间距的
-                mLayoutComputeDistance.setVisibility(View.GONE);
-                mJisuanImg.setImageResource(R.mipmap.tab_compute_pressed);
-                if (mFragJisuan == null) {
-                    mFragJisuan = new SettingFragment();
-                    transaction.add(R.id.layout_dianxian_qingce_id, mFragJisuan);
-                } else {
-                    transaction.show(mFragJisuan);
+                    // 在计算tab 默认看到的是计算路径电线长度，隐藏两点间距的
+                    mLayoutComputeDistance.setVisibility(View.GONE);
+                    mJisuanImg.setImageResource(R.mipmap.tab_compute_pressed);
+                    if (mFragJisuan == null) {
+                        mFragJisuan = new SettingFragment();
+                        transaction.add(R.id.layout_dianxian_qingce_id, mFragJisuan);
+                    } else {
+                        transaction.show(mFragJisuan);
+                    }
                 }
-
             //    startScan();
                 break;
         }
