@@ -1106,7 +1106,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
                 if(!oldTabTag.equals(tabFlag) )
                 {
-                    setLujingListFlag();
                     mLayoutQingCe.setVisibility(View.GONE);
                     mLayoutLujing.setVisibility(View.VISIBLE);
                     mLayoutCompute.setVisibility(View.GONE);
@@ -1138,7 +1137,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 tabFlag = "在计算中心";
                 if(!oldTabTag.equals(tabFlag) )
                 {
-                    setLujingListFlag();
                     mLayoutQingCe.setVisibility(View.GONE);
                     mLayoutLujing.setVisibility(View.GONE);
                     mLayoutCompute.setVisibility(View.VISIBLE);
@@ -1160,34 +1158,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 //        transaction.commit();
     }
 
-    private void setLujingListFlag(){
-        //要设定flag
-        if(tabFlag.equals("在路径模型")) {
-            for (int k = 0; k < mLujingList.size(); k++) {
-                mLujingList.get(k).setFlag(Constant.FLAG_LUJING_IN_LUJING);
-            }
-
-            Log.i(TAG,"--> 路径模型中的路径");
-            mLujingAdapter = new LujingAdapter(mLujingList, Main.this);
-            mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
-            mLujingRV.setAdapter(mLujingAdapter);
-            mLujingAdapter.notifyDataSetChanged();
-            mLujingAdapter.setOnItemClickListener(MyItemClickListener);
-        } else  if(tabFlag.equals("在计算中心")) {
-            for (int k = 0; k < mLujingList.size(); k++) {
-                mLujingList.get(k).setFlag(Constant.FLAG_LUJING_IN_CALCULATE);
-            }
-
-            Log.i(TAG,"--> 计算中心中的路径");
-            mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this);
-            mLujingInCalculateRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
-            mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
-            mLujingInCalculateAdapter.notifyDataSetChanged();
-            mLujingInCalculateAdapter.setOnItemClickListener(MyItemClickListener);
-        }
-
-
-    }
     private void  startScan(){
 
         if(mQRCodeView != null) {
@@ -1267,9 +1237,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     Log.i(TAG," 筛选得到" + mLujingList.size() + " 条路径");
                     Toast.makeText(this, " 筛选得到" + mLujingList.size() + " 条路径", Toast.LENGTH_LONG).show();
 
-//                    mLujingListInCalculate = (ArrayList<LujingData>) mLujingList.clone();
-                    //要设定flag
-                    setLujingListFlag();
                 }
                 break;
 
