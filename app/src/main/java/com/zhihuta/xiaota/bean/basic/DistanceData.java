@@ -8,6 +8,15 @@ public class DistanceData implements Serializable {
     private String serial_number; //间距 编号
     private String distance; // 距离值
     private Integer qr_sequence; ///二维码的顺序  path distance qr表
+    private String flag; ///
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
+    }
 
     public Integer getQr_sequence() {
         return qr_sequence;

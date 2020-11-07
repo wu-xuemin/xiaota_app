@@ -18,6 +18,9 @@ public class Constant {
     public static String FLAG_LUJING_IN_LUJING = "路径模型中的路径";
     public static String FLAG_LUJING_IN_CALCULATE = "计算中心中的路径";
 
+    public static String FLAG_DISTANCE_IN_LUJING = "路径模型中的间距";
+    public static String FLAG_DISTANCE_IN_CALCULATE = "计算中心中的间距";
+
     public static final int REQUEST_CODE_ADD_TOTAL_NEW_LUJING = 1;            //路径中心，添加 全新 新路径
     public static final int REQUEST_CODE_SCAN_TO_FILTER_LUJING = 2;    //路径中心，扫码筛选路径
 

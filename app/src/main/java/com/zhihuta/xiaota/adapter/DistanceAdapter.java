@@ -12,11 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
+import com.zhihuta.xiaota.common.Constant;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.DistanceViewHolder>implements View.OnClickListener {
+public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.ItemViewDistanceViewHolder>implements View.OnClickListener {
 //    public class LujingAdapter extends RecyclerView.Adapter<com.zhihuta.xiaota.adapter.LujingAdapter.LujingViewHolder> implements View.OnClickListener {
 
         private SimpleDateFormat sf3 = new SimpleDateFormat("yy/MM/dd");
@@ -26,19 +27,19 @@ public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.Distan
 //        mDistanceAdapter = list;
 //    }
 
-    private List<DistanceData> list;//数据源
+    private List<DistanceData> dataList;//数据源
     private Context context;//上下文
 
     /// 这里，传数据
     public DistanceAdapter(List<DistanceData> list, Context context) {
-        this.list = list;
+        this.dataList = list;
         this.context = context;
     }
     @NonNull
     @Override
-    public DistanceAdapter.DistanceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ItemViewDistanceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_distance,parent,false);
-        return new DistanceAdapter.DistanceViewHolder(view);
+        return new ItemViewDistanceViewHolder(view);
     }
 
 
@@ -46,29 +47,59 @@ public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.Distan
      * 绑定数据
      */
     @Override
-    public void onBindViewHolder(@NonNull DistanceAdapter.DistanceViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ItemViewDistanceViewHolder holder, int position) {
 
-        DistanceData data = list.get(position);
+        DistanceData data = dataList.get(position);
         holder.distanceNameTv.setText(data.getName());
         holder.distanceNumberTv.setText(data.getSerial_number());// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
         holder.distanceUpBt.setTag(position);
         holder.distanceDownBt.setTag(position);
         holder.deleteDistanceBt.setTag(position);
+
+        holder.distanceLengthTv.setText(data.getDistance());
+        holder.distanceIdTv.setText(data.getSerial_number());
+
+
+        final ItemViewDistanceViewHolder itemView = (ItemViewDistanceViewHolder) holder;
+        if(dataList.get(position).getFlag().equals(Constant.FLAG_DISTANCE_IN_LUJING)) { //
+            itemView.distanceNameTv.setVisibility(View.VISIBLE);
+            itemView.distanceNumberTv.setVisibility(View.VISIBLE);
+
+            itemView.distanceUpBt.setVisibility(View.VISIBLE);
+            itemView.distanceDownBt.setVisibility(View.VISIBLE);
+            itemView.deleteDistanceBt.setVisibility(View.VISIBLE);
+
+            itemView.distanceLengthTv.setVisibility(View.GONE);
+            itemView.distanceIdTv.setVisibility(View.GONE);
+        } else if(dataList.get(position).getFlag().equals(Constant.FLAG_DISTANCE_IN_CALCULATE)) { //
+            itemView.distanceNameTv.setVisibility(View.VISIBLE);
+            itemView.distanceNumberTv.setVisibility(View.VISIBLE);
+
+            itemView.distanceUpBt.setVisibility(View.GONE);
+            itemView.distanceDownBt.setVisibility(View.GONE);
+            itemView.deleteDistanceBt.setVisibility(View.GONE);
+
+            itemView.distanceLengthTv.setVisibility(View.VISIBLE);
+            itemView.distanceIdTv.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return dataList.size();
     }
 
-    public class DistanceViewHolder extends RecyclerView.ViewHolder{
+    public class ItemViewDistanceViewHolder extends RecyclerView.ViewHolder{
         TextView distanceNameTv;
         TextView distanceNumberTv;
         Button distanceUpBt;
         Button distanceDownBt;
         Button deleteDistanceBt;
+        TextView distanceLengthTv;
+        TextView distanceIdTv;
 
-        DistanceViewHolder(View itemView) {
+        ItemViewDistanceViewHolder(View itemView) {
             super(itemView);
             distanceNameTv = itemView.findViewById(R.id.textView_distanceName);
             distanceNumberTv = itemView.findViewById(R.id.textView_distanceNumber);
@@ -76,12 +107,12 @@ public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.Distan
             distanceUpBt = itemView.findViewById(R.id.button_distance_up);
             distanceDownBt = itemView.findViewById(R.id.button_distance_down);
             deleteDistanceBt = itemView.findViewById(R.id.button_distance_delete);
-
+            distanceLengthTv = itemView.findViewById(R.id.textView2);
+            distanceIdTv = itemView.findViewById(R.id.textView6);
             // 为ItemView添加点击事件
             distanceUpBt.setOnClickListener(DistanceAdapter.this);
             distanceDownBt.setOnClickListener(DistanceAdapter.this);
             deleteDistanceBt.setOnClickListener(DistanceAdapter.this);
-
         }
     }
 
@@ -126,7 +157,7 @@ public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.Distan
 
     @Override
     public int getItemViewType(int position) {
-        if (position == list.size()) {
+        if (position == dataList.size()) {
             return 1;
         } else {
             return 0;

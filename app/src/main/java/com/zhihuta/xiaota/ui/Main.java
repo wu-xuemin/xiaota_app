@@ -423,6 +423,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                         distanceData.setQr_id( distanceObj.qrId );
                         distanceData.setDistance(String.valueOf(distanceObj.distance));
                         distanceData.setName(distanceObj.name);
+                        distanceData.setFlag(Constant.FLAG_DISTANCE_IN_CALCULATE);
 
                         mDistanceList.add( distanceData);
                         sumOfDistances =   (int) (sumOfDistances + distanceObj.distance);

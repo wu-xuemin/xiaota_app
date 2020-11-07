@@ -293,6 +293,7 @@ public class LujingActivity extends AppCompatActivity {
                         distanceData.setQr_id(distance_qr.qrId);
                         distanceData.setQr_sequence(distance_qr.qrSequence);
                         distanceData.setSerial_number(distance_qr.serialNumber);
+                        distanceData.setFlag(Constant.FLAG_DISTANCE_IN_LUJING);
 
                         mDistanceList.add( distanceData);
                     }
@@ -349,10 +350,6 @@ public class LujingActivity extends AppCompatActivity {
             super.handleMessage(msg);
             if (msg.what == Network.OK) {
                 ShowMessage.showToast(LujingActivity.this,"添加间距成功！",ShowMessage.MessageDuring.SHORT);
-//                //把扫码新加的各个间距加入间距列表
-//                mDistanceList.add(list.get(i));
-//                mDistanceAdapter.notifyDataSetChanged();
-
             }else {
 
                 if( msg.obj != null){

@@ -110,8 +110,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginButton.setEnabled(false);
 
-        String account  = mAccountText.getText().toString().trim();
-        String password = mPasswordText.getText().toString();
+        String account = "王小明"; // mAccountText.getText().toString().trim();
+        String password = "a";//mPasswordText.getText().toString();
 
         if (account.isEmpty() || password.isEmpty())
         {
