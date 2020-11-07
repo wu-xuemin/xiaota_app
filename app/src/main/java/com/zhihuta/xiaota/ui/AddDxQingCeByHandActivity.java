@@ -37,11 +37,11 @@ import static com.zhihuta.xiaota.common.Constant.getDxListUrl8083;
 public class AddDxQingCeByHandActivity extends AppCompatActivity {
 
     private static final String[] mXinshuXuanXiang = {"单芯","2芯","3芯","4芯","5芯","6芯","其他"};
-    private Spinner spinnerXinshu;
+    //private Spinner spinnerXinshu;
     private ArrayAdapter<String> adapterXinShu;
 
     private static final String[] mJieMianXuanxXiang = {"直径1mm","直径2mm","直径3mm","直径4mm","直径5mm","直径6mm","其他"};
-    private Spinner spinnerJieMian;
+    //private Spinner spinnerJieMian;
     private ArrayAdapter<String> adapterJieMian;
 
     @Override
@@ -64,13 +64,13 @@ public class AddDxQingCeByHandActivity extends AppCompatActivity {
         adapterXinShu.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         //将adapter 添加到spinner中
-        spinnerXinshu.setAdapter(adapterXinShu);
+//        spinnerXinshu.setAdapter(adapterXinShu);
 
         //添加事件Spinner事件监听
-        spinnerXinshu.setOnItemSelectedListener(new SpinnerSelectedListenerXinShu());
+//        spinnerXinshu.setOnItemSelectedListener(new SpinnerSelectedListenerXinShu());
 
         //设置默认值
-        spinnerXinshu.setVisibility(View.VISIBLE);
+//        spinnerXinshu.setVisibility(View.VISIBLE);
 
         /// 截面 下拉
         //spinnerJieMian = (Spinner) findViewById(R.id.spinner_jiemian);
@@ -81,13 +81,13 @@ public class AddDxQingCeByHandActivity extends AppCompatActivity {
         adapterJieMian.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         //将adapter 添加到spinner中
-        spinnerJieMian.setAdapter(adapterJieMian);
+//        spinnerJieMian.setAdapter(adapterJieMian);
 
         //添加事件Spinner事件监听
-        spinnerJieMian.setOnItemSelectedListener(new SpinnerSelectedListenerJieMian());
+//        spinnerJieMian.setOnItemSelectedListener(new SpinnerSelectedListenerJieMian());
 
         //设置默认值
-        spinnerJieMian.setVisibility(View.VISIBLE);
+//        spinnerJieMian.setVisibility(View.VISIBLE);
 
         findViewById(R.id.button_save).setOnClickListener(new View.OnClickListener() {
             @Override

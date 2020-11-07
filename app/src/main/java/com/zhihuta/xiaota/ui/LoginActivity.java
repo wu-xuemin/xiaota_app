@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
             mAccountText.setText(XiaotaApp.getApp().getAccount());
         }
         if(XiaotaApp.getApp().getPassword() != null && !"".equals(XiaotaApp.getApp().getPassword())) {
-            mAccountText.setText(XiaotaApp.getApp().getPassword());
+            mPasswordText.setText(XiaotaApp.getApp().getPassword());
         }
 
         mSystemVersionTv = findViewById(R.id.system_version);
@@ -110,8 +110,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginButton.setEnabled(false);
 
-        String account = "王小明"; // mAccountText.getText().toString().trim();
-        String password = "a";//mPasswordText.getText().toString();
+        String account  = mAccountText.getText().toString().trim();
+        String password = mPasswordText.getText().toString();
 
         if (account.isEmpty() || password.isEmpty())
         {
