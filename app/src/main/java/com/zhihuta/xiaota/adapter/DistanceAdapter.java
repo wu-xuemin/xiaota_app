@@ -57,7 +57,6 @@ public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.ItemVi
         holder.deleteDistanceBt.setTag(position);
 
         holder.distanceLengthTv.setText(data.getDistance());
-        holder.distanceIdTv.setText(data.getSerial_number());
 
 
         final ItemViewDistanceViewHolder itemView = (ItemViewDistanceViewHolder) holder;
@@ -70,7 +69,6 @@ public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.ItemVi
             itemView.deleteDistanceBt.setVisibility(View.VISIBLE);
 
             itemView.distanceLengthTv.setVisibility(View.GONE);
-            itemView.distanceIdTv.setVisibility(View.GONE);
         } else if(dataList.get(position).getFlag().equals(Constant.FLAG_DISTANCE_IN_CALCULATE)) { //
             itemView.distanceNameTv.setVisibility(View.VISIBLE);
             itemView.distanceNumberTv.setVisibility(View.VISIBLE);
@@ -80,7 +78,6 @@ public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.ItemVi
             itemView.deleteDistanceBt.setVisibility(View.GONE);
 
             itemView.distanceLengthTv.setVisibility(View.VISIBLE);
-            itemView.distanceIdTv.setVisibility(View.VISIBLE);
         }
 
     }
@@ -97,7 +94,6 @@ public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.ItemVi
         Button distanceDownBt;
         Button deleteDistanceBt;
         TextView distanceLengthTv;
-        TextView distanceIdTv;
 
         ItemViewDistanceViewHolder(View itemView) {
             super(itemView);
@@ -108,7 +104,6 @@ public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.ItemVi
             distanceDownBt = itemView.findViewById(R.id.button_distance_down);
             deleteDistanceBt = itemView.findViewById(R.id.button_distance_delete);
             distanceLengthTv = itemView.findViewById(R.id.textView2);
-            distanceIdTv = itemView.findViewById(R.id.textView6);
             // 为ItemView添加点击事件
             distanceUpBt.setOnClickListener(DistanceAdapter.this);
             distanceDownBt.setOnClickListener(DistanceAdapter.this);

@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.internal.LinkedTreeMap;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.SettingFragment;
@@ -156,9 +157,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private ZXingView mQRCodeView;
     private ScheduledExecutorService mStopScanTimer;
     private Button mContinueScanBt;
-    private Button mFinishScanBt;
     private TextView mDisplayScanResultTv;
-    private Button mResetInCaculateBt;          //计算中心-重置按钮
+    private Button mResetInCaculateBt;          //计算中心-重置按钮 （重置清零查询路径的结果）
     private SearchView mSearchViewInCalculate;  //计算中心-按名称查找按钮
 
     private RecyclerView mDistanceRV;
@@ -166,6 +166,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private ArrayList<DistanceData> mDistanceList = new ArrayList<>();           //计算两点距离时，扫码所得的间距
     private ArrayList<DistanceData> mScanResultDistanceList = new ArrayList<>(); //路径中心，筛选路径所用
     private TextView textViewShowSumOfDistances; // 总长
+    private Button mResetScanResultInCaculateBt;          //计算中心-计算两点距离-重新扫码  （重置清零扫码的结果）
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -221,16 +222,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
             }
         });
 
-        mFinishScanBt = (Button) findViewById(R.id.button_scan_again);
-        mFinishScanBt.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "点击了结束按钮");
-
-            }
-        });
-
         textViewShowSumOfDistances = (TextView)findViewById(R.id.textView11);
     }
 
@@ -248,12 +239,17 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         /**
          * 把二维码 累积起来，用于退出时筛选路径
          */
+        for (DistanceData distanceData1 : mScanResultDistanceList) {
+            if(distanceData1.getSerial_number().equals( distanceData.getSerial_number())){
+                Toast.makeText(Main.this, "扫到码重复了,忽略", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
         mScanResultDistanceList.add(distanceData);
         if(mScanResultDistanceList.size() >1){
             //扫到第二个码时,程序自动将两个码之间所有的码自动添加进列表, 方便查看
 //            mNetwork.();
-
-
+            Log.i(TAG,"扫到第二个码" + mScanResultDistanceList.get(0).getName() +"," + mScanResultDistanceList.get(1).getName());
             LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
 
             String url = Constant.getDistanceListByTwoDistanceUrl.replace("qrId1",String.valueOf( mScanResultDistanceList.get(0).getQr_id()));//"caculate/distance?qr_id=qrId1,qrId2";
@@ -423,6 +419,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                         distanceData.setQr_id( distanceObj.qrId );
                         distanceData.setDistance(String.valueOf(distanceObj.distance));
                         distanceData.setName(distanceObj.name);
+                        distanceData.setQr_sequence(distanceObj.qrSequence);
+                        distanceData.setSerial_number(distanceObj.serialNumber);
                         distanceData.setFlag(Constant.FLAG_DISTANCE_IN_CALCULATE);
 
                         mDistanceList.add( distanceData);
@@ -442,6 +440,9 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     textViewShowSumOfDistances.setTextColor(Color.rgb(255, 0, 0));
                     // 设置item及item中控件的点击事件
 //                    mDistanceAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                    // 计算完一次 就清理
+                    mScanResultDistanceList.clear();
+
                 }
                 else
                 {
@@ -855,6 +856,33 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 return true;
             }
         });
+        mResetInCaculateBt = (Button) findViewById(R.id.button_reset_in_calculate);
+        mResetInCaculateBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                mPostValue.put("account", "z");
+
+                if (!getLujingListHandler.getIsGetting())
+                {
+                    getLujingListHandler.setIsGetting(true);
+                    mNetwork.get(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler,(handler,msg)->{
+                        handler.sendMessage(msg);
+                    });
+                }
+            }
+        });
+        mResetScanResultInCaculateBt = (Button) findViewById(R.id.button_scan_again);
+        mResetScanResultInCaculateBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                textViewShowSumOfDistances.setText("0");
+                mDisplayScanResultTv.setText("");
+                mDistanceList.clear();
+                mScanResultDistanceList.clear();
+                mDistanceAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     /**
@@ -904,22 +932,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 return true;
             }
         });
-        mResetInCaculateBt = (Button) findViewById(R.id.button_reset_in_calculate);
-        mResetInCaculateBt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-                mPostValue.put("account", "z");
 
-                if (!getLujingListHandler.getIsGetting())
-                {
-                    getLujingListHandler.setIsGetting(true);
-                    mNetwork.get(Constant.getLujingListUrl8083, mPostValue, getLujingListHandler,(handler,msg)->{
-                        handler.sendMessage(msg);
-                    });
-                }
-             }
-        });
     }
 
     /**
