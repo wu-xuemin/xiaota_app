@@ -8,6 +8,9 @@ public class URL {
 
 
     public static final String GET_DIANXIAN_QINGCE_LIST = "/wires";
+    public static final String POST_DIANXIAN_QINGCE_IMPORT = "/wires/import";
+
+
     public static final String GET_ACCOUNT_LIST = "/accounts";
     public static final String GET_USER_LIST = "/user/list";
     public static final String GET_LUJING_LIST = "/paths";

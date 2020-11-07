@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -13,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.GsonBuilder;
+import com.google.zxing.common.StringUtils;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.HttpResponseHandler;
 import com.zhihuta.xiaota.bean.basic.Result;
@@ -26,6 +28,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zhihuta.xiaota.util.ShowMessage;
 
+import org.apache.poi.util.StringUtil;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -35,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -186,13 +192,17 @@ public class Network {
             Log.d(TAG, "http post: 没网络");
             ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
             msg.what = NG;
-            msg.obj = mCtx.getString(R.string.network_not_connect);
+            msg.obj = "没网络";
             handler.sendMessage(msg);
+            return false;
         }
 
         if (url == null || url.trim().isEmpty())
         {
             Log.d(TAG, "http post:  empty url");
+            msg.what = NG;
+            msg.obj = "url为空";
+            handler.sendMessage(msg);
             return false;
         }
 
@@ -219,14 +229,15 @@ public class Network {
             @Override
             public void run() {
 
-                RequestBody requestBody;
-                requestBody = RequestBody.create(typeJSON, JsonBody.toString());
-
-                //Post method
-                Request request = new Request.Builder().url(url).post(requestBody).build();
-                OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
                 Response response = null;
                 try {
+                    RequestBody requestBody;
+                    requestBody = RequestBody.create(typeJSON, JsonBody.toString());
+
+                    //Post method
+                    Request request = new Request.Builder().url(url).post(requestBody).build();
+                    OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+
                     //同步网络请求
                     response = client.newCall(request).execute();
 
@@ -272,6 +283,274 @@ public class Network {
         return true;
     }
 
+    public boolean postMultiForm(final String url, final LinkedHashMap<String, String> values, final Handler handler, final HttpResponseHandler httpResponseHandler)
+    {
+        final Message msg = handler.obtainMessage();
+
+        if (!isNetworkConnected()) {
+            Log.d(TAG, "http post: 没网络");
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = "没网络";
+            handler.sendMessage(msg);
+            return false;
+        }
+
+        if (url == null || url.trim().isEmpty())
+        {
+            Log.d(TAG, "http post:  empty url");
+
+            msg.what = NG;
+            msg.obj = "url为空";
+            handler.sendMessage(msg);
+
+            return false;
+        }
+
+        Log.d(TAG, "http post:"+url);
+
+        if (values == null || values.isEmpty())
+        {
+            Log.d(TAG, "http post:  empty values");
+
+            msg.what = NG;
+            msg.obj = "上传内容为空";
+            handler.sendMessage(msg);
+
+            return false;
+        }
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                Response response = null;
+                try {
+                    RequestBody requestBody;
+
+                    MultipartBody.Builder builder= new MultipartBody.Builder()
+                            .setType(MultipartBody.FORM);
+
+                    try {
+                        for (Object o : values.entrySet()) {
+                            HashMap.Entry entry = (HashMap.Entry) o;
+
+                            String key   = entry.getKey().toString().toLowerCase();
+                            String value = entry.getValue().toString().toLowerCase();
+
+                            if (key != null && !key.isEmpty())
+                            {
+                                if (value!= null && !value.isEmpty())
+                                {
+                                    if (key.equals("file") )
+                                    {
+                                        //File file = new File(Environment.getExternalStorageDirectory(), fileName + ".txt");
+
+                                        File file = new File(value);//use app inner storage.
+
+                                        String fileName = values.get("filename");//value.substring(pos+1);
+
+//                                        RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), file);
+                                        RequestBody fileBody = RequestBody.create(null, file);
+                                        builder = builder.addFormDataPart("file", fileName, fileBody);
+                                    }
+                                    else
+                                    {
+                                        builder= builder.addFormDataPart(key, value);
+                                    }
+                                }
+                            }
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    requestBody = builder.build();
+
+                    //Post method
+                    Request request = new Request.Builder().url(url).post(requestBody).build();
+                    OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+
+                    //同步网络请求
+                    response = client.newCall(request).execute();
+
+                    //by default, set the msg status to ng.
+                    msg.what = NG;
+
+                    if (response.isSuccessful()) {
+                        Log.d(TAG, "http post: response success");
+
+                        Result result = JSONObject.parseObject(response.body().string(), Result.class);
+
+                        if (result != null) {
+
+                            msg.obj = result;
+                            msg.what = OK;
+                        }
+                        else
+                        {
+                            msg.obj =  "http post: 返回结果JSON格式不对 ";
+                            msg.what = NG;
+                        }
+
+                    } else {
+                        msg.obj = "网路请求失败";
+                    }
+
+                } catch (Exception e) {
+                    msg.what = NG;
+                    msg.obj = "异常" + e.getMessage();
+                    Log.d(TAG, "http post:  catch " + e);
+                } finally {
+
+                    Log.d(TAG, "http post: finally");
+                    if (response != null) {
+                        response.close();
+                    }
+
+                    httpResponseHandler.processResponse(handler,msg);
+                }
+            }
+        });//executor
+
+        return true;
+    }
+    public boolean putMultiForm(final String url, final LinkedHashMap<String, String> values, final Handler handler, final HttpResponseHandler httpResponseHandler)
+    {
+        final Message msg = handler.obtainMessage();
+
+        if (!isNetworkConnected()) {
+            Log.d(TAG, "http post: 没网络");
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = "没网络";
+            handler.sendMessage(msg);
+            return false;
+        }
+
+        if (url == null || url.trim().isEmpty())
+        {
+            Log.d(TAG, "http post:  empty url");
+
+            msg.what = NG;
+            msg.obj = "url为空";
+            handler.sendMessage(msg);
+
+            return false;
+        }
+
+        Log.d(TAG, "http post:"+url);
+
+        if (values == null || values.isEmpty())
+        {
+            Log.d(TAG, "http post:  empty values");
+
+            msg.what = NG;
+            msg.obj = "上传内容为空";
+            handler.sendMessage(msg);
+
+            return false;
+        }
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                Response response = null;
+                try {
+                    RequestBody requestBody;
+
+                    MultipartBody.Builder builder= new MultipartBody.Builder()
+                            .setType(MultipartBody.FORM);
+
+                    try {
+                        for (Object o : values.entrySet()) {
+                            HashMap.Entry entry = (HashMap.Entry) o;
+
+                            String key   = entry.getKey().toString().toLowerCase();
+                            String value = entry.getValue().toString().toLowerCase();
+
+                            if (key != null && !key.isEmpty())
+                            {
+                                if (value!= null && !value.isEmpty())
+                                {
+                                    if (key.equals("file") )
+                                    {
+                                        //File file = new File(Environment.getExternalStorageDirectory(), fileName + ".txt");
+
+                                        File file = new File(value);//use app inner storage.
+
+                                        String fileName = values.get("filename");//value.substring(pos+1);
+
+//                                        RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), file);
+                                        RequestBody fileBody = RequestBody.create(null, file);
+                                        builder = builder.addFormDataPart("file", fileName, fileBody);
+                                    }
+                                    else
+                                    {
+                                        builder= builder.addFormDataPart(key, value);
+                                    }
+                                }
+                            }
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    requestBody = builder.build();
+
+                    //Post method
+                    Request request = new Request.Builder().url(url).put(requestBody).build();
+                    OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+
+                    //同步网络请求
+                    response = client.newCall(request).execute();
+
+                    //by default, set the msg status to ng.
+                    msg.what = NG;
+
+                    if (response.isSuccessful()) {
+                        Log.d(TAG, "http post: response success");
+
+                        Result result = JSONObject.parseObject(response.body().string(), Result.class);
+
+                        if (result != null) {
+
+                            msg.obj = result;
+                            msg.what = OK;
+                        }
+                        else
+                        {
+                            msg.obj =  "http post: 返回结果JSON格式不对 ";
+                            msg.what = NG;
+                        }
+
+                    } else {
+                        msg.obj = "网路请求失败";
+                    }
+
+                } catch (Exception e) {
+                    msg.what = NG;
+                    msg.obj = "异常" + e.getMessage();
+                    Log.d(TAG, "http post:  catch " + e);
+                } finally {
+
+                    Log.d(TAG, "http post: finally");
+                    if (response != null) {
+                        response.close();
+                    }
+
+                    httpResponseHandler.processResponse(handler,msg);
+                }
+            }
+        });//executor
+
+        return true;
+    }
     public boolean put(final String url,final LinkedHashMap<String, String> values,final Handler handler, final HttpResponseHandler httpResponseHandler)
     {
         final Message msg = handler.obtainMessage();
@@ -289,6 +568,9 @@ public class Network {
         if (url == null || url.trim().isEmpty())
         {
             Log.d(TAG, "http put:  empty url");
+            msg.what = NG;
+            msg.obj =  "空url";
+            handler.sendMessage(msg);
             return false;
         }
 
@@ -316,14 +598,16 @@ public class Network {
             @Override
             public void run() {
 
-                RequestBody requestBody;
-                requestBody = RequestBody.create(typeJSON, JsonBody.toString());
-
-                //Post method
-                Request request = new Request.Builder().url(url).put(requestBody).build();
-                OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
                 Response response = null;
                 try {
+                    RequestBody requestBody;
+                    requestBody = RequestBody.create(typeJSON, JsonBody.toString());
+
+                    //Post method
+                    Request request = new Request.Builder().url(url).put(requestBody).build();
+                    OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+
+
                     //同步网络请求
                     response = client.newCall(request).execute();
 
@@ -386,6 +670,10 @@ public class Network {
         if (url == null || url.trim().isEmpty())
         {
             Log.d(TAG, "http delete:  empty url");
+            msg.what = NG;
+            msg.obj = "空url";
+            handler.sendMessage(msg);
+
             return false;
         }
 
@@ -412,21 +700,24 @@ public class Network {
             @Override
             public void run() {
 
-                Request request = null;
-                if (JsonBody.isEmpty())
-                {
-                    request = new Request.Builder().url(url).delete().build();
-                }
-                else {
-                    RequestBody requestBody;
-                    requestBody = RequestBody.create(typeJSON, JsonBody.toString());
-
-                    request = new Request.Builder().url(url).delete(requestBody).build();
-                }
-
-                OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
                 Response response = null;
                 try {
+                    Request request = null;
+
+                    if (JsonBody.isEmpty())
+                    {
+                        request = new Request.Builder().url(url).delete().build();
+                    }
+                    else {
+                        RequestBody requestBody;
+                        requestBody = RequestBody.create(typeJSON, JsonBody.toString());
+
+                        request = new Request.Builder().url(url).delete(requestBody).build();
+                    }
+
+                    OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+
+
                     //同步网络请求
                     response = client.newCall(request).execute();
 
