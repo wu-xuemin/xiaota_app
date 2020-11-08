@@ -962,7 +962,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
      */
     private LujingAdapter.OnItemClickListener MyItemClickListener = new LujingAdapter.OnItemClickListener() {
 
-        int positionPass;
         @Override
         public void onItemClick(View v, LujingAdapter.ViewName viewName, int position) {
             //viewName可区分item及item内部控件
@@ -985,7 +984,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                             .setPositiveButton("删除", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    String IDs =  "{ids:[" + String.valueOf(mLujingList.get(positionPass).getId())  + "]}"; /// {ids:[91]}
+                                    String IDs =  "{ids:[" + String.valueOf(mLujingList.get(position).getId())  + "]}"; /// {ids:[91]}
                                     mNetwork.deleteLujing(Constant.deleteLujingUrl, IDs, new DeleteLujingHandler());
                                 }
                             })
