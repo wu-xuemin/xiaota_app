@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -167,6 +168,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private ArrayList<DistanceData> mScanResultDistanceList = new ArrayList<>(); //路径中心，筛选路径所用
     private TextView textViewShowSumOfDistances; // 总长
     private Button mResetScanResultInCaculateBt;          //计算中心-计算两点距离-重新扫码  （重置清零扫码的结果）
+    private Button mSetDistanceLengthInCaculateBt;          //计算中心-计算两点距离-设置值
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -883,6 +885,26 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 mDistanceAdapter.notifyDataSetChanged();
             }
         });
+        mSetDistanceLengthInCaculateBt  = (Button) findViewById(R.id.button5);
+        mSetDistanceLengthInCaculateBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final EditText et = new EditText(Main.this);
+                et.setInputType(InputType.TYPE_CLASS_NUMBER);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Main.this);
+                alertDialogBuilder.setTitle("输入间距长度：")
+                        .setView(et)
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                             Log.i(TAG, "输入了长度： " + et.getText());
+                            }
+                        })
+                        .show();
+            }
+        });
+
     }
 
     /**
