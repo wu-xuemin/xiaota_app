@@ -42,6 +42,8 @@ public class Constant {
     //获取 路径对应的间距列表 (编辑路径时，或 在基于已有路径 新建路径时)
     public static final String getLujingDistanceListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_LUJING_DISTANCE_LIST;
     public static final String addNewLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING;
+    public static final String addNewLujingBaseOnOldUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING_BASE_ON_OLD;
+
     public static final String modifyLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.PUT_MODIFY_LUJING_NAME;
     public static final String putLujingDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.PUT_LUJING_DISTANCE;
     public static final String deleteLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.DELETE_DELETE_LUJING;

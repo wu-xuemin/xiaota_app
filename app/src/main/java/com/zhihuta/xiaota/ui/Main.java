@@ -231,6 +231,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     public void onScanQRCodeSuccess(String result) {
 
         mDisplayScanResultTv.setText(result);
+        mSetDistanceLengthInCaculateBt.setEnabled(true);
 
         // 解析数据，并填入
         DistanceData distanceData = JSONObject.parseObject(result, DistanceData.class);
@@ -886,6 +887,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
             }
         });
         mSetDistanceLengthInCaculateBt  = (Button) findViewById(R.id.button5);
+        //初始为不可点击，扫码有结果时才enable
+        mSetDistanceLengthInCaculateBt.setEnabled(false);
         mSetDistanceLengthInCaculateBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -104,9 +104,9 @@
                 android:id="@+id/textView10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:background="#FFFFFF"
-                android:text="间距总长：" />
+                android:text="间距总长："
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/textView11"
@@ -114,13 +114,15 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="#FFFFFF"
-                android:text="待计算" />
+                android:gravity="left"
+                android:text="待计算"
+                android:textSize="18sp" />
 
         </LinearLayout>
         <!--横线-->
         <View
             android:layout_width="wrap_content"
-            android:layout_height="1dp"
+            android:layout_height="3dp"
             android:background="#008577" />
 
         <LinearLayout

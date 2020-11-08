@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -249,9 +252,20 @@ public class LujingActivity extends AppCompatActivity {
                     break;
                 case R.id.button_distance_delete:
                     Toast.makeText(LujingActivity.this, "你点击了 删除路径按钮" + (position + 1), Toast.LENGTH_SHORT).show();
-                    //TODO 警告之后再删除??
+
+                    android.app.AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LujingActivity.this);
+                    alertDialogBuilder.setTitle("确认删除路径" + mDistanceList.get(position).getName() + "吗？")
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                                }
+                            })
+                            .show();
                     mDistanceList.remove(position);
                     mDistanceAdapter.notifyDataSetChanged();
+                    //TODO
                     break;
                 default:
                     Toast.makeText(LujingActivity.this, "你点击了item按钮" + (position + 1), Toast.LENGTH_SHORT).show();

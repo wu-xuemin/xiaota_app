@@ -55,7 +55,7 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
 
         LujingData data = dataList.get(position);
         holder.lujingNameTv.setText(data.getName());
-        holder.lujingCreatedDateTv.setText(data.getCreate_time());// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
+        holder.lujingCreatedDateTv.setText(data.getCreate_time().substring(2));// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
         holder.lujingCreaterTv.setText(data.getCreator());
         holder.modifyLujingBt.setTag(position);
         holder.createLujingBaseOnExistBt.setTag(position);

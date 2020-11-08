@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -148,6 +150,18 @@ public class RelatedDxActivity extends AppCompatActivity {
             switch (v.getId()){
                 case R.id.buttonDxDelete:
                     Toast.makeText(RelatedDxActivity.this," 已选电线的 删除:" + (position+1),Toast.LENGTH_SHORT).show();
+
+                    android.app.AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RelatedDxActivity.this);
+                    alertDialogBuilder.setTitle("确认删除电线" + mDianxianList.get(position).getSerial_number() + "吗？")
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                                }
+                            })
+                            .show();
+                    //TODO
                     mDianxianList.remove(position);
                     mDianXianAdapter.notifyDataSetChanged(); //刷新列表
                     break;
@@ -214,6 +228,7 @@ public class RelatedDxActivity extends AppCompatActivity {
                         mDxRV.addItemDecoration(new DividerItemDecoration(RelatedDxActivity.this, DividerItemDecoration.VERTICAL));
                         mDxRV.setAdapter(mDianXianAdapter);
                         mDianXianAdapter.notifyDataSetChanged();
+                        mDianXianAdapter.setOnItemClickListener(MyItemClickListener);
                     }
                 }
             } else {
