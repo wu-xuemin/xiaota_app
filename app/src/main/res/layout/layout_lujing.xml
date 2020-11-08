@@ -26,6 +26,13 @@
                 android:text="扫码筛选" />
 
             <Button
+                android:id="@+id/button_reset_lujing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="重置" /> <!-- android:layout_weight="1" -->
+
+
+            <Button
                 android:id="@+id/button_add_new_lujing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

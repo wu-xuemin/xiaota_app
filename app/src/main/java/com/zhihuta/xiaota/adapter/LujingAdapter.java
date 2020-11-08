@@ -30,14 +30,18 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
     private List<LujingData> dataList;//数据源
     private Context context;//上下文
 
+    private String  strMode;
     /// 这里，传数据
-    public LujingAdapter(List<LujingData> list, Context context) {
+//    public LujingAdapter(List<LujingData> list, Context context) {
+    public LujingAdapter(List<LujingData> list, Context context, String strMode) {
         this.dataList = list;
         this.context = context;
+        this.strMode = strMode;
     }
 
-    public void updateDataSource(List<LujingData> list)
+    public void updateDataSource(List<LujingData> list, String strMode)
     {
+        this.strMode = strMode;
         this.dataList = list;
         notifyDataSetChanged();
     }
@@ -65,14 +69,14 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
 
         final LujingAdapter.ItemViewLujingViewHolder itemView = (LujingAdapter.ItemViewLujingViewHolder) holder;
 
-        if(dataList.get(position).getFlag().equals(Constant.FLAG_LUJING_IN_LUJING)) { //路径模型中
+        if( this.strMode.equals(Constant.FLAG_LUJING_IN_LUJING)) { //路径模型中
             itemView.modifyLujingBt.setVisibility(View.VISIBLE);
             itemView.createLujingBaseOnExistBt.setVisibility(View.VISIBLE);
             itemView.deleteLujingBt.setVisibility(View.VISIBLE);
 
             itemView.exportAccordModelBt.setVisibility(View.GONE);
             itemView.wiresListBt.setVisibility(View.GONE);
-        } else if (dataList.get(position).getFlag().equals(Constant.FLAG_LUJING_IN_CALCULATE)){  //计算模型中
+        } else if (this.strMode.equals(Constant.FLAG_LUJING_IN_CALCULATE)){  //计算模型中
             itemView.modifyLujingBt.setVisibility(View.GONE);
             itemView.createLujingBaseOnExistBt.setVisibility(View.GONE);
             itemView.deleteLujingBt.setVisibility(View.GONE);

@@ -53,7 +53,7 @@ public class LujingActivity extends AppCompatActivity {
     private RecyclerView mDistanceRV;
 
     private Network mNetwork;
-    private GetLujingDistanceListHandler getLujingDistanceListHandler;
+    //private GetLujingDistanceListHandler getLujingDistanceListHandler;
 
     private Button mButtonScanToAddXianduan; // 扫码去添加线段
     private Button mButtonRelateDx; // 去关联电缆电线
@@ -84,7 +84,7 @@ public class LujingActivity extends AppCompatActivity {
         mNetwork = Network.Instance(getApplication());
         lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
 
-        getLujingDistanceListHandler = new GetLujingDistanceListHandler();
+        //getLujingDistanceListHandler = new GetLujingDistanceListHandler();
         //返回前页按钮
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -188,7 +188,7 @@ public class LujingActivity extends AppCompatActivity {
     // 无论是 修改路径，还是基于已有路径新建路径，都需要获该路径取原有的间距列表
     private void getGetLujingDistanceList(Intent intent) {
         //获取 路径对应的间距列表
-        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+
 //        mPostValue.put("account", "z");
         String theUrl;
         //如果是基于旧的路径，还需要把旧路径的间距拿来。
@@ -200,7 +200,7 @@ public class LujingActivity extends AppCompatActivity {
 
         //mNetwork.fetchDistanceListOfLujing(theUrl, mPostValue, getLujingDistanceListHandler);
         //获取路径的间距列表
-        mNetwork.get(theUrl,null,getLujingDistanceListHandler,
+        mNetwork.get(theUrl,null,new GetLujingDistanceListHandler(""),
                 (handler, msg)->{
                         handler.sendMessage(msg);
                 });
@@ -281,6 +281,11 @@ public class LujingActivity extends AppCompatActivity {
 
     @SuppressLint("HandlerLeak")
     class GetLujingDistanceListHandler extends Handler {
+        private String strMode = "";
+        public GetLujingDistanceListHandler(String strMode)
+        {
+            this.strMode = strMode;
+        }
         @Override
         public void handleMessage(final Message msg) {
 //            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
@@ -307,7 +312,7 @@ public class LujingActivity extends AppCompatActivity {
                         distanceData.setQr_id(distance_qr.qrId);
                         distanceData.setQr_sequence(distance_qr.qrSequence);
                         distanceData.setSerial_number(distance_qr.serialNumber);
-                        distanceData.setFlag(Constant.FLAG_DISTANCE_IN_LUJING);
+                        distanceData.setFlag(this.strMode);
 
                         mDistanceList.add( distanceData);
                     }

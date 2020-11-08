@@ -14,16 +14,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.zhihuta.xiaota.R;
+import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
+import com.zhihuta.xiaota.bean.basic.Result;
+import com.zhihuta.xiaota.bean.response.PathGetObject;
+import com.zhihuta.xiaota.bean.response.PathsResponse;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -73,6 +79,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
         mQRCodeView = (ZXingView) findViewById(R.id.zxingview);
         mQRCodeView.setDelegate(this);
         mDisplayScanResultTv = (TextView) findViewById(R.id.textView_display_scan_result);
+        mDisplayScanResultTv.setText("请对准二维码");
         mContinueScanBt = (Button) findViewById(R.id.button_continue_scan);
         mContinueScanBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,6 +89,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                 mQRCodeView.showScanRect();
                 Log.d(TAG, "onStart: startCamera");
                 mQRCodeView.startSpot(); ///开启扫描  --要重新开启扫描，否则扫描不出下一个新的二维码
+                mDisplayScanResultTv.setText("请对准二维码");
             }
         });
 
@@ -94,8 +102,6 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
                 if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING) {
                     Log.i(TAG, "筛选路径");
-                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-                    mPostValue.put("account","z"); ///TODO
 
                     String qrIDs = null;
                     if(mScanResultDistanceList.size() ==0){
@@ -109,8 +115,20 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                                 qrIDs = qrIDs + "," + String.valueOf(mScanResultDistanceList.get(j).getQr_id());
                             }
                         }
-                        String theUrl = Constant.getFilterLujingListByQrUrl.replace("qrIDs", qrIDs); ///paths?qr_ids=qrIDs
-                        mNetwork.fetchLujingListData(theUrl, mPostValue, new FilterPathHandler());//ok
+                        //String theUrl = Constant.getFilterLujingListByQrUrl.replace("qrIDs", qrIDs); ///paths?qr_ids=qrIDs
+
+
+                       // mNetwork.fetchLujingListData(theUrl, mPostValue, new FilterPathHandler());//ok
+
+                        HashMap<String, String> getParams = new HashMap<>();
+                        getParams.put("qr_ids",qrIDs);
+
+                        mNetwork.get(Constant.getLujingListUrl8083, getParams, new FilterPathHandler(getParams),
+                                (handler, msg) -> {
+                                    handler.sendMessage(msg);
+                                });
+
+
                     }
                 } else {
                     /**
@@ -241,32 +259,77 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
     }
     @SuppressLint("HandlerLeak")
     class FilterPathHandler extends Handler {
+        private HashMap<String, String> getParameters = new HashMap<>();
+        public FilterPathHandler(HashMap<String, String> mPostValue)
+        {
+            this.getParameters = mPostValue;
+        }
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+
+            ////////////////
+
+            String errorMsg = "";
+
             if (msg.what == Network.OK) {
-                mFilterLujingList = (ArrayList<LujingData>) msg.obj;
-                if (mFilterLujingList == null) {
-                    Log.d(TAG, "筛选 得到路径数量为0或者异常"  );
-                } else {
+                Result result= (Result)(msg.obj);
+
+                PathsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), PathsResponse.class);
+
+                if (responseData != null &&responseData.errorCode == 0)
+                {
+                    mFilterLujingList = new ArrayList<>();
+
+                    for (PathGetObject pathObj : responseData.paths) {
+
+                        LujingData lujingData = new LujingData();
+                        lujingData.setId( pathObj.id );
+                        lujingData.setName(pathObj.name);
+                        lujingData.setCreator(pathObj.creator);
+                        //lujingData.setLujingCaozuo(pathObj.);
+                        lujingData.setCreate_time(pathObj.createTime);
+
+                        mFilterLujingList.add( lujingData);
+                    }
+
+                    Log.d(TAG, "获取路径: size: " + mFilterLujingList.size());
+
+                    if (mFilterLujingList.size() == 0) {
+                        Toast.makeText(ZxingScanActivity.this, "筛选得到路径数量为0！", Toast.LENGTH_SHORT).show();
+
+                        return;
+                    }
+
                     ShowMessage.showToast(ZxingScanActivity.this, "筛选 得到路径数量：" + mFilterLujingList.size(), ShowMessage.MessageDuring.SHORT);
                     /**
                      * 把筛选结果返回给主页面
                      */
+
                     Intent intent = new Intent();
+                    intent.putExtra("getParameters", getParameters);
                     intent.putExtra("mFilterLujingList", mFilterLujingList);
                     setResult(RESULT_OK, intent);
-                }
-                finish();
-            } else {
 
-                if (msg.obj != null) {
-//                    if( msg.obj.toString().equals("PATH_QRCODE_EXIST")){
-//                        ShowMessage.showDialog(ZxingScanActivity.this,"异常！该路径已包含了该二维码" ); //
-//                    } else {
-                    ShowMessage.showDialog(ZxingScanActivity.this, "筛选路径出错！"); //
+                    finish();
+                }
+                else
+                {
+                    errorMsg =  "路径获取异常:"+ result.getCode() + result.getMessage();
+                    Log.d(TAG, errorMsg );
                 }
             }
+            else
+            {
+                errorMsg = (String) msg.obj;
+            }
+
+            if (!errorMsg.isEmpty())
+            {
+                Log.d("路径获取 NG:", errorMsg);
+                Toast.makeText(ZxingScanActivity.this, "筛选路径出错！", Toast.LENGTH_SHORT).show();
+            }
+            ////////////////
         }
     }
 
