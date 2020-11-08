@@ -47,8 +47,6 @@ public class RelateNewDxActivity extends AppCompatActivity {
     private ArrayList<DianxianQingCeData> mCheckedDxList = new ArrayList<>();
     private LujingData mLujing;
 
-    GetDxListHandler getDxListHandler ;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,8 +61,6 @@ public class RelateNewDxActivity extends AppCompatActivity {
         }
 
         mNetwork = Network.Instance(getApplication());
-
-        getDxListHandler = new GetDxListHandler();
 
         initViews();
 //        showTobeSelectedDxList();
@@ -87,19 +83,16 @@ public class RelateNewDxActivity extends AppCompatActivity {
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mDxRV.setLayoutManager(manager);
 
-        if (!getDxListHandler.getIsGetting())
-        {
-            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-            mPostValue.put("account","z");
-            mPostValue.put("password", "a");
-            mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
+        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+        mPostValue.put("account","z");
+        mPostValue.put("password", "a");
+        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
 
-            /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
+        /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
 
-            mNetwork.get(Constant.getDxListUrl8083, mPostValue, getDxListHandler,(handler, msg)->{
-                handler.sendMessage(msg);
-            });
-        }
+        mNetwork.get(Constant.getDxListUrl8083, mPostValue, new GetDxListHandler(),(handler, msg)->{
+            handler.sendMessage(msg);
+        });
 
         mDianxianTobeSelectList = new ArrayList<>();
         mAddBt = (Button) findViewById(R.id.button_OK_to_add_dxTobeSelect22 ); // 添加 按钮
@@ -214,11 +207,14 @@ public class RelateNewDxActivity extends AppCompatActivity {
                             checkedList.add(false); //初始时都是未选中。
                         }
 
-                        mDianXianToBeSelectedAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList, RelateNewDxActivity.this);
-                        mDxRV.addItemDecoration(new DividerItemDecoration(RelateNewDxActivity.this, DividerItemDecoration.VERTICAL));
-                        mDxRV.setAdapter(mDianXianToBeSelectedAdapter);
-                        mDianXianToBeSelectedAdapter.notifyDataSetChanged();
-                        mDianXianToBeSelectedAdapter.setOnItemClickListener(MyItemClickListener);
+                        if (mDianXianToBeSelectedAdapter == null)
+                        {
+                            mDianXianToBeSelectedAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList, RelateNewDxActivity.this);
+                            mDxRV.addItemDecoration(new DividerItemDecoration(RelateNewDxActivity.this, DividerItemDecoration.VERTICAL));
+                            mDxRV.setAdapter(mDianXianToBeSelectedAdapter);
+                            mDianXianToBeSelectedAdapter.setOnItemClickListener(MyItemClickListener);
+                        }
+                        mDianXianToBeSelectedAdapter.updateDataSoruce(mDianxianTobeSelectList);
                     }
                     else
                     {

@@ -139,6 +139,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
     HashMap<String, String> mLujingGetParameters = new HashMap<>();
 
+    LinkedHashMap<String, String> mDxQingCeGetParameters = new LinkedHashMap<>();
+
     LinkedHashMap<String, String> mLujingCaculateGetParameters = new LinkedHashMap<>();
 //    private LujingAdapter mLujingShaixuanAdapter;
 //    private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
@@ -147,7 +149,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
     private Network mNetwork;
     private GetUserHandler getUserHandler;
-    private GetDxListHandler getDxListHandler;
+//    private GetDxListHandler getDxListHandler;
 //    private GetLujingListHandler getLujingListHandler;
     private GetDistanceListHandler  getDistanceListHandler;
 
@@ -182,7 +184,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
         mNetwork = Network.Instance(getApplication());
         getUserHandler = new Main.GetUserHandler();
-        getDxListHandler = new GetDxListHandler();
+//        getDxListHandler = new GetDxListHandler();
         //getLujingListHandler = new GetLujingListHandler();
         getDistanceListHandler = new GetDistanceListHandler();
         initViews();//初始化控件
@@ -716,15 +718,15 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            LinkedHashMap<String, String> mLujingGetParameters = new LinkedHashMap<>();
+                            LinkedHashMap<String, String> newPathParameters = new LinkedHashMap<>();
                             String name = et.getText().toString();
                             if (name == null || name.isEmpty()) { //不允许名称为空
                                 Toast.makeText(Main.this, "名称不能为空", Toast.LENGTH_SHORT).show();
                             } else {
                                 mLujingToPass.setName(et.getText().toString());
-//                            mLujingGetParameters.put("name", new Gson().toJson(mLujingToPass.getName()));
-                                mLujingGetParameters.put("name", (mLujingToPass.getName()));
-                                mNetwork.addNewLujing(Constant.addNewLujingUrl, mLujingGetParameters, new LujingHandler());
+//                            newPathParameters.put("name", new Gson().toJson(mLujingToPass.getName()));
+                                newPathParameters.put("name", (mLujingToPass.getName()));
+                                mNetwork.addNewLujing(Constant.addNewLujingUrl, newPathParameters, new LujingHandler());
                             }
                         }
                     })
@@ -740,10 +742,10 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            LinkedHashMap<String, String> mLujingGetParameters = new LinkedHashMap<>();
+                            LinkedHashMap<String, String> newPathParameters = new LinkedHashMap<>();
                             mLujingToPass.setName(et.getText().toString());
-                            mLujingGetParameters.put("name", mLujingToPass.getName());
-                            mNetwork.addNewLujing(Constant.addNewLujingUrl, mLujingGetParameters, new LujingHandler());
+                            newPathParameters.put("name", mLujingToPass.getName());
+                            mNetwork.addNewLujing(Constant.addNewLujingUrl, newPathParameters, new LujingHandler());
                         }
                     })
                     .show();
@@ -1037,34 +1039,12 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         Log.i(TAG, "onResume");
         if (tabFlag.equals("在电线清册") )
         {
-//            if (!getDxListHandler.getIsGetting())
-//            {
-//                getDxListHandler.setIsGetting(true);
-//                LinkedHashMap<String, String> mLujingGetParameters = new LinkedHashMap<>();
-//                mLujingGetParameters.put("account", "z"); ///TODO
-//
-//                mNetwork.get(Constant.getDxListUrl8083, mLujingGetParameters, getDxListHandler,(handler, msg)->{
-//                    handler.sendMessage(msg);
-//                });
-//            }
+
         }
         else if (tabFlag.equals("在路径模型") )
         {
-            /**
-             * 如果是从筛选界面返回，则使用返回的筛选结果，不要去服务器获取。
-             */
-//            if (isBackFromFilterPath) {
-//                Log.i(TAG, "从筛选返回,不刷新");
-//                isBackFromFilterPath = false;
-//            } else {
-//                Log.i(TAG, "不是从筛选返回,要刷新");
-
             //筛选界面负责将参数传进来！
 
-//            mNetwork.get(Constant.getLujingListUrl8083, mLujingGetParameters, new GetLujingListHandler(tabFlag),
-//                        (handler, msg) -> {
-//                            handler.sendMessage(msg);
-//                        });
         }
         else if (tabFlag.equals ("在计算中心"))
         {
@@ -1136,10 +1116,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     stopScan();
 
                     //get list
-                    LinkedHashMap<String, String> mLujingGetParameters = new LinkedHashMap<>();
-                    //mLujingGetParameters.put("account", "z"); ///TODO
-
-                    mNetwork.get(Constant.getDxListUrl8083, mLujingGetParameters, getDxListHandler,(handler, msg)->{
+                    mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
                         handler.sendMessage(msg);
                     });
                 }
@@ -1290,6 +1267,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
                     HashMap<String, String> params = (HashMap<String, String>)(serializable);
 
+                    //保存路劲筛选的参数，
                     mLujingGetParameters = params;
                 }
                 break;
