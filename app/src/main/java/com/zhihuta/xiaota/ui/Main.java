@@ -125,6 +125,9 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private RecyclerView mQingceRV;
     private RecyclerView mLujingRV;
     private RecyclerView mLujingInCalculateRV;
+
+    private DividerItemDecoration mDividerItemDecoration;
+
 //    private OrderAdapter mOrderAdapter;
 //    private ArrayList<OrderData> mOrderList = new ArrayList<>();
 
@@ -338,19 +341,38 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                         Toast.makeText(Main.this, "路径数量为0！", Toast.LENGTH_SHORT).show();
                     }
 
+                    if ( mLujingAdapter!= null && !mLujingAdapter.getStrMode().equals( tabFlag) )
+                    {//mode is switched,
+                        mLujingAdapter.setOnItemClickListener(null);
+                        mLujingRV.setAdapter(null);
+                        mLujingRV.removeItemDecoration(mDividerItemDecoration);
+
+                         mLujingAdapter = null;
+                         mDividerItemDecoration = null;
+                    }
+
+                    String strModeIdentifier = "";//Constant.FLAG_LUJING_IN_LUJING;
+                    if (strMode.equals("在计算中心") )////在计算中心,在路径模型,在电线清册
+                    {
+                        strModeIdentifier = Constant.FLAG_LUJING_IN_CALCULATE;
+                    }
+                    else if (strMode.equals("在路径模型"))
+                    {
+                        strModeIdentifier = Constant.FLAG_LUJING_IN_LUJING;
+                    }
+
                     if (mLujingAdapter == null)
                     {
-                        mLujingAdapter = new LujingAdapter(mLujingList, Main.this,Constant.FLAG_LUJING_IN_LUJING);
-                        mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                        mLujingAdapter = new LujingAdapter(mLujingList, Main.this,strModeIdentifier);
+                        mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+                        mLujingRV.addItemDecoration(mDividerItemDecoration);
                         mLujingRV.setAdapter(mLujingAdapter);
 
                         // 设置item及item中控件的点击事件
                         mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
                     }
-                    else
-                    {
-                        mLujingAdapter.updateDataSource(mLujingList, Constant.FLAG_LUJING_IN_LUJING);
-                    }
+
+                    mLujingAdapter.updateDataSource(mLujingList, strModeIdentifier);
                 }
                 else
                 {
@@ -1159,14 +1181,13 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     // 在计算tab 默认看到的是计算路径电线长度，隐藏两点间距的
                     mLayoutComputeDistance.setVisibility(View.GONE);
                     mJisuanImg.setImageResource(R.mipmap.tab_compute_pressed);
-//                    if (mFragJisuan == null) {
-//                        mFragJisuan = new SettingFragment();
-//                        transaction.add(R.id.layout_dianxian_qingce_id, mFragJisuan);
-//                    } else {
-//                        transaction.show(mFragJisuan);
-//                    }
+
+                    mNetwork.get(Constant.getLujingListUrl8083, mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
+                        handler.sendMessage(msg);
+                    });
+
                 }
-                startScan();
+
                 break;
         }
         //不要忘记提交事务
