@@ -126,7 +126,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private RecyclerView mLujingRV;
     private RecyclerView mLujingInCalculateRV;
 
-    private DividerItemDecoration mDividerItemDecoration;
+    private DividerItemDecoration mDividerItemDecoration; 			//路径模型列表里的间隔
+    private DividerItemDecoration mDividerItemDecorationInCalcuate;	//计算中心列表里的间隔
 
 //    private OrderAdapter mOrderAdapter;
 //    private ArrayList<OrderData> mOrderList = new ArrayList<>();
@@ -342,8 +343,9 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                         if (mLujingInCalculateAdapter == null)
                         {
                             mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
-                            mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
-                            mLujingInCalculateRV.addItemDecoration(mDividerItemDecoration);
+                            mDividerItemDecorationInCalcuate = null;
+                            mDividerItemDecorationInCalcuate = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+                            mLujingInCalculateRV.addItemDecoration(mDividerItemDecorationInCalcuate);
                             mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
 
                             // 设置item及item中控件的点击事件
@@ -353,9 +355,9 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
                         if (mLujingInCalculateAdapter != null && !mLujingInCalculateAdapter.getStrMode().equals(tabFlag)) {//mode is switched,
                             mLujingInCalculateAdapter.setOnItemClickListener(null);
-                            mLujingInCalculateRV.removeItemDecoration(mDividerItemDecoration);
-                            mDividerItemDecoration = null;
-                            mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+                            mLujingInCalculateRV.removeItemDecoration(mDividerItemDecorationInCalcuate);
+                            mDividerItemDecorationInCalcuate = null;
+                            mDividerItemDecorationInCalcuate = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
                             mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
 
                             mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
@@ -371,6 +373,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                         if (mLujingAdapter == null)
                         {
                             mLujingAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
+                            mDividerItemDecoration=null;
                             mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
                             mLujingRV.addItemDecoration(mDividerItemDecoration);
                             mLujingRV.setAdapter(mLujingAdapter);
@@ -379,14 +382,12 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                             mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
                         }
 
-
                         if (mLujingAdapter != null && !mLujingAdapter.getStrMode().equals(tabFlag)) {//mode is switched,
                             mLujingAdapter.setOnItemClickListener(null);
                             mLujingRV.removeItemDecoration(mDividerItemDecoration);
-                            mDividerItemDecoration = null;
                             mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
-//                            mLujingRV.addItemDecoration(mDividerItemDecoration);
                             mLujingAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
+                            mLujingRV.addItemDecoration(mDividerItemDecoration);
                             mLujingRV.setAdapter(mLujingAdapter);
 
                             // 设置item及item中控件的点击事件
@@ -875,8 +876,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         if (mLujingAdapter == null)
         {
             mLujingAdapter = new LujingAdapter(mLujingList, Main.this, Constant.FLAG_LUJING_IN_LUJING);
-            mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
-            mLujingRV.addItemDecoration(mDividerItemDecoration);
+            mDividerItemDecorationInCalcuate = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+            mLujingRV.addItemDecoration(mDividerItemDecorationInCalcuate);
             mLujingRV.setAdapter(mLujingAdapter);
 
             // 设置item及item中控件的点击事件
