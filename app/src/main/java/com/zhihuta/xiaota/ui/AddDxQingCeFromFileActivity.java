@@ -4,6 +4,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -12,12 +13,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
+import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.common.CallbackBundle;
 import com.zhihuta.xiaota.common.OpenFileDialog;
 
@@ -39,7 +43,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import com.zhihuta.xiaota.common.PathUtils;
+import com.zhihuta.xiaota.net.Network;
+
+import static com.zhihuta.xiaota.common.Constant.importFromDianxianFile;
 
 
 public class AddDxQingCeFromFileActivity extends AppCompatActivity {
@@ -47,6 +56,9 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
     static private int openfileDialogId = 0;
 
     private static final int PICK_FILE = 1;
+
+    ImportDianxianQinceHandler importDianxianQinceHandler = new ImportDianxianQinceHandler();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,14 +98,44 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
         switch (requestCode) {
             case  PICK_FILE :
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    Uri uri = data.getData();
-                    if (uri != null) {
+                    Uri fileuri = data.getData();
+                    if (fileuri != null) {
 //                        InputStream inputStream = ContentResolver.get(uri) //openInputStream
 //                        // 执行文件读取操作
-                        Toast.makeText(this, "文件路径："+ uri.getPath().toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "文件路径："+ fileuri.getPath().toString(), Toast.LENGTH_SHORT).show();
 //uri.getEncodedPath()
 //                        uri:  content://com.android.externalstorage.documents/document/primary%3ADownload%2Fdx.xlsx
-                        readExcel(uri.getPath());
+                        //readExcel(uri.getPath());
+                        String actualfilepath = "";//fileuri.getPath();//getPath(fileuri);
+                        try {
+
+                            actualfilepath = PathUtils.getPath(getApplicationContext(), fileuri );
+                            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                            mPostValue.put("file",actualfilepath );
+
+                            ///document/home:电线统计平台.xlsx
+                            int  pos = actualfilepath.lastIndexOf('/');
+                            String fileName = actualfilepath.substring(pos+1);
+
+                            mPostValue.put("filename",fileName );
+
+
+                            if (!importDianxianQinceHandler.getIsGetting())
+                            {
+                                importDianxianQinceHandler.setIsGetting(true);
+
+                                Network.Instance(getApplication()).putMultiForm( importFromDianxianFile,mPostValue,
+                                        importDianxianQinceHandler,
+                                        (handler,msg)->{
+                                            handler.sendMessage(msg);
+                                        });
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.e("import file ", "导入电线失败 " + ex.getMessage());
+                            Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线失败！" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     }
             }
         }
@@ -233,4 +275,66 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("HandlerLeak")
+    class ImportDianxianQinceHandler extends Handler {
+
+        private boolean bIsGetting = false;
+
+        public boolean getIsGetting()
+        {
+            return bIsGetting;
+        }
+
+        public void setIsGetting(boolean getting)
+        {
+            bIsGetting = getting;
+        }
+
+        @Override
+        public void handleMessage(final Message msg) {
+//            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
+//                mLoadingProcessDialog.dismiss();
+//            }
+
+            //////////////////////
+            String errorMsg = "";
+
+            try {
+
+                if (msg.what == Network.OK) {
+                    Result result= (Result)(msg.obj);
+
+                    if (result.getCode() != 200)
+                    {
+                        errorMsg = "服务器错误："+ result.getMessage();
+                    }
+                    else
+                    {
+                        AddDxQingCeFromFileActivity.this.finish();
+
+                        Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                else
+                {
+                    errorMsg = (String) msg.obj;
+                }
+
+                if (!errorMsg.isEmpty())
+                {
+                    Log.d("导入电线失败:", errorMsg);
+                    Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.d("导入电线失败:", ex.getMessage());
+            }
+            finally {
+                setIsGetting(false);
+            }
+        }//handle message
+
+    }
 }
