@@ -4,6 +4,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +26,7 @@ import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.PathGetObject;
 import com.zhihuta.xiaota.bean.response.PathsResponse;
+import com.zhihuta.xiaota.bean.response.pathContainsQRResponse;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
@@ -67,7 +70,10 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zxing_scan);
+
+        //get the request code from starter
         getDataFromPrev();
+
         mNetwork = Network.Instance(getApplication());
         //返回前页按钮
         ActionBar actionBar = getSupportActionBar();
@@ -127,17 +133,119 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                                 (handler, msg) -> {
                                     handler.sendMessage(msg);
                                 });
+                    }
+                }
+                else if (mRequestCodeFroPrev ==Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH)
+                {
+                    if (mScanResultDistanceList.isEmpty())
+                    {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this.getApplicationContext());
 
+                        alertDialogBuilder.setTitle("没有选择任何节点，是否需要继续？")
+                                .setNegativeButton("结束", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        finishActivity(mRequestCodeFroPrev);
+                                    }
+                                })
+                                .setPositiveButton("继续选择", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        ;
+                                    }
+                                });
 
                     }
-                } else {
+                    else
+                    {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this.getApplicationContext());
+
+                        //choose the last scanned qr
+                        alertDialogBuilder.setTitle("确定从节点["
+                                + mScanResultDistanceList.get(mScanResultDistanceList.size()-1).getQr_id()
+                                + "]分叉吗？")
+                                .setNegativeButton("否", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                       //
+                                    }
+                                })
+                                .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        Intent intent = new Intent();
+
+                                        intent.putExtra("mScanResultDistanceList", mScanResultDistanceList);
+                                        setResult(mRequestCodeFroPrev, intent);
+                                        finish();
+                                    }
+                                });
+                    }
+                }
+                else if (mRequestCodeFroPrev ==Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH)
+                {
+                    final int scanCount = mScanResultDistanceList.size();
+                    if (scanCount < 2)
+                    {//0,1个码不够
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this.getApplicationContext());
+
+                        alertDialogBuilder.setTitle("节点数量小于2个，是否需要继续？")
+                                .setNegativeButton("结束", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        finishActivity(mRequestCodeFroPrev);
+                                    }
+                                })
+                                .setPositiveButton("继续选择", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        ;
+                                    }
+                                });
+                    }
+                    else
+                    {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this.getApplicationContext());
+
+                        //choose the last scanned qr
+                        alertDialogBuilder.setTitle("确定选择节点["
+                                + mScanResultDistanceList.get(0).getQr_id()
+                                +","
+                                + mScanResultDistanceList.get(mScanResultDistanceList.size()-1).getQr_id()
+                                + "]子路径吗？")
+                                .setNegativeButton("否", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        //
+                                    }
+                                })
+                                .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        Intent intent = new Intent();
+
+                                        intent.putExtra("mScanResultDistanceList", mScanResultDistanceList);
+                                        setResult(mRequestCodeFroPrev, intent);
+                                        finish();
+                                    }
+                                });
+                    }
+                }
+                else {
                     /**
                      * 如果是 添加路径，在扫描页面 已经 保存到了数据库，直接关闭
                      */
                     ZxingScanActivity.this.finish();
                 }
-            }
-            });
+            }});
 
     }
 
@@ -145,11 +253,29 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
         Intent intent = getIntent();
 //        mRequestCodeFroPrev = (int) intent.getExtras().getSerializable("requestCode");
         mRequestCodeFroPrev = intent.getIntExtra("requestCode", 0);
-        if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING) {
-            //如果是从主界面筛选，不需要传路径到本页
-            Log.i(TAG, "筛选路径");
-        } else {
-            mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+        switch (mRequestCodeFroPrev)
+        {
+            case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING:
+                //如果是从主界面筛选，不需要传路径到本页
+                Log.i(TAG, "筛选路径");
+
+                break;
+            case Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH:
+                mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+
+                break;
+
+            case Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH:
+
+                mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+                break;
+
+//            case Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING:
+//                mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+//                break;
+            default://? to do
+				mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+                break;
         }
     }
 
@@ -221,9 +347,51 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             /**
              * 把二维码 累积起来，用于退出时筛选路径
              */
-            mScanResultDistanceList.add(distanceData);
+            boolean bFind = false;
+            for (DistanceData data : mScanResultDistanceList) {
+                if (data.getQr_id() == distanceData.getQr_id())
+                    bFind = true;
+            }
 
-        } else {
+            if (!bFind) {
+                mScanResultDistanceList.add(distanceData);
+            }
+            else
+            {
+                return;
+            }
+
+        }else if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH
+                || mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH )
+        {
+            //first , add the qr to result list, then check if qr is in path or not, if not, then remove it from result list.
+            boolean bFind = false;
+            for (DistanceData data : mScanResultDistanceList) {
+                if (data.getQr_id() == distanceData.getQr_id())
+                    bFind = true;
+            }
+
+            if (!bFind) {
+                mScanResultDistanceList.add(distanceData);
+            }
+            else
+            {
+                return;
+            }
+
+            HashMap<String,String> parameters = new HashMap<>();
+
+            String strQrids = Integer.toString(distanceData.getQr_id());
+
+            parameters.put("qr_ids", strQrids) ;
+
+            //check if qr in the path
+            mNetwork.get(Constant.getLujingDistanceExist,parameters, new GetPathContainsDistanceQRHandler(parameters),
+                    (Handler, msg)->{
+                        Handler.sendMessage(msg);
+                    });
+        }
+        else {
             /**
              * 每次扫码成功，都尝试把二维码加入到路径
              */
@@ -328,6 +496,71 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             {
                 Log.d("路径获取 NG:", errorMsg);
                 Toast.makeText(ZxingScanActivity.this, "筛选路径出错！", Toast.LENGTH_SHORT).show();
+            }
+            ////////////////
+        }
+    }
+
+    @SuppressLint("HandlerLeak")
+    class GetPathContainsDistanceQRHandler extends Handler {
+        private HashMap<String, String> getParameters = new HashMap<>();
+        public GetPathContainsDistanceQRHandler(HashMap<String, String> mPostValue)
+        {
+            this.getParameters = mPostValue;
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            ////////////////
+
+            String errorMsg = "";
+
+            if (msg.what == Network.OK) {
+                Result result= (Result)(msg.obj);
+
+                pathContainsQRResponse responseData = CommonUtility.objectToJavaObject(result.getData(), pathContainsQRResponse.class);
+
+                if (responseData != null &&responseData.errorCode == 0)
+                {
+                    ArrayList<DistanceData> tempList = new ArrayList<>();
+
+                    for (Integer value : responseData.not_in_path) {
+
+                        for (DistanceData tempValue :mScanResultDistanceList)
+                        {
+                            if (tempValue.getQr_id() == value.intValue())
+                            {
+                                tempList.add(tempValue);
+                            }
+                        }
+                    }
+
+                    for(DistanceData v: tempList)
+                    {
+                        mScanResultDistanceList.remove(v);
+                    }
+
+                    if (!responseData.not_in_path.isEmpty())
+                    {
+                        ShowMessage.showToast(ZxingScanActivity.this, "二维码id " +tempList.get(0).getQr_id() + "不在路径中：" , ShowMessage.MessageDuring.SHORT);
+                    }
+                }
+                else
+                {
+                    errorMsg =  "查找路径异常:"+ result.getCode() + result.getMessage();
+                    Log.d(TAG, errorMsg );
+                }
+            }
+            else
+            {
+                errorMsg = (String) msg.obj;
+            }
+
+            if (!errorMsg.isEmpty())
+            {
+                Log.d("路径获取 NG:", errorMsg);
+                Toast.makeText(ZxingScanActivity.this, "查找路径出错！", Toast.LENGTH_SHORT).show();
             }
             ////////////////
         }

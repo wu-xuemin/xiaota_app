@@ -114,6 +114,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     // 建全新路径 按钮
     private Button addTotalNewLujingBt;
 
+    private int  mNewPathchoice = 0;
 
     private Button mLujingScanBt; //路径主界面的扫码按钮，用于 筛选出需要查看或者编辑的路径, 扫的越多码筛选出的路径越精确.
     private Button mComputeScanBt; //计算中心主界面的扫码按钮
@@ -148,8 +149,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     LinkedHashMap<String, String> mLujingCaculateGetParameters = new LinkedHashMap<>();
 //    private LujingAdapter mLujingShaixuanAdapter;
 //    private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
-
-    private boolean isBackFromFilterPath = false;// 是否为从扫码筛选界面返回，如果是，不需要去刷新获取路径
 
     private Network mNetwork;
     private GetUserHandler getUserHandler;
@@ -776,18 +775,70 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         } else if ( mRequestCode == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
 
             mLujingToPass = lujingData;
-            final EditText et = new EditText(this);
+
+            final CharSequence items[] = { "追加模式", "子路径模式", "分叉模式" };
+
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Main.this);
-            alertDialogBuilder.setTitle("输入路径名称：")
-                    .setView(et)
+            alertDialogBuilder.setTitle("选择模式：")
+                    .setSingleChoiceItems(items, 0,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    mNewPathchoice = which;
+                                }
+                            })
                     .setNegativeButton("取消", null)
                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            LinkedHashMap<String, String> newPathParameters = new LinkedHashMap<>();
-                            mLujingToPass.setName(et.getText().toString());
-                            newPathParameters.put("name", mLujingToPass.getName());
-                            mNetwork.addNewLujing(Constant.addNewLujingUrl, newPathParameters, new LujingHandler());
+
+                            AlertDialog.Builder inputPathNameDialogBuilder = new AlertDialog.Builder(alertDialogBuilder.getContext());
+                            final EditText et = new EditText(inputPathNameDialogBuilder.getContext());
+
+                            inputPathNameDialogBuilder.setTitle("请输入路径名称").setView(et)
+                                    .setNegativeButton("取消", null)
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                                switch (mNewPathchoice)
+                                                {
+                                                    case 0:
+                                                          LinkedHashMap<String, String> newPathParameters = new LinkedHashMap<>();
+                                                          mLujingToPass.setName(et.getText().toString());
+                                                          newPathParameters.put("name", mLujingToPass.getName());
+                                                          mNetwork.addNewLujing(Constant.addNewLujingUrl, newPathParameters, new LujingHandler());
+
+                                                        break;
+                                                    case 1://子路径模式
+                                                        //start the qr scan to get a qr id to branch on
+
+                                                        Intent intent = new Intent(Main.this, ZxingScanActivity.class);
+
+                                                        //运行时权限
+                                                        if (ContextCompat.checkSelfPermission(Main.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
+                                                            ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},1);
+                                                        }else {
+                                                            /**
+                                                             * requestCode为：
+                                                             */
+
+                                                            intent.putExtra("requestCode", (Serializable) Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH);
+                                                            intent.putExtra("mLujingToPass", (Serializable) mLujingToPass);
+
+                                                            startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH);
+                                                        }
+
+                                                        break;
+                                                    case 2://分叉模式
+
+
+                                                        break;
+                                                }
+
+                                        }
+                                    }).show();
                         }
                     })
                     .show();
@@ -1325,7 +1376,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         switch (requestCode){
                 case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING:
                 if (resultCode == RESULT_OK) {
-                    isBackFromFilterPath = true;
+
                     //把筛选结果返回给主页面
                     ArrayList<LujingData> list = (ArrayList<LujingData>) data.getSerializableExtra("mFilterLujingList");
                     mLujingList = (ArrayList<LujingData>) list.clone();

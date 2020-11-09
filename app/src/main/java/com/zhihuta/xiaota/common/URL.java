@@ -17,9 +17,16 @@ public class URL {
     public static final String GET_LUJING_DISTANCE_LIST = "/paths/lujingID/distance_qrs";   //E.g: paths/1/distance_qrs
     public static final String POST_ADD_NEW_LUJING = "/paths";
     public static final String POST_ADD_NEW_LUJING_BASE_ON_OLD = "/paths/{id}/new";// 追加模式 新建路径
+    public static final String POST_ADD_NEW_LUJING_BRANCH_ON_OLD = "/paths/{id}/branch";// 分叉模式新建路径
+
     public static final String DELETE_DELETE_LUJING = "/paths";
     public static final String PUT_MODIFY_LUJING_NAME = "/paths/{id}/name"; //  修改路径的名称， "name": "南京上海"
     public static final String PUT_LUJING_DISTANCE = "/paths/lujingID/distance_qrs";   // E.g: paths/1/distance_qrs "qr_id":1, 数据库里 间距二维码的id
+
+    public static final String GET_LUJING_DISTANCE_EXIST = "/paths/{lujingID}/exsit";   // E.g:  /paths/1/exsit?qr_ids={1,2} "qr_id":1, 数据库里 间距二维码的id
+
+
+
 
     public static final String GET_DX_OF_LUJING = "/paths/{lujingId}/wires?serial_number={dxSN}&parts_code={dxPartsCode}"; //serial_number:电线编号 parts_code:型号
     public static final String PUT_DX_OF_LUJING = "/paths/{lujingId}/wires"; // 参数为电线ID列表  "wires_id":[ 1,2,3]
