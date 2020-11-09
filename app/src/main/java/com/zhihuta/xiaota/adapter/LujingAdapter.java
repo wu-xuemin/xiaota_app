@@ -72,6 +72,9 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
         holder.deleteLujingBt.setTag(position);
         holder.wiresListBt.setTag(position);
         holder.exportAccordModelBt.setTag(position);
+        holder.lujingNameTv.setTag(position);
+        holder.lujingCreaterTv.setTag(position);
+        holder.lujingCreatedDateTv.setTag(position);
 
         final LujingAdapter.ItemViewLujingViewHolder itemView = (LujingAdapter.ItemViewLujingViewHolder) holder;
 
@@ -137,6 +140,9 @@ public class LujingAdapter extends RecyclerView.Adapter<LujingAdapter.ItemViewLu
             wiresListBt.setOnClickListener(LujingAdapter.this);
             exportAccordModelBt.setOnClickListener(LujingAdapter.this);
 
+            lujingNameTv.setOnClickListener(LujingAdapter.this);
+            lujingCreaterTv.setOnClickListener(LujingAdapter.this);
+            lujingCreatedDateTv.setOnClickListener(LujingAdapter.this);
         }
     }
 

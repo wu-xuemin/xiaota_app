@@ -1071,6 +1071,17 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     Log.i(TAG,"型号导出 按钮" +(position+1));
                     gotoWiresExportActivity(Constant.REQUEST_CODE_CALCULATE_WIRES, mLujingList.get(position));
                     break;
+                case R.id.lujingMingChenTextView:
+                case R.id.lujingCreaterTextView:
+                case R.id.lujingCreateDateTextView:
+                    Log.i(TAG," 点击了路径名称或创建人或创建日期" +(position+1));
+                    AlertDialog.Builder alertDialogBuilder2 = new AlertDialog.Builder(Main.this);
+                    alertDialogBuilder2.setTitle( mLujingList.get(position).getName()
+                            + "," + mLujingList.get(position).getCreator()
+                            + "," + mLujingList.get(position).getCreate_time())
+                            .setNegativeButton("OK", null)
+                            .show();
+                    break;
                 default:
                     Toast.makeText(Main.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();
                     break;
