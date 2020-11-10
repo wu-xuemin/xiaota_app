@@ -1,5 +1,6 @@
 package com.zhihuta.xiaota.ui;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -140,6 +141,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 //    private ArrayList<LujingData> mLujingListInCalculate = new ArrayList<>(); //不需要用不同list,只要有不同adapter
     private LujingData mLujingToPass = new LujingData(); //传给下个页面的路径数据
 
+    private Intent scanIntent;
     private String mStrNewPathName;
 
     private int mRequestCode = 0;
@@ -864,7 +866,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
 
-                                                Intent intent = new Intent(Main.this, ZxingScanActivity.class);
+                                                scanIntent = new Intent(Main.this, ZxingScanActivity.class);
                                                 mStrNewPathName = et.getText().toString().trim();
                                                 if (mStrNewPathName.isEmpty())
                                                 {
@@ -895,34 +897,36 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                                                         break;
                                                     case 1://子路径模式
                                                         //start the qr scan to get a qr id to sub on
+                                                        scanIntent.putExtra("requestCode", (Serializable) Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH);
+                                                        scanIntent.putExtra("mLujingToPass", (Serializable) baselujingData);
 
                                                         //运行时权限
                                                         if (ContextCompat.checkSelfPermission(Main.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
-                                                            ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},1);
+                                                         {
+                                                                ActivityCompat.requestPermissions(Main.this, new String[]{Manifest.permission.CAMERA}, Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH);
+                                                         }
                                                         }else {
 
-                                                            intent.putExtra("requestCode", (Serializable) Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH);
-                                                            intent.putExtra("mLujingToPass", (Serializable) baselujingData);
 
-                                                            startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH);
+                                                            startActivityForResult(scanIntent, Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH);
                                                         }
 
                                                         break;
                                                     case 2://分叉模式
                                                         //start the qr scan to get a qr id to branch on
+                                                        scanIntent.putExtra("requestCode", (Serializable) Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH);
+                                                        scanIntent.putExtra("mLujingToPass", (Serializable) baselujingData);
 
                                                         //运行时权限
                                                         if (ContextCompat.checkSelfPermission(Main.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
-                                                            ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},1);
+                                                            ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH);
                                                         }else {
                                                             /**
                                                              * requestCode为：
                                                              */
 
-                                                            intent.putExtra("requestCode", (Serializable) Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH);
-                                                            intent.putExtra("mLujingToPass", (Serializable) baselujingData);
 
-                                                            startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH);
+                                                            startActivityForResult(scanIntent, Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH);
                                                         }
                                                         break;
                                                 }
@@ -1129,17 +1133,17 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(Main.this, ZxingScanActivity.class);
+            scanIntent = new Intent(Main.this, ZxingScanActivity.class);
+            scanIntent.putExtra("requestCode", Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING);
 
             //运行时权限
             if (ContextCompat.checkSelfPermission(Main.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},1);
+                ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING);
             }else {
                 /**
                  * requestCode为：
                  */
-                intent.putExtra("requestCode", Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING);
-                startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING);
+                startActivityForResult(scanIntent, Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING);
             }
         }
     }
@@ -1637,4 +1641,31 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 break;
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            //开启权限
+            switch (requestCode)
+            {
+                case Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH:
+                    startActivityForResult(scanIntent, requestCode );
+                    break;
+                case Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH:
+                    startActivityForResult(scanIntent, requestCode );
+                    break;
+                case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING:
+                    startActivityForResult(scanIntent, requestCode );
+                    break;
+                default:
+            }
+        } else {
+
+            scanIntent = null;
+            Toast.makeText(Main.this,"您拒绝了权限申请，无法使用相机扫描",Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

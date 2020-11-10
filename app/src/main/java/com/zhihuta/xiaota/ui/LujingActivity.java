@@ -1,5 +1,6 @@
 package com.zhihuta.xiaota.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -63,6 +64,7 @@ public class LujingActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SCAN_QRCODE_START = 1;
     private static final int REQUEST_CODE_RELATEd_DX =2;
 
+    private Intent scanIntent;
     /**
      * 基于旧路径 新建路径, 需要对新路径赋值一次旧路径的间距
      */
@@ -135,17 +137,16 @@ public class LujingActivity extends AppCompatActivity {
         mButtonScanToAddXianduan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LujingActivity.this, ZxingScanActivity.class);
-                intent.putExtra("mLujing", (Serializable) mLujing);
+                scanIntent = new Intent(LujingActivity.this, ZxingScanActivity.class);
+                scanIntent.putExtra("requestCode", (Serializable) Constant.REQUEST_CODE_SCAN_TO_ADD_NEW_QR);
+                scanIntent.putExtra("mLujingToPass", (Serializable) mLujing);
+
                 //运行时权限
                 if (ContextCompat.checkSelfPermission(LujingActivity.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(LujingActivity.this,new String[]{Manifest.permission.CAMERA},1);
+                    ActivityCompat.requestPermissions(LujingActivity.this,new String[]{Manifest.permission.CAMERA},Constant.REQUEST_CODE_SCAN_TO_ADD_NEW_QR);
                 }else {
 
-                    intent.putExtra("requestCode", (Serializable) Constant.REQUEST_CODE_SCAN_TO_ADD_NEW_QR);
-                    intent.putExtra("mLujingToPass", (Serializable) mLujing);
-
-                    startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_ADD_NEW_QR);
+                    startActivityForResult(scanIntent, Constant.REQUEST_CODE_SCAN_TO_ADD_NEW_QR);
                 }
             }
         });
@@ -359,6 +360,25 @@ public class LujingActivity extends AppCompatActivity {
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            //开启权限
+            switch (requestCode)
+            {
+                case Constant.REQUEST_CODE_SCAN_TO_ADD_NEW_QR:
+                    startActivityForResult(scanIntent, requestCode );
+                    break;
+                default:
+            }
+        } else {
+            scanIntent = null;
+            Toast.makeText(LujingActivity.this,"您拒绝了权限申请，无法使用相机扫描",Toast.LENGTH_SHORT).show();
         }
     }
 
