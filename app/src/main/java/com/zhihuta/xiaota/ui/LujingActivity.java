@@ -200,7 +200,7 @@ public class LujingActivity extends AppCompatActivity {
 
         //mNetwork.fetchDistanceListOfLujing(theUrl, mPostValue, getLujingDistanceListHandler);
         //获取路径的间距列表
-        mNetwork.get(theUrl,null,new GetLujingDistanceListHandler(""),
+        mNetwork.get(theUrl,null,new GetLujingDistanceListHandler(Constant.FLAG_DISTANCE_IN_LUJING),
                 (handler, msg)->{
                         handler.sendMessage(msg);
                 });
