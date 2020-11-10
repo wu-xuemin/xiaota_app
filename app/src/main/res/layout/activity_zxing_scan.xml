@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:qrcv_animTime="1000"
-        app:qrcv_barCodeTipText="将条码放入框内，即可自动扫描"
+        app:qrcv_barCodeTipText="将二维码放入框内，即可自动扫描"
         app:qrcv_barcodeRectHeight="120dp"
         app:qrcv_borderColor="@android:color/white"
         app:qrcv_borderSize="1dp"
@@ -34,14 +34,14 @@
         app:qrcv_isTipTextBelowRect="false"
         app:qrcv_maskColor="#333333"
         app:qrcv_qrCodeTipText="将二维码放入框内，即可自动扫描，若扫不出来，请调整二维码的距离"
-        app:qrcv_rectWidth="200dp"
+        app:qrcv_rectWidth="350dp"
         app:qrcv_scanLineColor="@color/colorPrimaryDark"
         app:qrcv_scanLineMargin="0dp"
         app:qrcv_scanLineSize="0.5dp"
         app:qrcv_tipTextColor="@android:color/white"
         app:qrcv_tipTextSize="12sp"
         app:qrcv_toolbarHeight="100dp"
-        app:qrcv_topOffset="10dp">
+        app:qrcv_topOffset="50dp">
 
     </cn.bingoogolapple.qrcode.zxing.ZXingView>
 
