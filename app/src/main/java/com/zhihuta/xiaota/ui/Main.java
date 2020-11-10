@@ -168,7 +168,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
      * 以下，主界面-计算中心-计算两点距离
      */
     private ZXingView mQRCodeView;
-    private ScheduledExecutorService mStopScanTimer;
+
     private Button mContinueScanBt;
     private TextView mDisplayScanResultTv;
     private Button mResetInCaculateBt;          //计算中心-重置按钮 （重置清零查询路径的结果）
@@ -222,10 +222,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
             @Override
             public void onClick(View v) {
 
-                mQRCodeView.startCamera();
-                mQRCodeView.showScanRect();
-                Log.d(TAG, "继续扫描");
-                mQRCodeView.startSpot(); ///开启扫描  --要重新开启扫描，否则扫描不出下一个新的二维码
+                startScan();
             }
         });
 
@@ -729,6 +726,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
             @Override
             public void onClick(View v) {
                 mLayoutComputeDx.setVisibility(View.VISIBLE);
+
+                stopScan();
                 mLayoutComputeDistance.setVisibility(View.GONE);
             }
         });
@@ -738,6 +737,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
             public void onClick(View v) {
                 mLayoutComputeDistance.setVisibility(View.VISIBLE);
                 mLayoutComputeDx.setVisibility(View.GONE);
+
+                startScan();
             }
         });
 
@@ -1469,30 +1470,18 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private void  startScan(){
 
         if(mQRCodeView != null) {
+
+            //mQRCodeView.
             mQRCodeView.startCamera();
             mQRCodeView.showScanRect();
             Log.d(TAG, "onStart: startCamera");
             mQRCodeView.startSpot(); ///开启扫描
-            //org.apache.commons.lang3.concurrent.BasicThreadFactory
-//            mStopScanTimer = new ScheduledThreadPoolExecutor(1);
-//            mStopScanTimer.schedule(new Runnable() {
-//                @Override
-//                public void run() {
-////                ToastUtils.showShort("扫描失败，切换至手动模式！");
-//                    mQRCodeView.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-////                        mQRCodeView.stopSpot(); /// 关闭扫描
-////                        showDialog(null);
-//                        }
-//                    });
-//                }
-//            }, 10, TimeUnit.SECONDS);
         }
     }
 
     private void stopScan(){
         if(mQRCodeView != null) {
+            mQRCodeView.stopSpot();
             mQRCodeView.stopCamera();
         }
     }

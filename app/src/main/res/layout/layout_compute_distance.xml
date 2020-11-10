@@ -34,7 +34,7 @@
         app:qrcv_isTipTextBelowRect="false"
         app:qrcv_maskColor="#333333"
         app:qrcv_qrCodeTipText="若扫不出来，请调整二维码的距离"
-        app:qrcv_rectWidth="200dp"
+        app:qrcv_rectWidth="350dp"
         app:qrcv_scanLineColor="@color/colorPrimaryDark"
         app:qrcv_scanLineMargin="0dp"
         app:qrcv_scanLineSize="0.5dp"
