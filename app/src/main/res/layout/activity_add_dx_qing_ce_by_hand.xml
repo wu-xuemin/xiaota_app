@@ -205,7 +205,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="输入钢冗余(参考)" />
+                android:text="钢管冗余(米)" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -232,7 +232,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="输入软冗余(米)" />
+                android:text="软管冗余(米)" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"

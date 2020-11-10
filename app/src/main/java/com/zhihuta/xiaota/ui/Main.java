@@ -1163,16 +1163,28 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 case R.id.dianxianBianhaotextView:
                 case R.id.qidianTextView:
                 case R.id.zhongdiantextView:
+                    View view = getLayoutInflater().inflate(R.layout.dialog_dx, null);
+                    final TextView tvDxSName = (TextView) view.findViewById(R.id.textView_dilag_bianhao);
+                    final TextView tvDxQidian = (TextView) view.findViewById(R.id.textView_dialog_qidian);
+                    final TextView tvDxZhongdian = (TextView) view.findViewById(R.id.textView15);
+                    final TextView tvDxModel = (TextView) view.findViewById(R.id.textView16);
+                    final TextView tvDxXinshuJiemian = (TextView) view.findViewById(R.id.textView17);
+                    final TextView tvDxLength = (TextView) view.findViewById(R.id.textView18);
+                    final TextView tvDxSteel = (TextView) view.findViewById(R.id.textView19);
+                    final TextView tvDxHose = (TextView) view.findViewById(R.id.textView20);
+                    tvDxSName.setText("编号: " + mDianxianQingCeList.get(position).getSerial_number());
+                    tvDxQidian.setText("起点: " + mDianxianQingCeList.get(position).getStart_point());
+                    tvDxZhongdian.setText("终点: " + mDianxianQingCeList.get(position).getEnd_point());
+                    tvDxModel.setText("型号: " + mDianxianQingCeList.get(position).getParts_code());
+                    tvDxXinshuJiemian.setText("芯数*截面: " + mDianxianQingCeList.get(position).getWickes_cross_section());
+                    tvDxLength.setText("长度(参考): " + mDianxianQingCeList.get(position).getLength());
+                    tvDxSteel.setText("钢管冗余: " + mDianxianQingCeList.get(position).getSteel_redundancy());
+                    tvDxHose.setText("皮管冗余: " + mDianxianQingCeList.get(position).getHose_redundancy());
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Main.this);
-                    alertDialogBuilder.setTitle( mDianxianQingCeList.get(position).getSerial_number()
-                            + "," + mDianxianQingCeList.get(position).getStart_point()
-                            + "," + mDianxianQingCeList.get(position).getEnd_point()
-                            + "," + mDianxianQingCeList.get(position).getParts_code()
-                            + "," + mDianxianQingCeList.get(position).getWickes_cross_section()
-                            + "," + mDianxianQingCeList.get(position).getLength()
-                            + "," + mDianxianQingCeList.get(position).getSteel_redundancy()
-                            + "," + mDianxianQingCeList.get(position).getHose_redundancy())
-                            .setNegativeButton("OK", null)
+                    alertDialogBuilder.setTitle("电线详情")
+                            .setView(view)
+                            .setPositiveButton("关闭",null)
+//                            .setNegativeButton("OK", null)
                             .show();
                     break;
                 default:
