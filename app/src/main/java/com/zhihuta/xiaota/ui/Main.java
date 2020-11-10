@@ -221,7 +221,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         mContinueScanBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+ 
                 startScan();
             }
         });
@@ -1100,6 +1100,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 mDistanceList.clear();
                 mScanResultDistanceList.clear();
                 mDistanceAdapter.notifyDataSetChanged();
+
+                startScan();
             }
         });
         mSetDistanceLengthInCaculateBt  = (Button) findViewById(R.id.button5);
@@ -1471,6 +1473,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
         if(mQRCodeView != null) {
 
+            mDisplayScanResultTv.setText("请对准二维码");
             //mQRCodeView.
             mQRCodeView.startCamera();
             mQRCodeView.showScanRect();
