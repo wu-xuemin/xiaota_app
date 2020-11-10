@@ -141,12 +141,12 @@ public class LujingActivity extends AppCompatActivity {
                 if (ContextCompat.checkSelfPermission(LujingActivity.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
                     ActivityCompat.requestPermissions(LujingActivity.this,new String[]{Manifest.permission.CAMERA},1);
                 }else {
-                    startActivityForResult(intent, mRequestCodeFromMain);
+
+                    intent.putExtra("requestCode", (Serializable) Constant.REQUEST_CODE_SCAN_TO_ADD_NEW_QR);
+                    intent.putExtra("mLujingToPass", (Serializable) mLujing);
+
+                    startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_ADD_NEW_QR);
                 }
-
-//                bundle2.putSerializable("mLujing", (Serializable) mLujing);
-//                intent.putExtras(bundle2);
-
             }
         });
 
@@ -159,6 +159,7 @@ public class LujingActivity extends AppCompatActivity {
 
                 bundle2.putSerializable("mLujing", (Serializable) mLujing);
                 intent.putExtras(bundle2);
+
                 startActivityForResult(intent, REQUEST_CODE_RELATEd_DX);
             }
         });

@@ -257,11 +257,15 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                                 }).show();
                     }
                 }
-                else {
+                else if (mRequestCodeFroPrev== Constant.REQUEST_CODE_SCAN_TO_ADD_NEW_QR){
                     /**
                      * 如果是 添加路径，在扫描页面 已经 保存到了数据库，直接关闭
                      */
                     ZxingScanActivity.this.finish();
+                }
+                else
+                {
+
                 }
             }});
 
@@ -269,7 +273,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
     private void getDataFromPrev() {
         Intent intent = getIntent();
-//        mRequestCodeFroPrev = (int) intent.getExtras().getSerializable("requestCode");
+
         mRequestCodeFroPrev = intent.getIntExtra("requestCode", 0);
         switch (mRequestCodeFroPrev)
         {
@@ -288,11 +292,12 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                 mLujing = (LujingData) intent.getExtras().getSerializable("mLujingToPass");
                 break;
 
-//            case Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING:
-//                mLujing = (LujingData) intent.getExtras().getSerializable("mLujingToPass");
-//                break;
-            default://? to do
-				mLujing = (LujingData) intent.getExtras().getSerializable("mLujingToPass");
+            case Constant.REQUEST_CODE_SCAN_TO_ADD_NEW_QR:
+                mLujing = (LujingData) intent.getExtras().getSerializable("mLujingToPass");
+                break;
+
+            default://?
+
                 break;
         }
     }
@@ -443,7 +448,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                         Handler.sendMessage(msg);
                     });
         }
-        else {
+        else if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_ADD_NEW_QR){
             /**
              * 每次扫码成功，都尝试把二维码加入到路径
              */
@@ -461,9 +466,8 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             super.handleMessage(msg);
             if (msg.what == Network.OK) {
                 ShowMessage.showToast(ZxingScanActivity.this,"添加间距成功！",ShowMessage.MessageDuring.SHORT);
-//                //把扫码新加的各个间距加入间距列表
-//                mDistanceList.add(list.get(i));
-//                mDistanceAdapter.notifyDataSetChanged();
+
+//                startScan();
 
             }else {
 
