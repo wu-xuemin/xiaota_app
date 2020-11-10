@@ -68,6 +68,9 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
 
         holder.deleteBt.setTag(position);
         holder.dxTobeSelectCheckBox.setTag(position);
+        holder.dianxianBianhaoTv.setTag(position);
+        holder.qidianTv.setTag(position );
+        holder.zhongdianTv.setTag(position);
 
         /**
          * 不同的数据，显示不同的内容，比如在备选电线列表里，不需要显示删除按钮
@@ -78,6 +81,7 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
             itemView.modelTv.setVisibility(View.GONE);
             itemView.steelHoseRedundancyTv.setVisibility(View.GONE);
             itemView.xinshuJiemianTv.setVisibility(View.GONE);
+            itemView.dxLengthTv.setVisibility(View.GONE);
         } else if(dataList.get(position).getFlag().equals(Constant.FLAG_RELATED_DX) ) { // 已关联
             itemView.deleteBt.setVisibility(View.VISIBLE);
             itemView.dxTobeSelectCheckBox.setVisibility(View.GONE);
@@ -139,7 +143,9 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
             // 为ItemView添加点击事件
             deleteBt.setOnClickListener(DianXianQingceAdapter.this);
             dxTobeSelectCheckBox.setOnClickListener(DianXianQingceAdapter.this);
-
+            dianxianBianhaoTv.setOnClickListener(DianXianQingceAdapter.this);
+            qidianTv.setOnClickListener(DianXianQingceAdapter.this);
+            zhongdianTv.setOnClickListener(DianXianQingceAdapter.this);
         }
     }
     //=======================以下为item中的button控件点击事件处理===================================

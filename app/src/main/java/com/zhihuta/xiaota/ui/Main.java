@@ -282,8 +282,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         mDistanceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mDistanceRV.setAdapter(mDistanceAdapter);
 
-        // 设置item及item中控件的点击事件
-//        mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
     }
 
     @Override
@@ -591,7 +589,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                             mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
                             mQingceRV.setAdapter(mDxQingceAdapter);
                         }
-
+                        mDxQingceAdapter.setOnItemClickListener(MyItemClickListenerDx);
                         mDxQingceAdapter.updateDataSoruce(mDianxianQingCeList);
 
                     }
@@ -736,6 +734,15 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         mLayoutComputeDx = (LinearLayout) findViewById(R.id.layout_compute_dianxian);
         mLayoutComputeDistance = (RelativeLayout) findViewById(R.id.layout_compute_dis);
 
+
+        if (mDxQingceAdapter == null)
+        {
+            mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this);
+            mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+            mQingceRV.setAdapter(mDxQingceAdapter);
+        }
+        mDxQingceAdapter.setOnItemClickListener(MyItemClickListenerDx);
+        mDxQingceAdapter.updateDataSoruce(mDianxianQingCeList);
     }
 
     /**
@@ -1144,7 +1151,41 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
         }
     };
+    /**
+     * 路径Adapter里item的控件点击监听事件
+     */
+    private DianXianQingceAdapter.OnItemClickListener MyItemClickListenerDx = new DianXianQingceAdapter.OnItemClickListener() {
 
+        @Override
+        public void onItemClick(View v, DianXianQingceAdapter.ViewName viewName, int position) {
+            //viewName可区分item及item内部控件
+            switch (v.getId()){
+                case R.id.dianxianBianhaotextView:
+                case R.id.qidianTextView:
+                case R.id.zhongdiantextView:
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Main.this);
+                    alertDialogBuilder.setTitle( mDianxianQingCeList.get(position).getSerial_number()
+                            + "," + mDianxianQingCeList.get(position).getStart_point()
+                            + "," + mDianxianQingCeList.get(position).getEnd_point()
+                            + "," + mDianxianQingCeList.get(position).getParts_code()
+                            + "," + mDianxianQingCeList.get(position).getWickes_cross_section()
+                            + "," + mDianxianQingCeList.get(position).getLength()
+                            + "," + mDianxianQingCeList.get(position).getSteel_redundancy()
+                            + "," + mDianxianQingCeList.get(position).getHose_redundancy())
+                            .setNegativeButton("OK", null)
+                            .show();
+                    break;
+                default:
+                    Toast.makeText(Main.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+
+        @Override
+        public void onItemLongClick(View v) {
+
+        }
+    };
 /*
 一个Activity启动另一个Activity: onPause()->onStop(),再返回：onRestart()->onStart()->onResume()
 程序按home 退出： onPause()->onStop(),再进入：onRestart()->onStart()->onResume();
