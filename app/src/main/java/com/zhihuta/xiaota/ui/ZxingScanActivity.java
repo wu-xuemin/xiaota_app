@@ -112,6 +112,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                     String qrIDs = null;
                     if(mScanResultDistanceList.size() ==0){
                         //如果没有扫成功，没有任何二维码被累积，则直接返回
+
                         finish();
                     } else {
                         for (int j = 0; j < mScanResultDistanceList.size(); j++) {
@@ -205,7 +206,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                     {//0,1个码不够
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this);
 
-                        alertDialogBuilder.setTitle("节点数量小于2个，是否需要继续？")
+                        alertDialogBuilder.setTitle("选择的节点数量小于2个，是否需要继续？")
                                 .setNegativeButton("结束", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -215,6 +216,8 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                                         intent.putExtra("mLujing", mLujing);
                                         intent.putExtra("mScanResultDistanceList", mScanResultDistanceList);
                                         setResult(mRequestCodeFroPrev, intent);
+
+                                        finish();
                                     }
                                 })
                                 .setPositiveButton("继续选择", new DialogInterface.OnClickListener() {
@@ -230,11 +233,11 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this);
 
                         //choose the last scanned qr
-                        alertDialogBuilder.setTitle("确定选择节点["
+                        alertDialogBuilder.setTitle("确定从节点["
                                 + mScanResultDistanceList.get(0).getQr_id()
-                                +","
+                                +" 至 "
                                 + mScanResultDistanceList.get(mScanResultDistanceList.size()-1).getQr_id()
-                                + "]子路径吗？")
+                                + "]复制子路径吗？")
                                 .setNegativeButton("否", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
