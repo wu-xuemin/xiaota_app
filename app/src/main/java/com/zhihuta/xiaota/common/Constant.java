@@ -21,13 +21,18 @@ public class Constant {
     public static String FLAG_DISTANCE_IN_LUJING = "路径模型中的间距";
     public static String FLAG_DISTANCE_IN_CALCULATE = "计算中心中的间距";
 
-    public static final int REQUEST_CODE_ADD_TOTAL_NEW_LUJING = 1;            //路径中心，添加 全新 新路径
-    public static final int REQUEST_CODE_SCAN_TO_FILTER_LUJING = 2;           //路径中心，扫码筛选路径
-    public static final int REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH = 3;          //路径中心，新建分支路径扫码去获取一个 QR信息
-    public static final int REQUEST_CODE_SCAN_TO_SUB_ON_PATH = 4;             //路径中心，新建子路径路径扫码去获取一个 QR信息
+    public static final int REQUEST_CODE_SCAN_TO_FILTER_LUJING = 1;           //路径中心，扫码筛选路径
 
-    public static final int REQUEST_CODE_MODIFY_LUJING = 3;                 //路径中心，修改已有路径
-    public static final int REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST = 4;  //路径中心，基于已有路径， 新建路径
+    //关于兴建路径request code 定义，防止误定义重复了
+    public static final int REQUEST_CODE_ADD_TOTAL_NEW_LUJING  =  2;            //路径中心，添加 全新 新路径
+    public static final int REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST = REQUEST_CODE_ADD_TOTAL_NEW_LUJING+1;  //路径中心，基于已有路径， 新建路径
+    public static final int REQUEST_CODE_MODIFY_LUJING = REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST +1;          //路径中心，修改已有路径
+
+    //关于兴建路径request code 定义，防止误定义重复了
+    public static final int REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH = 10;                                   //路径中心，新建分支路径扫码去获取一个 QR信息
+    public static final int REQUEST_CODE_SCAN_TO_SUB_ON_PATH = REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH+1;   //路径中心，新建子路径路径扫码去获取一个 QR信息
+    public static final int REQUEST_CODE_SCAN_TO_COPY_ON_PATH = REQUEST_CODE_SCAN_TO_SUB_ON_PATH+1;     //路径中心，新建分支路径扫码去获取一个 QR信息
+
     public static final int REQUEST_CODE_CALCULATE_WIRES = 5;  //计算中心，电线清单
 
 
@@ -44,8 +49,10 @@ public class Constant {
     //获取 路径对应的间距列表 (编辑路径时，或 在基于已有路径 新建路径时)
     public static final String getLujingDistanceListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_LUJING_DISTANCE_LIST;
     public static final String addNewLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING;
-    public static final String addNewLujingBaseOnOldUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING_BASE_ON_OLD;
+    public static final String addNewLujingCopyOnOldUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING_BASE_ON_OLD;
     public static final String addNewLujingBranchOnOldUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING_BRANCH_ON_OLD;
+    public static final String addNewLujingSubOnOldUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING_SUB_ON_OLD;
+
 
     public static final String getLujingDistanceExist = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_LUJING_DISTANCE_EXIST;
 

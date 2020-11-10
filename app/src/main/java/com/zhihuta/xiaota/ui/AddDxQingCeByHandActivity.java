@@ -30,6 +30,7 @@ import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import static com.zhihuta.xiaota.common.Constant.getDxListUrl8083;
@@ -96,7 +97,7 @@ public class AddDxQingCeByHandActivity extends AppCompatActivity {
                 //add new data to server
                 Network network = Network.Instance(getApplication());
 
-                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+               HashMap<String, String> mPostValue = new LinkedHashMap<>();
 
                String strTemp = ((TextInputEditText)(findViewById(R.id.txtinput_serialnumer))).getText().toString();
                if (strTemp.isEmpty())

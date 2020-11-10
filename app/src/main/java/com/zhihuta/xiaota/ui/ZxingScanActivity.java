@@ -48,7 +48,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
     private static final String TAG = "nlgScanQrcodeActivity";
 //    private AlertDialog scanQrResultDialog;
     private ZXingView mQRCodeView;
-    private ScheduledExecutorService mStopScanTimer;
+//    private ScheduledExecutorService mStopScanTimer;
 
     private Button mContinueScanBt;
     private Button mFinishScanBt;
@@ -91,10 +91,8 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             @Override
             public void onClick(View v) {
 
-                mQRCodeView.startCamera();
-                mQRCodeView.showScanRect();
-                Log.d(TAG, "onStart: startCamera");
-                mQRCodeView.startSpot(); ///开启扫描  --要重新开启扫描，否则扫描不出下一个新的二维码
+                startScan();
+
                 mDisplayScanResultTv.setText("请对准二维码");
             }
         });
@@ -105,6 +103,8 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "点击了结束按钮");
+
+                stopScan();
 
                 if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING) {
                     Log.i(TAG, "筛选路径");
@@ -139,38 +139,49 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                 {
                     if (mScanResultDistanceList.isEmpty())
                     {
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this.getApplicationContext());
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this);
 
                         alertDialogBuilder.setTitle("没有选择任何节点，是否需要继续？")
                                 .setNegativeButton("结束", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
 
-                                        finishActivity(mRequestCodeFroPrev);
+                                        Intent intent = new Intent();
+
+                                        intent.putExtra("mLujing", mLujing);
+                                        intent.putExtra("mScanResultDistanceList", mScanResultDistanceList);
+                                        setResult(mRequestCodeFroPrev, intent);
+
+                                        finish();
                                     }
                                 })
                                 .setPositiveButton("继续选择", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
 
-                                        ;
+                                            startScan();
                                     }
-                                });
-
+                                }).show();
                     }
                     else
                     {
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this.getApplicationContext());
+                        for (int i = 0; i < mScanResultDistanceList.size()-1 ; i++) {
+                            mScanResultDistanceList.remove(i);
+                        }//only choose the last one.
+
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this);
 
                         //choose the last scanned qr
                         alertDialogBuilder.setTitle("确定从节点["
-                                + mScanResultDistanceList.get(mScanResultDistanceList.size()-1).getQr_id()
+                                + mScanResultDistanceList.get(0).getQr_id()
                                 + "]分叉吗？")
                                 .setNegativeButton("否", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
 
-                                       //
+                                        //startScanTimer();
+                                        mScanResultDistanceList.clear();
+                                        startScan();
                                     }
                                 })
                                 .setPositiveButton("是", new DialogInterface.OnClickListener() {
@@ -179,11 +190,12 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
                                         Intent intent = new Intent();
 
+                                        intent.putExtra("mLujing", mLujing);
                                         intent.putExtra("mScanResultDistanceList", mScanResultDistanceList);
                                         setResult(mRequestCodeFroPrev, intent);
                                         finish();
                                     }
-                                });
+                                }).show();
                     }
                 }
                 else if (mRequestCodeFroPrev ==Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH)
@@ -191,27 +203,31 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                     final int scanCount = mScanResultDistanceList.size();
                     if (scanCount < 2)
                     {//0,1个码不够
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this.getApplicationContext());
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this);
 
                         alertDialogBuilder.setTitle("节点数量小于2个，是否需要继续？")
                                 .setNegativeButton("结束", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
 
-                                        finishActivity(mRequestCodeFroPrev);
+                                        Intent intent = new Intent();
+
+                                        intent.putExtra("mLujing", mLujing);
+                                        intent.putExtra("mScanResultDistanceList", mScanResultDistanceList);
+                                        setResult(mRequestCodeFroPrev, intent);
                                     }
                                 })
                                 .setPositiveButton("继续选择", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
 
-                                        ;
+                                        startScan();
                                     }
-                                });
+                                }).show();
                     }
                     else
                     {
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this.getApplicationContext());
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ZxingScanActivity.this);
 
                         //choose the last scanned qr
                         alertDialogBuilder.setTitle("确定选择节点["
@@ -223,7 +239,8 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
 
-                                        //
+                                        mScanResultDistanceList.clear();
+                                        startScan();
                                     }
                                 })
                                 .setPositiveButton("是", new DialogInterface.OnClickListener() {
@@ -232,11 +249,12 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
                                         Intent intent = new Intent();
 
+                                        intent.putExtra("mLujing", mLujing);
                                         intent.putExtra("mScanResultDistanceList", mScanResultDistanceList);
                                         setResult(mRequestCodeFroPrev, intent);
                                         finish();
                                     }
-                                });
+                                }).show();
                     }
                 }
                 else {
@@ -261,20 +279,20 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
                 break;
             case Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH:
-                mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+                mLujing = (LujingData) intent.getExtras().getSerializable("mLujingToPass");
 
                 break;
 
             case Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH:
 
-                mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+                mLujing = (LujingData) intent.getExtras().getSerializable("mLujingToPass");
                 break;
 
 //            case Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING:
-//                mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+//                mLujing = (LujingData) intent.getExtras().getSerializable("mLujingToPass");
 //                break;
             default://? to do
-				mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+				mLujing = (LujingData) intent.getExtras().getSerializable("mLujingToPass");
                 break;
         }
     }
@@ -282,29 +300,66 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
     @Override
     protected void onStart() {
         super.onStart();
+
+        startScan();
+
+        //org.apache.commons.lang3.concurrent.BasicThreadFactory
+//        mStopScanTimer = new ScheduledThreadPoolExecutor(1);
+//        mStopScanTimer.schedule(new Runnable() {
+//            @Override
+//            public void run() {
+////                ToastUtils.showShort("扫描失败，切换至手动模式！");
+//                mQRCodeView.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+////                        mQRCodeView.stopSpot(); /// 关闭扫描
+////                        showDialog(null);
+//                    }
+//                });
+//            }
+//        }, 10, TimeUnit.SECONDS);
+    }
+
+    private  void startScan()
+    {
         mQRCodeView.startCamera();
         mQRCodeView.showScanRect();
         Log.d(TAG, "onStart: startCamera");
-        mQRCodeView.startSpot(); ///开启扫描
-        //org.apache.commons.lang3.concurrent.BasicThreadFactory
-        mStopScanTimer = new ScheduledThreadPoolExecutor(1);
-        mStopScanTimer.schedule(new Runnable() {
-            @Override
-            public void run() {
-//                ToastUtils.showShort("扫描失败，切换至手动模式！");
-                mQRCodeView.post(new Runnable() {
-                    @Override
-                    public void run() {
-//                        mQRCodeView.stopSpot(); /// 关闭扫描
-//                        showDialog(null);
-                    }
-                });
-            }
-        }, 10, TimeUnit.SECONDS);
+        mQRCodeView.startSpot(); ///开启扫描  --要重新开启扫描，否则扫描不出下一个新的二维码
+
+        mDisplayScanResultTv.setText("请对准二维码");
     }
+
+    private void stopScan()
+    {
+        mQRCodeView.stopSpot();
+        mQRCodeView.stopCamera();
+
+        mDisplayScanResultTv.setText("扫码已停止");
+    }
+//    private  void startScanTimer()
+//    {
+//        mStopScanTimer.schedule(new Runnable() {
+//            @Override
+//            public void run() {
+////                ToastUtils.showShort("扫描失败，切换至手动模式！");
+//                mQRCodeView.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+////                        mQRCodeView.stopSpot(); /// 关闭扫描
+////                        showDialog(null);
+//                    }
+//                });
+//            }
+//        }, 10, TimeUnit.SECONDS);
+//    }
+//    private  void stopScanTimer()
+//    {
+//        mStopScanTimer.shutdown();
+//    }
     @Override
     protected void onStop() {
-        mQRCodeView.stopCamera();
+        stopScan();
         super.onStop();
     }
 
@@ -316,9 +371,9 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 //        if (scanQrResultDialog!=null){
 //            scanQrResultDialog.dismiss();
 //        }
-        if(!mStopScanTimer.isShutdown() ) {
-            mStopScanTimer.shutdownNow();
-        }
+//        if(!mStopScanTimer.isShutdown() ) {
+//            mStopScanTimer.shutdownNow();
+//        }
     }
 
     private void vibrate() {
@@ -335,10 +390,6 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
         vibrate();
         mDisplayScanResultTv.setText(result);
 
-        //扫码成功，取消之前设置的20秒后的task
-        if(!mStopScanTimer.isShutdown() ) {
-            mStopScanTimer.shutdownNow();
-        }
         // 解析数据，并填入
         Gson gson = new Gson();
         DistanceData distanceData = gson.fromJson(result, DistanceData.class);
@@ -384,9 +435,10 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             String strQrids = Integer.toString(distanceData.getQr_id());
 
             parameters.put("qr_ids", strQrids) ;
+            String strUrl = Constant.getLujingDistanceExist.replace("{lujingID}", Integer.toString(mLujing.getId()));
 
             //check if qr in the path
-            mNetwork.get(Constant.getLujingDistanceExist,parameters, new GetPathContainsDistanceQRHandler(parameters),
+            mNetwork.get(strUrl,parameters, new GetPathContainsDistanceQRHandler(parameters),
                     (Handler, msg)->{
                         Handler.sendMessage(msg);
                     });
@@ -559,6 +611,15 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
             if (!errorMsg.isEmpty())
             {
+                if (!mScanResultDistanceList.isEmpty())
+                {
+                    mScanResultDistanceList.remove(mScanResultDistanceList.size()-1);
+                }
+
+                //startScanTimer();
+
+                startScan();
+
                 Log.d("路径获取 NG:", errorMsg);
                 Toast.makeText(ZxingScanActivity.this, "查找路径出错！", Toast.LENGTH_SHORT).show();
             }

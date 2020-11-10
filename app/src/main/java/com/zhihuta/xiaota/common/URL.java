@@ -18,6 +18,7 @@ public class URL {
     public static final String POST_ADD_NEW_LUJING = "/paths";
     public static final String POST_ADD_NEW_LUJING_BASE_ON_OLD = "/paths/{id}/new";// 追加模式 新建路径
     public static final String POST_ADD_NEW_LUJING_BRANCH_ON_OLD = "/paths/{id}/branch";// 分叉模式新建路径
+    public static final String POST_ADD_NEW_LUJING_SUB_ON_OLD = "/paths/{id}/sub";// 分叉模式新建路径
 
     public static final String DELETE_DELETE_LUJING = "/paths";
     public static final String PUT_MODIFY_LUJING_NAME = "/paths/{id}/name"; //  修改路径的名称， "name": "南京上海"

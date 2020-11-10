@@ -38,6 +38,7 @@ import com.alibaba.fastjson.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class LoginActivity extends AppCompatActivity {
@@ -126,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         else {
 
-            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+            HashMap<String, String> mPostValue = new LinkedHashMap<>();
             mPostValue.put("account", account);
             mPostValue.put("password",password );
 

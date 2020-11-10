@@ -56,6 +56,7 @@ import com.zhihuta.xiaota.bean.response.DistanceQRsResponse;
 import com.zhihuta.xiaota.bean.response.DistanceResponseData;
 import com.zhihuta.xiaota.bean.response.GetDistanceResponse;
 import com.zhihuta.xiaota.bean.response.GetWiresResponse;
+import com.zhihuta.xiaota.bean.response.NewPathDistanceQRsResponse;
 import com.zhihuta.xiaota.bean.response.PathGetDistanceQr;
 import com.zhihuta.xiaota.bean.response.PathGetObject;
 import com.zhihuta.xiaota.bean.response.PathsResponse;
@@ -139,6 +140,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 //    private ArrayList<LujingData> mLujingListInCalculate = new ArrayList<>(); //不需要用不同list,只要有不同adapter
     private LujingData mLujingToPass = new LujingData(); //传给下个页面的路径数据
 
+    private String mStrNewPathName;
 
     private int mRequestCode = 0;
 
@@ -282,6 +284,8 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         mDistanceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mDistanceRV.setAdapter(mDistanceAdapter);
 
+        // 设置item及item中控件的点击事件
+//        mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
     }
 
     @Override
@@ -637,6 +641,60 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         }
     }
 
+    @SuppressLint("HandlerLeak")
+    class CloneLujingHandler extends Handler {
+
+        private String  newPathName;
+
+        CloneLujingHandler(String newPathName)
+        {
+            this.newPathName = newPathName;
+        }
+
+        @Override
+        public void handleMessage(final Message msg) {
+//            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
+//                mLoadingProcessDialog.dismiss();
+//            }
+
+            String errorMsg = "";
+
+            if (msg.what == Network.OK) {
+                Result result= (Result)(msg.obj);
+
+                NewPathDistanceQRsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), NewPathDistanceQRsResponse.class);
+
+                if (responseData != null && responseData.errorCode == 0)
+                {
+                    int newPathId = responseData.id;
+
+                    LujingData lujingData = new LujingData();
+
+                    lujingData.setId(newPathId);
+                    lujingData.setName(newPathName);
+
+                    FinalGotoLujingActivity(Constant.REQUEST_CODE_MODIFY_LUJING, lujingData);
+                }
+                else
+                {
+                    errorMsg =  "创建路径失败:"+ result.getCode() + result.getMessage();
+                    Log.d(TAG, errorMsg );
+                }
+            }
+            else
+            {
+                errorMsg = (String) msg.obj;
+            }
+
+            if (!errorMsg.isEmpty())
+            {
+                Log.d("创建路径失败 NG:", errorMsg);
+                Toast.makeText(Main.this, "创建路径失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
     private void initEvents() {
         //初始化3个Tab的点击事件
         mTabDxQingce.setOnClickListener(this);
@@ -749,7 +807,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
      * 在进入路径界面前，如果是 全新新建、基于旧的新建，包括修改路径， 都应该先让用户设置好路径名称。
      * 如果在路径界面临时写路径名称，会有很多逻辑。
      */
-    private void tryGotoLujingActivity(int requestCode, LujingData lujingData) {
+    private void tryGotoLujingActivity(int requestCode, LujingData baselujingData) {
         mRequestCode = requestCode;
         /**
          * 在主界面定好路径名称后，无论是哪种模式，都应该确保有路径数据
@@ -757,7 +815,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
          * 基于旧路径 新建路径 --要创建,创建成功了再跳转
          * 修改路径 -- 要更新路径 -->暂时先不修改名称， 直接跳转
          */
-        if (mRequestCode == Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING ) {
+        if (requestCode == Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING ) {
             final EditText et = new EditText(this);
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Main.this);
             alertDialogBuilder.setTitle("输入路径名称：")
@@ -767,21 +825,18 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             LinkedHashMap<String, String> newPathParameters = new LinkedHashMap<>();
-                            String name = et.getText().toString();
-                            if (name == null || name.isEmpty()) { //不允许名称为空
+                            String strNewPathName = et.getText().toString();
+                            if (strNewPathName == null || strNewPathName.isEmpty()) { //不允许名称为空
                                 Toast.makeText(Main.this, "名称不能为空", Toast.LENGTH_SHORT).show();
                             } else {
-                                mLujingToPass.setName(et.getText().toString());
-//                            newPathParameters.put("name", new Gson().toJson(mLujingToPass.getName()));
-                                newPathParameters.put("name", (mLujingToPass.getName()));
-                                mNetwork.addNewLujing(Constant.addNewLujingUrl, newPathParameters, new LujingHandler());
+
+                                newPathParameters.put("name",  strNewPathName);
+                                mNetwork.addNewLujing(Constant.addNewLujingUrl, newPathParameters, new NewLujingHandler(strNewPathName));
                             }
                         }
                     })
                     .show();
-        } else if ( mRequestCode == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
-
-            mLujingToPass = lujingData;
+        } else if ( requestCode == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
 
             final CharSequence items[] = { "追加模式", "子路径模式", "分叉模式" };
 
@@ -800,7 +855,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
 
-                            AlertDialog.Builder inputPathNameDialogBuilder = new AlertDialog.Builder(alertDialogBuilder.getContext());
+                            AlertDialog.Builder inputPathNameDialogBuilder = new AlertDialog.Builder(Main.this);
                             final EditText et = new EditText(inputPathNameDialogBuilder.getContext());
 
                             inputPathNameDialogBuilder.setTitle("请输入路径名称").setView(et)
@@ -809,19 +864,52 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
 
+                                                Intent intent = new Intent(Main.this, ZxingScanActivity.class);
+                                                mStrNewPathName = et.getText().toString().trim();
+                                                if (mStrNewPathName.isEmpty())
+                                                {
+                                                    ShowMessage.showToast(Main.this,"路径名不能为空！",ShowMessage.MessageDuring.SHORT);
+                                                    return;
+                                                }
+
                                                 switch (mNewPathchoice)
                                                 {
-                                                    case 0:
-                                                          LinkedHashMap<String, String> newPathParameters = new LinkedHashMap<>();
-                                                          mLujingToPass.setName(et.getText().toString());
-                                                          newPathParameters.put("name", mLujingToPass.getName());
-                                                          mNetwork.addNewLujing(Constant.addNewLujingUrl, newPathParameters, new LujingHandler());
+                                                    case 0://clone mode
+                                                          ////
+                                                        mScanResultDistanceList.clear();
 
+                                                        HashMap postValue = new HashMap<>();
+                                                        postValue.put("name", mStrNewPathName);
+
+                                                        //call the to create a new path
+                                                        String url = Constant.addNewLujingCopyOnOldUrl.replace("{id}",
+                                                                Integer.toString(baselujingData.getId()));
+
+                                                        mNetwork.post(url,postValue,new CloneLujingHandler(
+                                                                mStrNewPathName),
+                                                                (handler, msg)->{
+                                                                    handler.sendMessage(msg);
+                                                                } );
+
+                                                        ////
                                                         break;
                                                     case 1://子路径模式
-                                                        //start the qr scan to get a qr id to branch on
+                                                        //start the qr scan to get a qr id to sub on
 
-                                                        Intent intent = new Intent(Main.this, ZxingScanActivity.class);
+                                                        //运行时权限
+                                                        if (ContextCompat.checkSelfPermission(Main.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
+                                                            ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},1);
+                                                        }else {
+
+                                                            intent.putExtra("requestCode", (Serializable) Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH);
+                                                            intent.putExtra("mLujingToPass", (Serializable) baselujingData);
+
+                                                            startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH);
+                                                        }
+
+                                                        break;
+                                                    case 2://分叉模式
+                                                        //start the qr scan to get a qr id to branch on
 
                                                         //运行时权限
                                                         if (ContextCompat.checkSelfPermission(Main.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
@@ -832,15 +920,10 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                                                              */
 
                                                             intent.putExtra("requestCode", (Serializable) Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH);
-                                                            intent.putExtra("mLujingToPass", (Serializable) mLujingToPass);
+                                                            intent.putExtra("mLujingToPass", (Serializable) baselujingData);
 
                                                             startActivityForResult(intent, Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH);
                                                         }
-
-                                                        break;
-                                                    case 2://分叉模式
-
-
                                                         break;
                                                 }
 
@@ -849,9 +932,9 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                         }
                     })
                     .show();
-        } else {
-            mLujingToPass = lujingData;
-            FinalGotoLujingActivity(); // 编辑路径
+        } else if (requestCode == Constant.REQUEST_CODE_MODIFY_LUJING){
+
+            FinalGotoLujingActivity(requestCode, baselujingData); // 编辑路径
         }
     }
 
@@ -878,7 +961,14 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         startActivityForResult(intent, requestCode);
     }
     @SuppressLint("HandlerLeak")
-    class LujingHandler extends Handler {
+    class NewLujingHandler extends Handler {
+
+        String newPathName;
+
+        public NewLujingHandler(String newPathName)
+        {
+            this.newPathName = newPathName;
+        }
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -889,16 +979,20 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                  */
                 String idStr = ((LinkedTreeMap) msg.obj).get("id").toString(); ///  {errorCode=0.0, id=56.0}
                 int lujingID = Double.valueOf(idStr).intValue();
-                int oldLujingID = mLujingToPass.getId();
-                mLujingToPass.setId(lujingID);
+
+
+                LujingData newLujingData = new LujingData();
+
+                newLujingData.setId(lujingID);
+                newLujingData.setName(newPathName);
+
                 Intent intent =getIntent();
-//                intent.setClass(Main.this, Main.class);
+
                 intent.setClass(Main.this, LujingActivity.class);
 
                 intent.putExtra("requestCode", (Serializable) mRequestCode);
-                intent.putExtra("mLujingToPass", (Serializable) mLujingToPass);
+                intent.putExtra("mLujingToPass", (Serializable) newLujingData);
 
-                intent.putExtra("oldLujingID", (Serializable) oldLujingID ); ///旧路径的ID
                 startActivityForResult(intent, mRequestCode);
             }else {
                 ShowMessage.showDialog(Main.this,"添加路径出错！");
@@ -909,15 +1003,26 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     /**
      * 真正带着数据切换到路径界面
      */
-    private void FinalGotoLujingActivity(){
+//    private void FinalGotoLujingActivity(){
+//        Intent intent = new Intent(Main.this, LujingActivity.class);
+//        Bundle bundle = new Bundle();
+//
+//        bundle.putSerializable("requestCode", (Serializable) mRequestCode);
+//        bundle.putSerializable("mLujingToPass", mLujingToPass);
+//        intent.putExtras(bundle);
+//        startActivityForResult(intent, mRequestCode);
+//    }
+
+    private void FinalGotoLujingActivity(int requestCode, LujingData lujingData){
         Intent intent = new Intent(Main.this, LujingActivity.class);
         Bundle bundle = new Bundle();
 
-        bundle.putSerializable("requestCode", (Serializable) mRequestCode);
-        bundle.putSerializable("mLujingToPass", mLujingToPass);
+        bundle.putSerializable("requestCode", (Serializable) requestCode);
+        bundle.putSerializable("mLujingToPass", lujingData);
         intent.putExtras(bundle);
-        startActivityForResult(intent, mRequestCode);
+        startActivityForResult(intent, requestCode);
     }
+
     private void initViewsCompute() {
 
         /// 各一个, 先建，后建
@@ -1424,14 +1529,26 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
     // onActivityResult 先于 resueme 执行
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        if (intent == null)
+        {
+            return;
+        }
+
+        ArrayList<DistanceData> distanceQrDatalist;
+        LujingData lujing;
+        DistanceData distanceData;
+        String url;
+        HashMap<String, String> postValue;
+
         switch (requestCode){
                 case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING:
                 if (resultCode == RESULT_OK) {
 
                     //把筛选结果返回给主页面
-                    ArrayList<LujingData> list = (ArrayList<LujingData>) data.getSerializableExtra("mFilterLujingList");
+                    ArrayList<LujingData> list = (ArrayList<LujingData>) intent.getSerializableExtra("mFilterLujingList");
                     mLujingList = (ArrayList<LujingData>) list.clone();
                     Log.i(TAG," 筛选得到" + mLujingList.size() + " 条路径");
                     Toast.makeText(this, " 筛选得到" + mLujingList.size() + " 条路径", Toast.LENGTH_LONG).show();
@@ -1447,7 +1564,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     }
                     mLujingAdapter.updateDataSource(mLujingList, Constant.FLAG_LUJING_IN_LUJING);
 
-                    Serializable serializable  = data.getSerializableExtra("getParameters");
+                    Serializable serializable  = intent.getSerializableExtra("getParameters");
 
                     HashMap<String, String> params = (HashMap<String, String>)(serializable);
 
@@ -1455,7 +1572,67 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                     mLujingGetParameters = params;
                 }
                 break;
+            case Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH:
 
+                mScanResultDistanceList.clear();
+
+                //the call back should only contains only one qr and non-empty list
+                Serializable result = intent.getSerializableExtra("mScanResultDistanceList");
+
+                distanceQrDatalist = result == null? null:(ArrayList<DistanceData>)result;
+
+                if (distanceQrDatalist != null && !distanceQrDatalist.isEmpty())
+                {
+
+                    lujing = (LujingData) intent.getSerializableExtra("mLujing");
+
+                    distanceData = distanceQrDatalist.get(0);
+
+
+                    postValue = new LinkedHashMap<>();
+                    postValue.put("name", mStrNewPathName);
+                    postValue.put("branch_qr_id", Integer.toString( distanceData.getQr_id()) );
+
+                    //call the to create a new path
+                    url = Constant.addNewLujingBranchOnOldUrl.replace("{id}", Integer.toString(lujing.getId()));
+
+                    mNetwork.post(url,postValue,new CloneLujingHandler(mStrNewPathName),(handler, msg)->{
+                        handler.sendMessage(msg);
+                    } );
+                }
+
+                break;
+            case Constant.REQUEST_CODE_SCAN_TO_SUB_ON_PATH:
+
+                mScanResultDistanceList.clear();
+
+                //the call back should only contains only one qr and non-empty list
+                Serializable result2 = intent.getSerializableExtra("mScanResultDistanceList");
+                distanceQrDatalist = result2 == null? null:(ArrayList<DistanceData>)result2;
+
+                if (distanceQrDatalist != null && (distanceQrDatalist.size()>1) )
+                {
+                    distanceData = distanceQrDatalist.get(0);
+                    postValue = new LinkedHashMap<>();
+
+                    postValue.put("sub_qr_id_start", Integer.toString( distanceData.getQr_id()) );
+
+                    distanceData = distanceQrDatalist.get(1);
+                    postValue.put("sub_qr_id_end", Integer.toString( distanceData.getQr_id()) );
+
+                    postValue.put("name", mStrNewPathName);
+
+                    //call the to create a new path
+                    lujing = (LujingData) intent.getSerializableExtra("mLujing");
+                    url = Constant.addNewLujingSubOnOldUrl.replace("{id}", Integer.toString(lujing.getId()));
+
+                    mNetwork.post(url,postValue,new CloneLujingHandler(mStrNewPathName),(handler, msg)->{
+                        handler.sendMessage(msg);
+                    } );
+
+                }
+
+                break;
             default:
                 break;
         }

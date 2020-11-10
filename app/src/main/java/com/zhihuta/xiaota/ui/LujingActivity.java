@@ -73,7 +73,6 @@ public class LujingActivity extends AppCompatActivity {
 //    private LujingData mOldBasedNewLujing = new LujingData(); //基于旧路径 新建路径
 
     private LujingData mLujing;
-    private int oldLujingID; ///旧路径的ID，在基于旧路径新建路径时，用到旧路径的间距。
 
     TextInputEditText lujingNameTv;
     @Override
@@ -84,49 +83,48 @@ public class LujingActivity extends AppCompatActivity {
         mNetwork = Network.Instance(getApplication());
         lujingNameTv = (TextInputEditText) findViewById(R.id.inputEditText_lujingName);
 
-        //getLujingDistanceListHandler = new GetLujingDistanceListHandler();
         //返回前页按钮
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        getDataFromPrev();
-        showDistanceList();
+
+        getDataFromSender();
+
         initViews();//初始化控件
 
+        //初始化间距节点UI布局， 数据会在initDataFromSender调用中请求
+        initDistanceListLayout();
+
+        initActivityUIBaseOnSender();
     }
     @Override
     protected void onResume() {
         super.onResume();
+
+        getGetLujingDistanceList();
+    }
+
+    private void getDataFromSender()
+    {
         Intent intent = getIntent();
-        getGetLujingDistanceList(intent);
+
+        mRequestCodeFromMain = (int) intent.getExtras().getSerializable("requestCode");
+        mLujing = (LujingData) intent.getExtras().getSerializable("mLujingToPass");
     }
 
     /**
      * 从前一个界面 收集到的数据
      */
-    private void getDataFromPrev(){
+    private void initActivityUIBaseOnSender(){
 
-        Intent intent = getIntent();
-        mRequestCodeFromMain = (int) intent.getExtras().getSerializable("requestCode");
-        mLujing = (LujingData) intent.getExtras().getSerializable("mLujingToPass");
         //因为路径名称在main就决定了，不可改
         lujingNameTv.setEnabled(false);
         lujingNameTv.setText(mLujing.getName());
-        if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_TOTAL_NEW_LUJING){
-//            mNewLujing
-        } else if(mRequestCodeFromMain == Constant.REQUEST_CODE_MODIFY_LUJING ){
+
+        if(mRequestCodeFromMain == Constant.REQUEST_CODE_MODIFY_LUJING ){
             this.setTitle("编辑路径");
-            getGetLujingDistanceList(intent);
-        }
-        // 在基于已有路径 新建路径, 要把旧的间距加到新的路径
-        else if(mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST ){
-            getGetLujingDistanceList(intent);
-            oldLujingID = (int) intent.getExtras().getSerializable("oldLujingID");
-            Log.i(TAG,"oldLujingID: " + oldLujingID);
-
-
         }
     }
     private void initViews() {
@@ -186,26 +184,20 @@ public class LujingActivity extends AppCompatActivity {
     }
 
     // 无论是 修改路径，还是基于已有路径新建路径，都需要获该路径取原有的间距列表
-    private void getGetLujingDistanceList(Intent intent) {
+    private void getGetLujingDistanceList(  ) {
         //获取 路径对应的间距列表
 
-//        mPostValue.put("account", "z");
         String theUrl;
-        //如果是基于旧的路径，还需要把旧路径的间距拿来。
-        if(mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
-            theUrl = Constant.getLujingDistanceListUrl.replace("lujingID", String.valueOf(oldLujingID));
-        } else {
-            theUrl = Constant.getLujingDistanceListUrl.replace("lujingID", String.valueOf(mLujing.getId()));
-        }
 
-        //mNetwork.fetchDistanceListOfLujing(theUrl, mPostValue, getLujingDistanceListHandler);
-        //获取路径的间距列表
-        mNetwork.get(theUrl,null,new GetLujingDistanceListHandler(Constant.FLAG_DISTANCE_IN_LUJING),
+        theUrl = Constant.getLujingDistanceListUrl.replace("lujingID",
+                String.valueOf(mLujing.getId()));
+
+        mNetwork.get(theUrl,null,new GetLujingDistanceListHandler(""),
                 (handler, msg)->{
                         handler.sendMessage(msg);
                 });
     }
-    private void showDistanceList(){
+    private void initDistanceListLayout(){
         //间距列表
         mDistanceRV = (RecyclerView) findViewById(R.id.rv_distance);
         LinearLayoutManager manager5 = new LinearLayoutManager(this);
@@ -214,7 +206,6 @@ public class LujingActivity extends AppCompatActivity {
         mDistanceAdapter = new DistanceAdapter(mDistanceList, this);
         mDistanceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mDistanceRV.setAdapter(mDistanceAdapter);
-
 
         // 设置item及item中控件的点击事件
         mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
@@ -251,7 +242,7 @@ public class LujingActivity extends AppCompatActivity {
                     Toast.makeText(LujingActivity.this,"你点击了 Down 按钮"+(position+1),Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.button_distance_delete:
-                    Toast.makeText(LujingActivity.this, "你点击了 删除路径按钮" + (position + 1), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LujingActivity.this, "你点击了 删除间距按钮" + (position + 1), Toast.LENGTH_SHORT).show();
 
                     android.app.AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LujingActivity.this);
                     alertDialogBuilder.setTitle("确认删除路径" + mDistanceList.get(position).getName() + "吗？")
@@ -329,19 +320,6 @@ public class LujingActivity extends AppCompatActivity {
                     // 设置item及item中控件的点击事件
                     mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
 
-//                    /**
-//                     * 如果是基于旧的新建，还要加间距到新路径中去, 基于旧的新建 后台api会将旧的路径上截取的节点自动返回给调用者
-//                     */
-//                    if( !isDistanceSetted) {
-//                        if (mRequestCodeFromMain == Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST) {
-//                            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-//                            for (int k = 0; k < mDistanceList.size(); k++) {
-//                                String url = Constant.putLujingDistanceUrl.replace("lujingID", String.valueOf(oldLujingID));
-//                                mNetwork.putLujingDistance(url, mPostValue, new PutLujingDistanceHandler());
-//                            }
-//                            isDistanceSetted = true;
-//                        }
-//                    }
                 }
                 else
                 {
@@ -362,6 +340,7 @@ public class LujingActivity extends AppCompatActivity {
 
         }
     }
+
     @SuppressLint("HandlerLeak")
     class PutLujingDistanceHandler extends Handler {
         @Override
