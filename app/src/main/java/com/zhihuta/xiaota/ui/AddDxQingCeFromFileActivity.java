@@ -21,7 +21,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
+import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.Result;
+import com.zhihuta.xiaota.bean.response.BaseResponse;
 import com.zhihuta.xiaota.common.CallbackBundle;
 import com.zhihuta.xiaota.common.OpenFileDialog;
 
@@ -303,16 +305,17 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
 
                 if (msg.what == Network.OK) {
                     Result result= (Result)(msg.obj);
+                    BaseResponse baseResponse = CommonUtility.objectToJavaObject(result.getData(),BaseResponse.class);
 
-                    if (result.getCode() != 200)
+                    if (baseResponse == null || baseResponse.errorCode!= 0 )
                     {
-                        errorMsg = "服务器错误："+ result.getMessage();
+                        errorMsg = "服务器错误："+ baseResponse.errorCode + result.getMessage();
                     }
                     else
                     {
                         AddDxQingCeFromFileActivity.this.finish();
 
-                        Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线成功！" + errorMsg, Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
