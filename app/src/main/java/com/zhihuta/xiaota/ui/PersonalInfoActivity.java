@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSON;
@@ -76,6 +77,24 @@ public class PersonalInfoActivity extends AppCompatActivity{
 
         getUserInfo(loginResponseData);
 
+        //返回前页按钮
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+    }
+    /**
+     * 复写：左侧按钮点击动作
+     * android.R.id.home
+     * v7 actionbar back event
+     * 注意：如果复写了onOptionsItemSelected方法，则onSupportNavigateUp无用
+     * */
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return super.onSupportNavigateUp();
     }
 
     private void initView(){
