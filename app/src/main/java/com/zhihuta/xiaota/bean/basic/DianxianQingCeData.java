@@ -13,7 +13,7 @@ public class DianxianQingCeData implements Serializable {
 //    private String calculatedLength; //电线长度
     private String steel_redundancy;  //钢冗
     private String hose_redundancy;  //皮冗
-
+    private String wires_sequence;
     /**
      * 用于标记不同的场合
      * 不同的场合 显示不同的图标/按钮等
@@ -109,5 +109,11 @@ public class DianxianQingCeData implements Serializable {
 
     public String getParts_code() {
         return parts_code;
+    }
+    public String getWires_sequence() {
+        return wires_sequence;
+    }
+    public void setWires_sequence(String wires_sequence) {
+        this.wires_sequence = wires_sequence;
     }
 }

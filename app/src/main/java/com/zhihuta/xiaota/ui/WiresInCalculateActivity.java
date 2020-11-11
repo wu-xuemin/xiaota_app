@@ -89,8 +89,8 @@ public class WiresInCalculateActivity extends AppCompatActivity {
          */
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
         mPostValue.put("account","NO USE"); //paths/{lujingId}/wires?serial_number={dxSN}&parts_code={dxPartsCode}
-        String theUrl = Constant.getDxListOfLujingUrl.replace("{lujingId}", String.valueOf(mLujing.getId()));
-        theUrl = theUrl.replace("{dxSN}","").replace("{dxPartsCode}","");
+        String theUrl = Constant.getDxOfLujingInCaculateUrl.replace("{path_id}", String.valueOf(mLujing.getId()));
+
         Log.i(TAG,"获取该路径的电线列表 " + theUrl);
         mNetwork.fetchDxListOfLujing(theUrl, mPostValue, new GetDxListOfLujingHandler());///
     }
