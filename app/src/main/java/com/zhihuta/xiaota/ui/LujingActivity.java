@@ -194,7 +194,7 @@ public class LujingActivity extends AppCompatActivity {
         theUrl = Constant.getLujingDistanceListUrl.replace("lujingID",
                 String.valueOf(mLujing.getId()));
 
-        mNetwork.get(theUrl,null,new GetLujingDistanceListHandler(""),
+        mNetwork.get(theUrl,null,new GetLujingDistanceListHandler(Constant.FLAG_DISTANCE_IN_LUJING),
                 (handler, msg)->{
                         handler.sendMessage(msg);
                 });

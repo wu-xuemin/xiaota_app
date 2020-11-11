@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
-                android:text="芯数*截面:" />
+                android:text="芯数*截面：" />
 
             <TextView
                 android:id="@+id/textView17"
