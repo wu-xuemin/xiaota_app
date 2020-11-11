@@ -551,7 +551,7 @@ public class Network {
 
         return true;
     }
-    public boolean put(final String url,final LinkedHashMap<String, String> values,final Handler handler, final HttpResponseHandler httpResponseHandler)
+    public boolean put(final String url,final HashMap<String, String> values,final Handler handler, final HttpResponseHandler httpResponseHandler)
     {
         final Message msg = handler.obtainMessage();
 

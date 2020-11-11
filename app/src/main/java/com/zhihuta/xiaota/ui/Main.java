@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -245,6 +246,10 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
             case R.id.personal_info:
 
+                Intent intentPersonal = new Intent(this, PersonalInfoActivity.class);
+                String strResponseData2 = JSON.toJSONString(loginResponseData);
+                intentPersonal.putExtra("loginResponseData", (Serializable)strResponseData2);
+                startActivityForResult(intentPersonal, 1);
                 break;
             case R.id.logout:
 

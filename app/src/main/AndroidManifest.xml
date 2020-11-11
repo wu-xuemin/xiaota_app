@@ -67,6 +67,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.RegisterActivity" />
+        <activity android:name=".ui.PersonalInfoActivity" />
     </application>
 
 </manifest>
