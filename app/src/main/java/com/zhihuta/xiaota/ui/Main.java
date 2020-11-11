@@ -115,6 +115,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     private Button addDxByHandBt;
     // 电线 "从文件导入" 按钮
     private Button addDxFromFileBt;
+    // 查看导入记录
+    private Button dxImportHistoryBt;
     // 建全新路径 按钮
     private Button addTotalNewLujingBt;
 
@@ -836,7 +838,15 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Main.this, AddDxQingCeFromFileActivity.class);
+                startActivity(intent);
+            }
+        });
 
+        dxImportHistoryBt = (Button) findViewById(R.id.button_show_import_history);
+        dxImportHistoryBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Main.this, DxImportHistoryActivity.class);
                 startActivity(intent);
             }
         });

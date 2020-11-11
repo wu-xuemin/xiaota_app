@@ -33,8 +33,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.WiresExportActivity"></activity>
-        <activity android:name=".ui.WiresInCalculateActivity" />
+        <activity android:name=".ui.DxImportHistoryActivity" android:label="电线导入记录" />
+        <activity android:name=".ui.WiresExportActivity" />
+        <activity android:name=".ui.WiresInCalculateActivity"/>
         <activity
             android:name=".ui.RelateNewDxActivity"
             android:label="候选电线" />
@@ -49,9 +50,6 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity
-            android:name=".ui.ShowDxQingCeActivity"
-            android:label="浏览电线设计清册" />
         <activity
             android:name=".ui.LujingActivity"
             android:label="建立新路径" />
