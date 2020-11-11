@@ -50,6 +50,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="终点" />
+            <TextView
+                android:id="@+id/tv_wiresLength"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="长度" />
 
         </LinearLayout>
 

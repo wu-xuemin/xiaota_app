@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
@@ -116,6 +118,9 @@ public class WiresInCalculateActivity extends AppCompatActivity {
                         mDxRV.addItemDecoration(new DividerItemDecoration(WiresInCalculateActivity.this, DividerItemDecoration.VERTICAL));
                         mDxRV.setAdapter(mDianXianAdapter);
                         mDianXianAdapter.notifyDataSetChanged();
+
+                        mDianXianAdapter.setOnItemClickListener(MyItemClickListenerDx);
+                        mDianXianAdapter.updateDataSoruce(mDianxianList);
                     }
                 }
             } else {
@@ -133,7 +138,54 @@ public class WiresInCalculateActivity extends AppCompatActivity {
         mDxRV.setAdapter(mDianXianAdapter);
 
         // 设置item及item中控件的点击事件
-//        mDianXianAdapter.setOnItemClickListener(MyItemClickListener);
-
+        mDianXianAdapter.setOnItemClickListener(MyItemClickListenerDx);
+        mDianXianAdapter.updateDataSoruce(mDianxianList);
     }
+    /**
+     * 路径Adapter里item的控件点击监听事件
+     */
+    private DianXianQingceAdapter.OnItemClickListener MyItemClickListenerDx = new DianXianQingceAdapter.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(View v, DianXianQingceAdapter.ViewName viewName, int position) {
+            //viewName可区分item及item内部控件
+            switch (v.getId()){
+                case R.id.dianxianBianhaotextView:
+                case R.id.qidianTextView:
+                case R.id.zhongdiantextView:
+                    View view = getLayoutInflater().inflate(R.layout.dialog_dx, null);
+                    final TextView tvDxSName = (TextView) view.findViewById(R.id.textView_dilag_bianhao);
+                    final TextView tvDxQidian = (TextView) view.findViewById(R.id.textView_dialog_qidian);
+                    final TextView tvDxZhongdian = (TextView) view.findViewById(R.id.textView15);
+                    final TextView tvDxModel = (TextView) view.findViewById(R.id.textView16);
+                    final TextView tvDxXinshuJiemian = (TextView) view.findViewById(R.id.textView17);
+                    final TextView tvDxLength = (TextView) view.findViewById(R.id.textView18);
+                    final TextView tvDxSteel = (TextView) view.findViewById(R.id.textView19);
+                    final TextView tvDxHose = (TextView) view.findViewById(R.id.textView20);
+                    tvDxSName.setText(  mDianxianList.get(position).getSerial_number());
+                    tvDxQidian.setText( mDianxianList.get(position).getStart_point());
+                    tvDxZhongdian.setText( mDianxianList.get(position).getEnd_point());
+                    tvDxModel.setText( mDianxianList.get(position).getParts_code());
+                    tvDxXinshuJiemian.setText( mDianxianList.get(position).getWickes_cross_section());
+                    tvDxLength.setText( mDianxianList.get(position).getLength());
+                    tvDxSteel.setText( mDianxianList.get(position).getSteel_redundancy());
+                    tvDxHose.setText( mDianxianList.get(position).getHose_redundancy());
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(WiresInCalculateActivity.this);
+                    alertDialogBuilder.setTitle("电线详情")
+                            .setView(view)
+                            .setPositiveButton("关闭",null)
+//                            .setNegativeButton("OK", null)
+                            .show();
+                    break;
+                default:
+                    Toast.makeText(WiresInCalculateActivity.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+
+        @Override
+        public void onItemLongClick(View v) {
+
+        }
+    };
 }
