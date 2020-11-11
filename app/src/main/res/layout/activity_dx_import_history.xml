@@ -20,21 +20,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="导入日期" />
+            android:text="文件名" />
 
         <TextView
             android:id="@+id/tv_dxImportFileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="文件名" />
+            android:text="导入人" />
 
         <TextView
             android:id="@+id/tv_dxImportOperater"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="导入者" />
+            android:text="导入日期" />
 
     </LinearLayout>
 

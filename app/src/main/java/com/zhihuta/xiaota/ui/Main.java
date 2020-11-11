@@ -1388,14 +1388,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                     final TextView tvDxLength = (TextView) view.findViewById(R.id.textView18);
                     final TextView tvDxSteel = (TextView) view.findViewById(R.id.textView19);
                     final TextView tvDxHose = (TextView) view.findViewById(R.id.textView20);
-                    tvDxSName.setText("编号: " + mDianxianQingCeList.get(position).getSerial_number());
-                    tvDxQidian.setText("起点: " + mDianxianQingCeList.get(position).getStart_point());
-                    tvDxZhongdian.setText("终点: " + mDianxianQingCeList.get(position).getEnd_point());
-                    tvDxModel.setText("型号: " + mDianxianQingCeList.get(position).getParts_code());
-                    tvDxXinshuJiemian.setText("芯数*截面: " + mDianxianQingCeList.get(position).getWickes_cross_section());
-                    tvDxLength.setText("长度(参考): " + mDianxianQingCeList.get(position).getLength());
-                    tvDxSteel.setText("钢管冗余: " + mDianxianQingCeList.get(position).getSteel_redundancy());
-                    tvDxHose.setText("皮管冗余: " + mDianxianQingCeList.get(position).getHose_redundancy());
+                    tvDxSName.setText( mDianxianQingCeList.get(position).getSerial_number());
+                    tvDxQidian.setText( mDianxianQingCeList.get(position).getStart_point());
+                    tvDxZhongdian.setText( mDianxianQingCeList.get(position).getEnd_point());
+                    tvDxModel.setText( mDianxianQingCeList.get(position).getParts_code());
+                    tvDxXinshuJiemian.setText( mDianxianQingCeList.get(position).getWickes_cross_section());
+                    tvDxLength.setText( mDianxianQingCeList.get(position).getLength());
+                    tvDxSteel.setText( mDianxianQingCeList.get(position).getSteel_redundancy());
+                    tvDxHose.setText( mDianxianQingCeList.get(position).getHose_redundancy());
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Main.this);
                     alertDialogBuilder.setTitle("电线详情")
                             .setView(view)

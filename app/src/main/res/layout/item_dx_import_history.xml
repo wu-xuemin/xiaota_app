@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:gravity="center_horizontal|fill_horizontal">
+
+    <TextView
+        android:id="@+id/dxImportHistoryFileNametextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:layout_weight="3"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="文件名称" />
+
+    <TextView
+        android:id="@+id/dxImportHistoryOperator"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:layout_weight="3"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="导入人" />
+
+    <TextView
+        android:id="@+id/dxImportHistoryFileNameDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="日期" />
+
+
+</LinearLayout>
