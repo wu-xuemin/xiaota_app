@@ -101,6 +101,10 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     // "计算两点间距" 的按钮
     private Button mComputeDistanceBt;
 
+    //电线清册 重置
+    private Button getmResetInDxQingceBt;
+    //电线清册 查找
+    private SearchView mSearchViewDxQingce;
     // 电线 "手动添加" 按钮
     private Button addDxByHandBt;
     // 电线 "从文件导入" 按钮
@@ -711,6 +715,35 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
             public void onClick(View v) {
                 Intent intent = new Intent(Main.this, AddDxQingCeByHandActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        getmResetInDxQingceBt = (Button) findViewById(R.id.button_reset_dxQingCe);
+        getmResetInDxQingceBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDxQingCeGetParameters.clear();  //重置查询条件
+                mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+                    handler.sendMessage(msg);
+                });
+            }
+        });
+
+        mSearchViewDxQingce = (SearchView) findViewById(R.id.sv_dxQingce);
+        mSearchViewDxQingce.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mDxQingCeGetParameters.clear();
+                mDxQingCeGetParameters.put("sn", query);
+                mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+                    handler.sendMessage(msg);
+                });
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return true;
             }
         });
 
