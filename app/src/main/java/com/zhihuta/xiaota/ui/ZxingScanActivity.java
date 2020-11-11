@@ -34,9 +34,6 @@ import com.zhihuta.xiaota.util.ShowMessage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import cn.bingoogolapple.qrcode.core.QRCodeView;
 import cn.bingoogolapple.qrcode.zxing.ZXingView;
@@ -106,7 +103,8 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
                 stopScan();
 
-                if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING) {
+                if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_LUJING||
+                        mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_CACULATE) {
                     Log.i(TAG, "筛选路径");
 
                     String qrIDs = null;
@@ -122,10 +120,6 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                                 qrIDs = qrIDs + "," + String.valueOf(mScanResultDistanceList.get(j).getQr_id());
                             }
                         }
-                        //String theUrl = Constant.getFilterLujingListByQrUrl.replace("qrIDs", qrIDs); ///paths?qr_ids=qrIDs
-
-
-                       // mNetwork.fetchLujingListData(theUrl, mPostValue, new FilterPathHandler());//ok
 
                         HashMap<String, String> getParams = new HashMap<>();
                         getParams.put("qr_ids",qrIDs);
@@ -280,7 +274,8 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
         mRequestCodeFroPrev = intent.getIntExtra("requestCode", 0);
         switch (mRequestCodeFroPrev)
         {
-            case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING:
+            case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_CACULATE:
+            case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_LUJING:
                 //如果是从主界面筛选，不需要传路径到本页
                 Log.i(TAG, "筛选路径");
 
@@ -402,7 +397,8 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
         Gson gson = new Gson();
         DistanceData distanceData = gson.fromJson(result, DistanceData.class);
 
-        if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING) {
+        if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_LUJING ||
+                mRequestCodeFroPrev==Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_CACULATE) {
             /**
              * 把二维码 累积起来，用于退出时筛选路径
              */

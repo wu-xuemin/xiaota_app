@@ -18,7 +18,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,13 +35,9 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.internal.LinkedTreeMap;
 import com.zhihuta.xiaota.R;
-import com.zhihuta.xiaota.SettingFragment;
-import com.zhihuta.xiaota.WeixinFragment;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
@@ -52,9 +47,7 @@ import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.basic.Wires;
-import com.zhihuta.xiaota.bean.response.DistanceQRsResponse;
 
-import com.zhihuta.xiaota.bean.response.DistanceResponseData;
 import com.zhihuta.xiaota.bean.response.GetDistanceResponse;
 import com.zhihuta.xiaota.bean.response.GetWiresResponse;
 import com.zhihuta.xiaota.bean.response.NewPathDistanceQRsResponse;
@@ -69,7 +62,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.concurrent.ScheduledExecutorService;
 
 import cn.bingoogolapple.qrcode.core.QRCodeView;
 import cn.bingoogolapple.qrcode.zxing.ZXingView;
@@ -147,10 +139,11 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private int mRequestCode = 0;
 
     HashMap<String, String> mLujingGetParameters = new HashMap<>();
+    HashMap<String, String> mLujingCaculateGetParameters = new HashMap<>();
 
     LinkedHashMap<String, String> mDxQingCeGetParameters = new LinkedHashMap<>();
 
-    LinkedHashMap<String, String> mLujingCaculateGetParameters = new LinkedHashMap<>();
+
 //    private LujingAdapter mLujingShaixuanAdapter;
 //    private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
 
@@ -1053,7 +1046,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         }
 
         mComputeScanBt = (Button) findViewById(R.id.button_compute_scan);
-        mComputeScanBt.setOnClickListener(new MyOnclickListenrOnScanBts());
+        mComputeScanBt.setOnClickListener(new MyOnclickListenrOnScanBts(Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_CACULATE));
 
         mSearchViewInCalculate = (SearchView) findViewById(R.id.searchViewInCalculate);
         mSearchViewInCalculate.setQueryHint("查找"); //按名称
@@ -1133,27 +1126,32 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
      */
     class MyOnclickListenrOnScanBts implements View.OnClickListener
     {
+        int mRequestCode;
 
+        public MyOnclickListenrOnScanBts(int mRequestCode)
+        {
+            this.mRequestCode = mRequestCode;
+        }
         @Override
         public void onClick(View v) {
             scanIntent = new Intent(Main.this, ZxingScanActivity.class);
-            scanIntent.putExtra("requestCode", Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING);
+            scanIntent.putExtra("requestCode", mRequestCode);
 
             //运行时权限
             if (ContextCompat.checkSelfPermission(Main.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING);
+                ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_LUJING);
             }else {
                 /**
                  * requestCode为：
                  */
-                startActivityForResult(scanIntent, Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING);
+                startActivityForResult(scanIntent, mRequestCode);
             }
         }
     }
 
     private void initViewsLujing() {
         mLujingScanBt = (Button) findViewById(R.id.button_scan_lujing);
-        mLujingScanBt.setOnClickListener(new MyOnclickListenrOnScanBts());
+        mLujingScanBt.setOnClickListener(new MyOnclickListenrOnScanBts(Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_LUJING));
         mLujingResetBt = (Button) findViewById(R.id.button_reset_lujing);;
         mLujingResetBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1540,7 +1538,7 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         HashMap<String, String> postValue;
 
         switch (requestCode){
-                case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING:
+                case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_LUJING:
                 if (resultCode == RESULT_OK) {
 
                     //把筛选结果返回给主页面
@@ -1566,6 +1564,36 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 
                     //保存路劲筛选的参数，
                     mLujingGetParameters = params;
+                }
+                break;
+            case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_CACULATE:
+                {
+                    if (resultCode == RESULT_OK) {
+
+                        //把筛选结果返回给主页面
+                        ArrayList<LujingData> list = (ArrayList<LujingData>) intent.getSerializableExtra("mFilterLujingList");
+                        mLujingList = (ArrayList<LujingData>) list.clone();
+                        Log.i(TAG," 筛选得到" + mLujingList.size() + " 条路径");
+                        Toast.makeText(this, " 筛选得到" + mLujingList.size() + " 条路径", Toast.LENGTH_LONG).show();
+
+                        if (mLujingAdapter == null)
+                        {
+                            mLujingAdapter = new LujingAdapter(mLujingList, Main.this,Constant.FLAG_LUJING_IN_LUJING);
+                            mLujingRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                            mLujingRV.setAdapter(mLujingAdapter);
+
+                            // 设置item及item中控件的点击事件
+                            mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                        }
+                        mLujingAdapter.updateDataSource(mLujingList, Constant.FLAG_LUJING_IN_LUJING);
+
+                        Serializable serializable  = intent.getSerializableExtra("getParameters");
+
+                        HashMap<String, String> params = (HashMap<String, String>)(serializable);
+
+                        //保存路劲筛选的参数，
+                        mLujingCaculateGetParameters = params;
+                    }
                 }
                 break;
             case Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH:
@@ -1648,7 +1676,10 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
                 case Constant.REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH:
                     startActivityForResult(scanIntent, requestCode );
                     break;
-                case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING:
+                case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_LUJING:
+                    startActivityForResult(scanIntent, requestCode );
+                    break;
+                case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_CACULATE:
                     startActivityForResult(scanIntent, requestCode );
                     break;
                 default:
