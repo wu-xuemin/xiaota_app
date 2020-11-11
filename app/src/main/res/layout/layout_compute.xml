@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include layout="@layout/top" />
+        <!--include layout="@layout/top" /-->
 
         <LinearLayout
             android:layout_width="match_parent"

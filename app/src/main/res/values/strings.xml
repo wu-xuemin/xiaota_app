@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">小塔</string>
+    <string name="app_name">路由宝</string>
     <string name="title_activity_xiangmu">MainActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -15,7 +15,7 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <string name="network_not_connect">Network not connected!</string>
-    <string name="system_name_cn">小塔</string>
+    <string name="system_name_cn">路由宝</string>
     <string name="account">账号</string>
     <string name="signup_password">密码</string>
     <string name="login_activity">登录</string>

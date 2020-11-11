@@ -23,6 +23,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.ToastUtils;
 
@@ -204,14 +205,17 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void onLoginSuccess(LoginResponseData data) {
+    public void onLoginSuccess(LoginResponseData loginResponseData) {
         /// test
 
-        if (data.errorCode == 0) {
+        if (loginResponseData.errorCode == 0) {
 
             Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, Main.class);
 
+            String strResponseData = JSON.toJSONString(loginResponseData);
+
+            intent.putExtra("loginResponseData", (Serializable)strResponseData);
             startActivity(intent);
             finish();//销毁此Activity
         } else {

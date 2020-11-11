@@ -1,6 +1,7 @@
 package com.zhihuta.xiaota.ui;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -23,6 +24,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -35,6 +37,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.internal.LinkedTreeMap;
 import com.zhihuta.xiaota.R;
@@ -50,11 +53,13 @@ import com.zhihuta.xiaota.bean.basic.Wires;
 
 import com.zhihuta.xiaota.bean.response.GetDistanceResponse;
 import com.zhihuta.xiaota.bean.response.GetWiresResponse;
+import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.bean.response.NewPathDistanceQRsResponse;
 import com.zhihuta.xiaota.bean.response.PathGetDistanceQr;
 import com.zhihuta.xiaota.bean.response.PathGetObject;
 import com.zhihuta.xiaota.bean.response.PathsResponse;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
@@ -68,7 +73,8 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 
 //public class DianxianQingCe extends AppCompatActivity {
-public class Main extends FragmentActivity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate, QRCodeView.Delegate {
+//FragmentActivity 无法创建菜单.
+public class Main extends AppCompatActivity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate, QRCodeView.Delegate {
 
     private static String TAG = "Main";
     private String tabFlag = "在路径模型"; // 还有： 在电线清册、在计算中心
@@ -178,12 +184,23 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
     private TextView textViewShowSumOfDistances; // 总长
     private Button mResetScanResultInCaculateBt;          //计算中心-计算两点距离-重新扫码  （重置清零扫码的结果）
     private Button mSetDistanceLengthInCaculateBt;          //计算中心-计算两点距离-设置值
+
+    LoginResponseData loginResponseData;
+
+
+    //******method******/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_main);
+
+        //get login infor from Loginactivity
+        Intent intent = getIntent();
+        String strLoginResponseJson = (String) intent.getExtras().getSerializable("loginResponseData");
+        loginResponseData =JSON.parseObject(strLoginResponseJson, LoginResponseData.class);
+        //
 
 
         mNetwork = Network.Instance(getApplication());
@@ -205,9 +222,55 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
         tabFlag = "";
         selectTab(R.id.id_tab_lujing_moxing);//默认选中第2个Tab
 
-
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        //menu.add(Menu.NONE,  Menu.FIRST+1 , 0, "设置").setIcon(R.drawable.setting);
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+//            case android.R.id.home:
+//                this.finish(); // back button
+//                return true;
+
+            case R.id.personal_info:
+
+                break;
+            case R.id.logout:
+
+                String url = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_LOGOUT.replace("{account_id}", Integer.toString(loginResponseData.getId()));
+
+                mNetwork.delete(url,null,new Handler(),(handler, msg)->{
+                    if (handler!= null)
+                    {
+                        handler.sendMessage(msg);
+                    }
+                    //do not care about the response from server.
+                });
+
+
+                Intent intent = new Intent(this, LoginActivity.class);
+
+                String strResponseData = JSON.toJSONString(loginResponseData);
+
+                intent.putExtra("loginResponseData", (Serializable)strResponseData);
+                startActivity(intent);
+                finish();//销毁此Activity
+
+                break;
+
+            default:
+        }
+        return super.onOptionsItemSelected(item);
+    }
     //计算两点距离 的界面初始化
     private void initComputeScan(){
 
@@ -1541,17 +1604,6 @@ public class Main extends FragmentActivity implements View.OnClickListener, BGAR
 //        mFrdImg.setImageResource(R.mipmap.tab_find_frd_normal);
         mLujingMoxingImg.setImageResource(R.mipmap.tab_address_normal);
         mJisuanImg.setImageResource(R.mipmap.tab_compute_normal);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish(); // back button
-                return true;
-            default:
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     // onActivityResult 先于 resueme 执行

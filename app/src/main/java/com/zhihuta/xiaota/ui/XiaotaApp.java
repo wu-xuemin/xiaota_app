@@ -28,7 +28,7 @@ public class XiaotaApp extends Application {
     /**
      * Shared preferences file name, where we store persistent values.
      */
-    static final String SHARED_PREFS_FILENAME = "小塔";
+    static final String SHARED_PREFS_FILENAME = "路由宝";
 
     public static final int LOGIN_REQUEST_CODE = 20000;
     public static final int LOGIN_RESULT_SUCCESS_CODE = 20001;
@@ -387,6 +387,8 @@ public class XiaotaApp extends Application {
     }
 
     public String getAccount() {
+
+        this.account = readValue(PersistentValueType.ACCOUNT, "a");
         return account;
     }
 
@@ -401,6 +403,8 @@ public class XiaotaApp extends Application {
     }
 
     public String getPassword() {
+
+        this.password = readValue(PersistentValueType.PASSWORD, "a");
         return password;
     }
 

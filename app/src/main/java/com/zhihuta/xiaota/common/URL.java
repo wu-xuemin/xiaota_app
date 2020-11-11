@@ -5,7 +5,7 @@ public class URL {
     public static final String HTTP_HEAD = "http://";
     public static final String TCP_HEAD = "tcp://";
     public static final String USER_LOGIN = "/login";
-
+    public static final String USER_LOGOUT= "/logout/{account_id}";
 
     public static final String GET_DIANXIAN_QINGCE_LIST = "/wires";
     public static final String POST_DIANXIAN_QINGCE_IMPORT = "/wires/import";

@@ -653,8 +653,15 @@ public class Network {
         return true;
     }
 
-    public boolean delete(final String url,final LinkedHashMap<String, String> values,final Handler handler, HttpResponseHandler httpResponseHandler)
+    public boolean delete(final String url,final LinkedHashMap<String, String> values,Handler handlerIn, HttpResponseHandler httpResponseHandler)
     {
+        if (handlerIn == null)
+        {
+            handlerIn = new Handler();
+        }
+
+        final Handler handler = handlerIn;
+
         final Message msg = handler.obtainMessage();
 
         if (!isNetworkConnected()) {
@@ -755,7 +762,10 @@ public class Network {
                         response.close();
                     }
 
-                    httpResponseHandler.processResponse(handler,msg);
+                    if (httpResponseHandler!= null)
+                    {
+                        httpResponseHandler.processResponse(handler,msg);
+                    }
                 }
             }
         });//executor
