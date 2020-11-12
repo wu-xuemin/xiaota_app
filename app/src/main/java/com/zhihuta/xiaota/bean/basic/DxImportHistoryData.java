@@ -7,9 +7,19 @@ import java.util.Date;
 public class DxImportHistoryData implements Serializable {
     private int id;
     private String fileName;
-    private Date operate_time;
+    private String operate_time;
     private String operator;
-    private SimpleDateFormat sf3 = new SimpleDateFormat("yy/MM/dd");
+    private String account;
+    private String name;
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
     public int getId() {
         return id;
     }
@@ -26,12 +36,12 @@ public class DxImportHistoryData implements Serializable {
         this.fileName = fileName;
     }
 
-    public Date getOperate_time() {
+    public String getOperate_time() {
 
         return operate_time;
     }
 
-    public void setOperate_time(Date operate_time) {
+    public void setOperate_time(String operate_time) {
         this.operate_time = operate_time;
     }
 

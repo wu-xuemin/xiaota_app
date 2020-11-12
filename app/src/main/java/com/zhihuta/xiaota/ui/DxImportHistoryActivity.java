@@ -25,6 +25,7 @@ import com.zhihuta.xiaota.net.Network;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DxImportHistoryActivity extends AppCompatActivity {
 
@@ -101,8 +102,9 @@ public class DxImportHistoryActivity extends AppCompatActivity {
                         DxImportHistoryData dxImportHistoryData = new DxImportHistoryData();
                         dxImportHistoryData.setFileName( dxImportHistory.getFileName());
                         dxImportHistoryData.setId(dxImportHistory.getId());
-                        dxImportHistoryData.setOperator(dxImportHistory.getOperator());
-                        dxImportHistoryData.setOperate_time( (dxImportHistory.getOperate_time()));//sf3.format
+                        dxImportHistoryData.setOperator(dxImportHistory.getAccount());
+                        long dateValue = Long.valueOf(dxImportHistory.getOperate_time());
+                        dxImportHistoryData.setOperate_time( sf3.format(dateValue));
                         dxImportHistoryList.add( dxImportHistoryData);
                     }
 
@@ -136,6 +138,7 @@ public class DxImportHistoryActivity extends AppCompatActivity {
 
         }
     }
+
     private void initDxLayout(){
         //间距列表
         mDxHistoryRV = (RecyclerView) findViewById(R.id.rv_dx_history);
