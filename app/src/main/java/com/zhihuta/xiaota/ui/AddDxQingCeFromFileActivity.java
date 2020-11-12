@@ -313,9 +313,10 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
                     }
                     else
                     {
+                        Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线成功！" + errorMsg, Toast.LENGTH_LONG).show();
+
                         AddDxQingCeFromFileActivity.this.finish();
 
-                        Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线成功！" + errorMsg, Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
@@ -327,7 +328,7 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
                 if (!errorMsg.isEmpty())
                 {
                     Log.d("导入电线失败:", errorMsg);
-                    Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线失败！" + errorMsg, Toast.LENGTH_LONG).show();
                 }
             }
             catch (Exception ex)
