@@ -25,6 +25,7 @@ import android.os.Message;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,6 +61,7 @@ import com.zhihuta.xiaota.bean.response.PathGetDistanceQr;
 import com.zhihuta.xiaota.bean.response.PathGetObject;
 import com.zhihuta.xiaota.bean.response.PathsResponse;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.MyActivityManager;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
@@ -191,6 +193,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
     LoginResponseData loginResponseData;
 
+    boolean mConfirmedExit = false;
 
     //******method******/
     @Override
@@ -1784,6 +1787,37 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             default:
                 break;
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (mConfirmedExit == false)
+        {
+            if(keyCode== KeyEvent.KEYCODE_BACK&&event.getAction()==KeyEvent.ACTION_DOWN){
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Main.this);
+                alertDialogBuilder.setTitle("确定退出程序？")
+                        .setNegativeButton("否", null)
+                        .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+//                                if (MyActivityManager.getInstance().getCurrentActivity().equals(Main.this))
+//                                {
+//                                    mConfirmedExit = true;
+//                                    Main.this.onKeyDown(keyCode, event);
+//                                }
+
+                                finish();
+                            }
+                        })
+                        .show();
+
+                return  true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
