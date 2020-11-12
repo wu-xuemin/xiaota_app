@@ -23,6 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
+                android:gravity="center"
                 android:text="文件名" />
 
             <TextView
@@ -30,6 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
+                android:gravity="center"
                 android:text="导入人" />
 
             <TextView
@@ -37,6 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
+                android:gravity="center"
                 android:text="导入日期" />
 
         </LinearLayout>

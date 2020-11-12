@@ -523,7 +523,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                         distanceData.setDistance(String.valueOf(distanceObj.distance));
                         distanceData.setName(distanceObj.name);
                         distanceData.setQr_sequence(distanceObj.qrSequence);
-                        distanceData.setSerial_number(distanceObj.serialNumber);
+                        distanceData.setSerial_number(distanceObj.serialNumber.substring(0,distanceObj.serialNumber.length()-4));
                         distanceData.setFlag(Constant.FLAG_DISTANCE_IN_CALCULATE);
 
                         mDistanceList.add( distanceData);

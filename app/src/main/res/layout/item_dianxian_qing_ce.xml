@@ -9,7 +9,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:layout_weight="3"
+        android:layout_weight="4"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:text="电线编号" />
@@ -18,9 +18,10 @@
         android:id="@+id/qidianTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|center_vertical"
+        android:layout_gravity="center"
         android:layout_weight="3"
         android:ellipsize="marquee"
+        android:gravity="center"
         android:singleLine="true"
         android:text="起点" />
 
@@ -28,6 +29,7 @@
         android:id="@+id/zhongdiantextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="3"
         android:ellipsize="marquee"
         android:gravity="center"
