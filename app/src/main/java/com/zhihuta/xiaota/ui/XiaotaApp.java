@@ -1,13 +1,17 @@
 package com.zhihuta.xiaota.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.blankj.utilcode.util.CacheUtils;
 import com.blankj.utilcode.util.Utils;
+import com.zhihuta.xiaota.common.AuthenticateInterceptor;
+import com.zhihuta.xiaota.common.MyActivityManager;
 import com.zhihuta.xiaota.util.LogUtils;
 
 import java.util.ArrayList;
@@ -144,7 +148,7 @@ public class XiaotaApp extends Application {
                         List<Cookie> cookies = cookieStore.get(httpUrl.host());
                         return cookies != null ? cookies : new ArrayList<Cookie>();
                     }
-                })
+                }).addInterceptor(new AuthenticateInterceptor())
                 .build();
 
         /*
@@ -205,6 +209,45 @@ public class XiaotaApp extends Application {
         }
         this.groupName = readValue(PersistentValueType.GROUP_NAME, "");
         this.groupType = readValue(PersistentValueType.GROUP_TYPE, "");
+
+        //Android自 API 14开始引入了一个方法，即Application的registerActivityLifecycleCallbacks方法，用来监听所有Activity的生命周期回调，
+        // 比如onActivityCreated,onActivityResumed等。
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+                MyActivityManager.getInstance().setCurrentActivity(activity);
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+
+            }
+        });
     }
 
     @SuppressLint({"MissingPermission", "HardwareIds"})
