@@ -1379,11 +1379,16 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 case R.id.lujingMingChenTextView:
                 case R.id.lujingCreaterTextView:
                 case R.id.lujingCreateDateTextView:
+                    View view = getLayoutInflater().inflate(R.layout.dialog_lujing, null);
+                    final TextView tvLujingName = (TextView) view.findViewById(R.id.textViewDialogName2);
+                    final TextView tvLujingCreator = (TextView) view.findViewById(R.id.textViewDialogCreator2);
+                    final TextView tvLujingCreatTime = (TextView) view.findViewById(R.id.textViewDialogCreateTime2);
+                    tvLujingName.setText( mLujingList.get(position).getName());
+                    tvLujingCreator.setText( mLujingList.get(position).getCreator());
+                    tvLujingCreatTime.setText( mLujingList.get(position).getCreate_time());
                     Log.i(TAG," 点击了路径名称或创建人或创建日期" +(position+1));
                     AlertDialog.Builder alertDialogBuilder2 = new AlertDialog.Builder(Main.this);
-                    alertDialogBuilder2.setTitle( mLujingList.get(position).getName()
-                            + "," + mLujingList.get(position).getCreator()
-                            + "," + mLujingList.get(position).getCreate_time())
+                    alertDialogBuilder2.setView(view).setTitle("详情")
                             .setNegativeButton("OK", null)
                             .show();
                     break;
