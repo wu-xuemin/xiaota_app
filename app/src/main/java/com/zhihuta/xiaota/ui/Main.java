@@ -187,6 +187,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     private TextView textViewShowSumOfDistances; // 总长
     private Button mResetScanResultInCaculateBt;          //计算中心-计算两点距离-重新扫码  （重置清零扫码的结果）
     private Button mSetDistanceLengthInCaculateBt;          //计算中心-计算两点距离-设置值
+    private DistanceData currentDistanceData;               //扫码得到的当前二维码，最新扫到的。
 
     LoginResponseData loginResponseData;
 
@@ -303,8 +304,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         mSetDistanceLengthInCaculateBt.setEnabled(true);
 
         // 解析数据，并填入
-        DistanceData distanceData = JSONObject.parseObject(result, DistanceData.class);
-        if(distanceData == null){
+        currentDistanceData = JSONObject.parseObject(result, DistanceData.class);
+        if(currentDistanceData == null){
             Log.i(TAG, "二维码解析异常");
             return;
         }
@@ -312,12 +313,12 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
          * 把二维码 累积起来，用于退出时筛选路径
          */
         for (DistanceData distanceData1 : mScanResultDistanceList) {
-            if(distanceData1.getSerial_number().equals( distanceData.getSerial_number())){
+            if(distanceData1.getSerial_number().equals( currentDistanceData.getSerial_number())){
                 Toast.makeText(Main.this, "扫到码重复了,忽略", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
-        mScanResultDistanceList.add(distanceData);
+        mScanResultDistanceList.add(currentDistanceData);
         if(mScanResultDistanceList.size() >1){
             //扫到第二个码时,程序自动将两个码之间所有的码自动添加进列表, 方便查看
 //            mNetwork.();
@@ -760,7 +761,23 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         }
     }
 
+    @SuppressLint("HandlerLeak")
+    class SetQrDistanceHandler extends Handler {
+        @Override
+        public void handleMessage(final Message msg) {
 
+          if (msg.what == Network.OK) {
+            Log.d("SetQrDistanceHandler", "OKKK");
+
+              Toast.makeText(Main.this, "设置长度OK！", Toast.LENGTH_SHORT).show();
+
+        } else {
+            String errorMsg = (String) msg.obj;
+            Log.d(TAG, errorMsg);
+            Toast.makeText(Main.this, "设置长度失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+        }
+    }
+    }
     private void initEvents() {
         //初始化3个Tab的点击事件
         mTabDxQingce.setOnClickListener(this);
@@ -1206,6 +1223,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 mDistanceAdapter.notifyDataSetChanged();
 
                 startScan();
+                mSetDistanceLengthInCaculateBt.setEnabled(false);
             }
         });
         mSetDistanceLengthInCaculateBt  = (Button) findViewById(R.id.button5);
@@ -1224,6 +1242,11 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                              Log.i(TAG, "输入了长度： " + et.getText());
+                                String theUrl = Constant.putQrDistanceUrl.replace("{qr_id}", String.valueOf(currentDistanceData.getQr_id()) ); //"/distance/qr/{qr_id}/{distance}/changeDistance";
+                                theUrl = theUrl.replace("{distance}",et.getText());
+                                mNetwork.put(theUrl, null, new SetQrDistanceHandler(), (handler, msg) -> {
+                                    handler.sendMessage(msg);
+                                });
                             }
                         })
                         .show();
@@ -1596,6 +1619,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             mQRCodeView.stopSpot();
             mQRCodeView.stopCamera();
         }
+        mSetDistanceLengthInCaculateBt.setEnabled(false);
     }
     //将3个的Fragment隐藏
     private void hideFragments(FragmentTransaction transaction) {

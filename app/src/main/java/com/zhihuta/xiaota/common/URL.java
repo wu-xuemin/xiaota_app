@@ -40,4 +40,5 @@ public class URL {
     public static final String GET_DISTANCE_LIST_BY_TWO_DISTANCE = "/caculate/distance?qr_id=qrId1,qrId2"; //扫2个码获取期间间距
 
     public static final String GET_DX_IMPORT_HISTORY = "/wires/import/files";  //电线导入历史
+    public static final String PUT_QR_DISTANCE = "/distance/qr/{qr_id}/{distance}/changeDistance";//设置二维码距离
 }
