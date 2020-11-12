@@ -46,6 +46,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "nlgLoginActivity";
 
+    private TextView mRegister;
+    private TextView mResetpassword;
+
     private TextView mSystemVersionTv;
     private EditText mAccountText;
     private EditText mPasswordText;
@@ -88,6 +91,36 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 login();
+            }
+        });
+
+        mRegister = (TextView) findViewById(R.id.register);
+        mRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        mResetpassword = (TextView) findViewById(R.id.reset_password);
+        mResetpassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder
+                        (LoginActivity.this);
+
+                final EditText et = new EditText(LoginActivity.this);
+                alertDialogBuilder.setTitle("请输入注册的邮箱，新密码将被发送到注册邮箱")
+                        .setView(et)
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                //
+                            }
+                        })
+                        .show();
             }
         });
     }
