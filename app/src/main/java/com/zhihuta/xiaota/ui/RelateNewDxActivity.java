@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
@@ -300,7 +302,29 @@ public class RelateNewDxActivity extends AppCompatActivity {
                     checkedList.set(position,  !checkedList.get(position) );
                     break;
                 default:
-                    Toast.makeText(RelateNewDxActivity.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    View view = getLayoutInflater().inflate(R.layout.dialog_dx, null);
+                    final TextView tvDxSName = (TextView) view.findViewById(R.id.textView_dilag_bianhao);
+                    final TextView tvDxQidian = (TextView) view.findViewById(R.id.textView_dialog_qidian);
+                    final TextView tvDxZhongdian = (TextView) view.findViewById(R.id.textView15);
+                    final TextView tvDxModel = (TextView) view.findViewById(R.id.textView16);
+                    final TextView tvDxXinshuJiemian = (TextView) view.findViewById(R.id.textView17);
+                    final TextView tvDxLength = (TextView) view.findViewById(R.id.textView18);
+                    final TextView tvDxSteel = (TextView) view.findViewById(R.id.textView19);
+                    final TextView tvDxHose = (TextView) view.findViewById(R.id.textView20);
+                    tvDxSName.setText( mDianxianTobeSelectList.get(position).getSerial_number());
+                    tvDxQidian.setText( mDianxianTobeSelectList.get(position).getStart_point());
+                    tvDxZhongdian.setText( mDianxianTobeSelectList.get(position).getEnd_point());
+                    tvDxModel.setText( mDianxianTobeSelectList.get(position).getParts_code());
+                    tvDxXinshuJiemian.setText( mDianxianTobeSelectList.get(position).getWickes_cross_section());
+                    tvDxLength.setText( mDianxianTobeSelectList.get(position).getLength());
+                    tvDxSteel.setText( mDianxianTobeSelectList.get(position).getSteel_redundancy());
+                    tvDxHose.setText( mDianxianTobeSelectList.get(position).getHose_redundancy());
+                    AlertDialog.Builder alertDialogBuilder2 = new AlertDialog.Builder(RelateNewDxActivity.this);
+                    alertDialogBuilder2.setTitle("电线详情")
+                            .setView(view)
+                            .setPositiveButton("关闭",null)
+//                            .setNegativeButton("OK", null)
+                            .show();
                     break;
             }
         }
