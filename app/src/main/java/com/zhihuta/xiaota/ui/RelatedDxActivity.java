@@ -167,7 +167,29 @@ public class RelatedDxActivity extends AppCompatActivity {
                     break;
 
                 default:
-                    Toast.makeText(RelatedDxActivity.this,"你点击了item按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    View view = getLayoutInflater().inflate(R.layout.dialog_dx, null);
+                    final TextView tvDxSName = (TextView) view.findViewById(R.id.textView_dilag_bianhao);
+                    final TextView tvDxQidian = (TextView) view.findViewById(R.id.textView_dialog_qidian);
+                    final TextView tvDxZhongdian = (TextView) view.findViewById(R.id.textView15);
+                    final TextView tvDxModel = (TextView) view.findViewById(R.id.textView16);
+                    final TextView tvDxXinshuJiemian = (TextView) view.findViewById(R.id.textView17);
+                    final TextView tvDxLength = (TextView) view.findViewById(R.id.textView18);
+                    final TextView tvDxSteel = (TextView) view.findViewById(R.id.textView19);
+                    final TextView tvDxHose = (TextView) view.findViewById(R.id.textView20);
+                    tvDxSName.setText( mDianxianList.get(position).getSerial_number());
+                    tvDxQidian.setText( mDianxianList.get(position).getStart_point());
+                    tvDxZhongdian.setText( mDianxianList.get(position).getEnd_point());
+                    tvDxModel.setText( mDianxianList.get(position).getParts_code());
+                    tvDxXinshuJiemian.setText( mDianxianList.get(position).getWickes_cross_section());
+                    tvDxLength.setText( mDianxianList.get(position).getLength());
+                    tvDxSteel.setText( mDianxianList.get(position).getSteel_redundancy());
+                    tvDxHose.setText( mDianxianList.get(position).getHose_redundancy());
+                    AlertDialog.Builder alertDialogBuilder2 = new AlertDialog.Builder(RelatedDxActivity.this);
+                    alertDialogBuilder2.setTitle("电线详情")
+                            .setView(view)
+                            .setPositiveButton("关闭",null)
+//                            .setNegativeButton("OK", null)
+                            .show();
                     break;
             }
         }

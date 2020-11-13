@@ -9,19 +9,21 @@
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <RelativeLayout android:id="@+id/rl_personal_info_top"
+
+        <RelativeLayout
+            android:id="@+id/rl_personal_info_top"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:background="@color/color_minefragment_top">
-            <TextView android:id="@+id/personal_info"
+            android:layout_height="50dp">
+
+            <TextView
+                android:id="@+id/personal_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
                 android:layout_toRightOf="@+id/iv_registeractivity_back"
                 android:text="个人信息"
-                android:textColor="#fff"
-                android:textSize="20dp"/>
+                android:textSize="20dp" />
         </RelativeLayout>
         <!-- 第一个文本编辑框  输入用户名 -->
         <LinearLayout android:layout_width="match_parent"
@@ -164,26 +166,29 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
             <!-- 修改按钮 -->
-            <Button android:id="@+id/bt_personal_modify"
+            <Button
+                android:id="@+id/bt_personal_modify"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_weight="1"
                 android:layout_marginLeft="40dp"
-                android:background="@drawable/selector_loginactivity_button"
-                android:textColor="#fff"
+                android:layout_marginTop="40dp"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
                 android:text="修改"
 
-                android:layout_marginTop="40dp"/>
-            <Button android:id="@+id/bt_personal_confirm"
+                android:textColor="#fff" />
+
+            <Button
+                android:id="@+id/bt_personal_confirm"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_weight="1"
                 android:layout_marginLeft="20dp"
+                android:layout_marginTop="40dp"
                 android:layout_marginRight="20dp"
-                android:background="@drawable/selector_loginactivity_button"
-                android:textColor="#fff"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
                 android:text="确定"
-                android:layout_marginTop="40dp"/>
+                android:textColor="#fff" />
         </LinearLayout>
 
     </LinearLayout>
