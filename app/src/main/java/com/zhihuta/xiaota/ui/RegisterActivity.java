@@ -4,23 +4,19 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.zhihuta.xiaota.Code;
-import com.zhihuta.xiaota.DBOpenHelper;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.AddUsersResponse;
-import com.zhihuta.xiaota.bean.response.BaseResponse;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
@@ -38,9 +34,9 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
     private String realCode;
 
     private Button mBtRegisteractivityRegister;
-    private RelativeLayout mRlRegisteractivityTop;
+//    private RelativeLayout mRlRegisteractivityTop;
     private ImageView mIvRegisteractivityBack;
-    private LinearLayout mLlRegisteractivityBody;
+//    private LinearLayout mLlRegisteractivityBody;
 
     private EditText mEtUserName;
     private EditText mEtPassword1;
@@ -49,12 +45,12 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
     private EditText mEtEmail;
     private EditText mEtCompany;
     private EditText mEtDepartment;
-    private EditText mEdTitle;
+    private EditText mEtTitle;
     private EditText mEtTel;
     private EditText mEtAdress;
 
-    private ImageView mIvRegisteractivityShowcode;
-    private RelativeLayout mRlRegisteractivityBottom;
+//    private ImageView mIvRegisteractivityShowcode;
+//    private RelativeLayout mRlRegisteractivityBottom;
 
     private Network mNetwork;
 
@@ -66,17 +62,17 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
         initView();
 
         //将验证码用图片的形式显示出来
-        mIvRegisteractivityShowcode.setImageBitmap(Code.getInstance().createBitmap());
-        realCode = Code.getInstance().getCode().toLowerCase();
+//        mIvRegisteractivityShowcode.setImageBitmap(Code.getInstance().createBitmap());
+        //realCode = Code.getInstance().getCode().toLowerCase();
 
         mNetwork = Network.Instance(getApplication());
     }
 
     private void initView(){
         mBtRegisteractivityRegister = findViewById(R.id.bt_registeractivity_register);
-        mRlRegisteractivityTop = findViewById(R.id.rl_registeractivity_top);
+//        mRlRegisteractivityTop = findViewById(R.id.rl_registeractivity_top);
         mIvRegisteractivityBack = findViewById(R.id.iv_registeractivity_back);
-        mLlRegisteractivityBody = findViewById(R.id.ll_registeractivity_body);
+//        mLlRegisteractivityBody = findViewById(R.id.ll_registeractivity_body);
 
 
         mEtAccount = findViewById(R.id.et_registeractivity_account);
@@ -86,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
         mEtEmail = findViewById(R.id.et_registeractivity_email);
         mEtCompany = findViewById(R.id.et_registeractivity_company);
         mEtDepartment = findViewById(R.id.et_registeractivity_department);
-        mEdTitle = findViewById(R.id.et_registeractivity_title);
+        mEtTitle = findViewById(R.id.et_registeractivity_title);
         mEtTel = findViewById(R.id.et_registeractivity_tel);
         mEtAdress= findViewById(R.id.et_registeractivity_address);
 
@@ -98,11 +94,11 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
         mIvRegisteractivityBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                finish();
             }
         });
 
-        mIvRegisteractivityShowcode.setOnClickListener(null);
+//        mIvRegisteractivityShowcode.setOnClickListener(null);
 
         mBtRegisteractivityRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,11 +126,11 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
                                 public void onClick(DialogInterface dialogInterface, int i) {
 
                                     HashMap<String, String> newUserInfoParameters = new HashMap<>();
-                                    newUserInfoParameters.put("account",  mEtUserName.getText().toString());
+                                    newUserInfoParameters.put("account",  mEtAccount.getText().toString());
                                     newUserInfoParameters.put("name",  mEtUserName.getText().toString());
                                     newUserInfoParameters.put("password",  mEtPassword1.getText().toString());
                                     newUserInfoParameters.put("email",  mEtEmail.getText().toString());
-                                    newUserInfoParameters.put("title",  mEdTitle.getText().toString());
+                                    newUserInfoParameters.put("title",  mEtTitle.getText().toString());
                                     newUserInfoParameters.put("phone",  mEtTel.getText().toString());
                                     newUserInfoParameters.put("company",  mEtCompany.getText().toString());
                                     newUserInfoParameters.put("department",  mEtDepartment.getText().toString());
@@ -144,7 +140,10 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
                                     String registerUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_REGISTER.replace("{type}",
                                             "3");
 
-                                    mNetwork.post(registerUrl,newUserInfoParameters, new Handler(),(handler, msg)->{
+                                    mNetwork.post(registerUrl,newUserInfoParameters, new Handler(){
+
+                                        @Override
+                                        public void handleMessage(final Message msg) {
                                             /*"{
                                               ""account"":""zhanglin01"",//账号名，不可以重复
                                               ""name"": ""maosan"",
@@ -158,34 +157,37 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
                                             }"
                                             */
 
+                                            String errorMsg = "";
 
-                                        String errorMsg = "";
+                                            if (msg.what == Network.OK) {
+                                                Result result= (Result)(msg.obj);
 
-                                        if (msg.what == Network.OK) {
-                                            Result result= (Result)(msg.obj);
+                                                AddUsersResponse addUsersResponse = CommonUtility.objectToJavaObject(result.getData(), AddUsersResponse.class);
 
-                                            AddUsersResponse addUsersResponse = CommonUtility.objectToJavaObject(result.getData(), AddUsersResponse.class);
+                                                if (addUsersResponse != null &&addUsersResponse.errorCode == 0)
+                                                {
+                                                    //
+                                                    Toast.makeText(RegisterActivity.this, "注册成功!", Toast.LENGTH_LONG).show();
 
-                                            if (addUsersResponse != null &&addUsersResponse.errorCode == 0)
-                                            {
-                                                //
-                                                Toast.makeText(RegisterActivity.this, "注册成功!", Toast.LENGTH_SHORT).show();
+                                                    finish();
+                                                }
+                                                else
+                                                {
+                                                    errorMsg =  "注册失败:"+ result.getCode() + result.getMessage();
+                                                }
                                             }
                                             else
                                             {
-                                                errorMsg =  "注册失败:"+ result.getCode() + result.getMessage();
+                                                errorMsg = "注册失败:" + (String) msg.obj;
+                                            }
+
+                                            if (!errorMsg.isEmpty())
+                                            {
+                                                Toast.makeText(RegisterActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
                                             }
                                         }
-                                        else
-                                        {
-                                            errorMsg = "注册失败:" + (String) msg.obj;
-                                        }
-
-                                        if (!errorMsg.isEmpty())
-                                        {
-                                            Toast.makeText(RegisterActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
-                                        }
-
+                                    },(handler, msg)->{
+                                        handler.sendMessage(msg);
                                     } );
                                 }
 
@@ -229,7 +231,7 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
             return false;
         }
 
-        if( mEdTitle.getText().toString().trim().equals("") )
+        if( mEtTitle.getText().toString().trim().equals("") )
         {
             //Toast.makeText(PersonalInfoActivity.this, "用户名不能为空", Toast.LENGTH_SHORT).show();
             //return false;
