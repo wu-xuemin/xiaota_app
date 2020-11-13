@@ -9,6 +9,7 @@ public class URL {
     public static final String USER_PASSWORD_RESET= "/accounts/{account}/password/reset";
     public static final String USER_INFO = "/accounts/{account_id}";
     public static final String USER_REGISTER = "/accounts/customer/{type}";
+    public static final String USER_ACCOUNT_EXIST= "/accounts/exist/{account}";
 
     public static final String GET_DIANXIAN_QINGCE_LIST = "/wires";
     public static final String POST_DIANXIAN_QINGCE_IMPORT = "/wires/import";

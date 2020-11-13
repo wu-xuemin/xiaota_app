@@ -72,5 +72,7 @@ public class Constant {
     public static final String putQrDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.PUT_QR_DISTANCE;
 
     public static final String putPasswordReset = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_PASSWORD_RESET;
+    public static final String getAccountExist = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_ACCOUNT_EXIST;
+
 
 }

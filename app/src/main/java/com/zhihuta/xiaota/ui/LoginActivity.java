@@ -32,6 +32,7 @@ import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.BaseResponse;
+import com.zhihuta.xiaota.bean.response.UserResponse;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
@@ -112,64 +113,132 @@ public class LoginActivity extends AppCompatActivity {
         mResetpassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder
-                        (LoginActivity.this);
 
-                final EditText et = new EditText(LoginActivity.this);
-                alertDialogBuilder.setTitle("请输入注册的邮箱，新密码将被发送到注册邮箱")
-                        .setView(et)
-                        .setNegativeButton("取消", null)
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
 
-                                String account = et.getText().toString();
-                                if (account.trim().isEmpty())
-                                {
-                                    return;
+                final String account = mAccountText.getText().toString();
+
+                if (account.trim().equals(""))
+                {
+                    Toast.makeText(LoginActivity.this, "用户名为空！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else
+                {
+                    String url = Constant.getAccountExist.replace("{account}",account );
+
+                    mNetwork.get(url, null, new Handler(){
+
+                                @Override
+                                public void handleMessage(final Message msg) {
+
+                                    String errorMsg = "";
+
+                                    if (msg.what == Network.OK) {
+                                        Result result= (Result)(msg.obj);
+
+                                        UserResponse responseData = CommonUtility.objectToJavaObject(result.getData(),UserResponse.class);
+
+                                        if (responseData != null &&responseData.errorCode == 0)
+                                        {
+                                            ConfirmSendEmail(responseData.account_info.getEmail(),account);
+                                         }
+                                        else
+                                        {
+                                            errorMsg =  "查找用户失败:"+ result.getCode() + result.getMessage();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        errorMsg =  "查找用户失败：" + (String) msg.obj;
+                                    }
+
+                                    if (!errorMsg.isEmpty())
+                                    {
+                                        Toast.makeText(LoginActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                                    }
                                 }
+                            },
+                            (handler,msg)->{
+                                handler.sendMessage(msg);
+                            });
+                }
 
-                                ///accounts/{account}/password/reset
-                                String url = Constant.putPasswordReset.replace("{account}",account );
 
-                                mNetwork.put(url, null, new Handler(),
-                                        (handler,msg)->{
-
-                                            String errorMsg = "";
-
-                                            if (msg.what == Network.OK) {
-                                                Result result= (Result)(msg.obj);
-
-                                                BaseResponse responseData = CommonUtility.objectToJavaObject(result.getData(),BaseResponse.class);
-
-                                                if (responseData != null &&responseData.errorCode == 0)
-                                                {
-                                                    Toast.makeText(LoginActivity.this, "密码重置成功，请稍后检查邮箱", Toast.LENGTH_SHORT).show();
-                                                }
-                                                else
-                                                {
-                                                    errorMsg =  "密码重置失败:"+ result.getCode() + result.getMessage();
-                                                }
-                                            }
-                                            else
-                                            {
-                                                errorMsg =  "密码重置失败：" + (String) msg.obj;
-                                            }
-
-                                            if (!errorMsg.isEmpty())
-                                            {
-                                                Toast.makeText(LoginActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
-                                            }
-
-                                        });
-                                //
-                            }
-                        })
-                        .show();
             }
         });
     }
 
+    private void ConfirmSendEmail(String userEmail,final String account )
+    {
+        final  String registeredEmail = userEmail;
+
+        if (userEmail == null)
+        {
+            userEmail = "";
+        }
+
+        int  pos = userEmail.lastIndexOf("@");
+        if ( pos!= -1)
+        {
+            userEmail = userEmail.charAt(0) + "***" + userEmail.substring(pos);
+        }
+
+
+
+        android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder
+                (LoginActivity.this);
+
+        final EditText etEmail = new EditText(LoginActivity.this);
+        alertDialogBuilder.setTitle("请确认注册的邮箱，新密码将被发送到 "+ userEmail +" 邮箱")
+                .setView(etEmail)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        final String inputEmail = etEmail.getText().toString();
+                        if (!inputEmail.equals(registeredEmail))
+                        {
+                            Toast.makeText(LoginActivity.this, "邮箱不匹配！", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        ///accounts/{account}/password/reset
+                        String url = Constant.putPasswordReset.replace("{account}",account );
+
+                        mNetwork.put(url, null, new Handler() {
+                                    @Override
+                                    public void handleMessage(final Message msg) {
+
+                                        String errorMsg = "";
+
+                                        if (msg.what == Network.OK) {
+                                            Result result = (Result) (msg.obj);
+
+                                            BaseResponse responseData = CommonUtility.objectToJavaObject(result.getData(), BaseResponse.class);
+
+                                            if (responseData != null && responseData.errorCode == 0) {
+                                                Toast.makeText(LoginActivity.this, "密码重置成功，请稍后检查邮箱", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                errorMsg = "密码重置失败:" + result.getCode() + result.getMessage();
+                                            }
+                                        } else {
+                                            errorMsg = "密码重置失败：" + (String) msg.obj;
+                                        }
+
+                                        if (!errorMsg.isEmpty()) {
+                                            Toast.makeText(LoginActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                },
+                                (handler,msg)->{
+                                    handler.sendMessage(msg);
+                                });
+                        //
+                    }
+                })
+                .show();
+    }
     /**
      * 获取版本号
      * @return 当前应用的版本号
