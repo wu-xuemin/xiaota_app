@@ -43,6 +43,7 @@
                 android:textStyle="bold" />
 
             <SearchView
+                android:id="@+id/sv_in_relate_new_dx"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />

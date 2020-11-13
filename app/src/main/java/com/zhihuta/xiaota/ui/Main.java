@@ -25,6 +25,7 @@ import android.os.Message;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -844,6 +845,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 return true;
             }
         });
+        //监听整个控件
+        mSearchViewDxQingce.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // while a false will expand it.
+                mSearchViewDxQingce.setIconified(false);
+            }
+        });
 
         mComputeDxBt = (Button) findViewById(R.id.button_compute_dx);
         mComputeDxBt.setOnClickListener(new View.OnClickListener() {
@@ -1212,6 +1221,15 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 return true;
             }
         });
+
+        //监听整个控件
+        mSearchViewInCalculate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // while a false will expand it.
+                mSearchViewInCalculate.setIconified(false);
+            }
+        });
         mResetInCaculateBt = (Button) findViewById(R.id.button_reset_in_calculate);
         mResetInCaculateBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1340,6 +1358,15 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 //                else
 //                    lv.setFilterText(newText);
                 return true;
+            }
+        });
+
+        //监听整个控件
+        mSearchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // while a false will expand it.
+                mSearchView.setIconified(false);
             }
         });
 

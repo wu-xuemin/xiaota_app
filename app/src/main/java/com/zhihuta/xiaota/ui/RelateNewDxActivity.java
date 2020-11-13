@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
@@ -47,6 +48,9 @@ public class RelateNewDxActivity extends AppCompatActivity {
     private ArrayList<DianxianQingCeData> mCheckedDxList = new ArrayList<>();
     private LujingData mLujing;
 
+    LinkedHashMap<String, String> mDxQingCeGetParameters = new LinkedHashMap<>();
+
+    private SearchView mSearchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,6 +143,41 @@ public class RelateNewDxActivity extends AppCompatActivity {
 
             }
         });
+
+        mSearchView = (SearchView) findViewById(R.id.sv_in_relate_new_dx);
+        mSearchView.setQueryHint("查找"); //按名称
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                mDxQingCeGetParameters.clear();
+                mDxQingCeGetParameters.put("sn", query);
+                mDxQingCeGetParameters.put("try_scope","2");
+                mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+                    handler.sendMessage(msg);
+                });
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+//                if (TextUtils.isEmpty(newText))
+//                    lv.clearTextFilter();
+//                else
+//                    lv.setFilterText(newText);
+                return true;
+            }
+        });
+
+        //监听整个控件
+        mSearchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // while a false will expand it.
+                mSearchView.setIconified(false);
+            }
+        });
+
     }
 
     @SuppressLint("HandlerLeak")
