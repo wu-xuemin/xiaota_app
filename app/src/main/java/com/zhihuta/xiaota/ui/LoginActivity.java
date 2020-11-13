@@ -31,12 +31,15 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.Result;
+import com.zhihuta.xiaota.bean.response.BaseResponse;
+import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 import com.alibaba.fastjson.JSONObject;
 import java.io.Serializable;
+import java.sql.SQLTransactionRollbackException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -117,6 +120,45 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
 
+                                String account = et.getText().toString();
+                                if (account.trim().isEmpty())
+                                {
+                                    return;
+                                }
+
+                                ///accounts/{account}/password/reset
+                                String url = Constant.putPasswordReset.replace("{account}",account );
+
+                                mNetwork.put(url, null, new Handler(),
+                                        (handler,msg)->{
+
+                                            String errorMsg = "";
+
+                                            if (msg.what == Network.OK) {
+                                                Result result= (Result)(msg.obj);
+
+                                                BaseResponse responseData = CommonUtility.objectToJavaObject(result.getData(),BaseResponse.class);
+
+                                                if (responseData != null &&responseData.errorCode == 0)
+                                                {
+                                                    Toast.makeText(LoginActivity.this, "密码重置成功，请稍后检查邮箱", Toast.LENGTH_SHORT).show();
+                                                }
+                                                else
+                                                {
+                                                    errorMsg =  "密码重置失败:"+ result.getCode() + result.getMessage();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                errorMsg =  "密码重置失败：" + (String) msg.obj;
+                                            }
+
+                                            if (!errorMsg.isEmpty())
+                                            {
+                                                Toast.makeText(LoginActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                                            }
+
+                                        });
                                 //
                             }
                         })

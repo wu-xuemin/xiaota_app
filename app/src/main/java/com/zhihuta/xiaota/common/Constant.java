@@ -70,4 +70,7 @@ public class Constant {
 
     public static final String getDxImportHistoryUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DX_IMPORT_HISTORY;
     public static final String putQrDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.PUT_QR_DISTANCE;
+
+    public static final String putPasswordReset = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_PASSWORD_RESET;
+
 }
