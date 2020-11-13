@@ -159,7 +159,7 @@ public class PersonalInfoActivity extends AppCompatActivity{
                                         newUserInfoParameters.put("account",  mEtUserName.getText().toString());
                                         newUserInfoParameters.put("name",  mEtUserName.getText().toString());
                                         //newUserInfoParameters.put("password",  strNewPathName);
-                                        newUserInfoParameters.put("mail",  mEtEmail.getText().toString());
+                                        newUserInfoParameters.put("email",  mEtEmail.getText().toString());
                                         newUserInfoParameters.put("title",  mEdTitle.getText().toString());
                                         newUserInfoParameters.put("phone",  mEtTel.getText().toString());
                                         newUserInfoParameters.put("company",  mEtCompany.getText().toString());
@@ -190,11 +190,14 @@ public class PersonalInfoActivity extends AppCompatActivity{
             Toast.makeText(PersonalInfoActivity.this, "用户名不能为空", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if( mEtEmail.getText().toString().trim().equals("") )
+
+        String email = mEtEmail.getText().toString().trim();
+        if( !CommonUtility.isEmail(email) )
         {
-            Toast.makeText(PersonalInfoActivity.this, "email 不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "email 无效格式", Toast.LENGTH_SHORT).show();
             return false;
         }
+
         if( mEdTitle.getText().toString().trim().equals("") )
         {
             //Toast.makeText(PersonalInfoActivity.this, "用户名不能为空", Toast.LENGTH_SHORT).show();
@@ -208,9 +211,8 @@ public class PersonalInfoActivity extends AppCompatActivity{
         }
         if( mEtTel.getText().toString().trim().equals("") )
         {
-            //Toast.makeText(PersonalInfoActivity.this, "用户名不能为空", Toast.LENGTH_SHORT).show();
-            //return false;
-            ;
+            Toast.makeText(PersonalInfoActivity.this, "手机号不能为空", Toast.LENGTH_SHORT).show();
+            return false;
         }
         if( mEtAdress.getText().toString().trim().equals("") )
         {
@@ -319,7 +321,7 @@ public class PersonalInfoActivity extends AppCompatActivity{
             }
             else
             {
-                errorMsg = (String) msg.obj;
+                errorMsg = "更新个人信息失败:" + (String) msg.obj;
             }
 
             if (!errorMsg.isEmpty())
