@@ -1563,18 +1563,13 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 //        hideFragments(transaction);
 
         String oldTabTag = tabFlag;
-
         switch (i) {
-
             case R.id.id_tab_wirelist:
-
-
                 tabFlag = "在电线清册";
-
+                //设置ImageButton为选中色
+                mQingceImg.setImageResource(R.mipmap.tab_dx_qingce_pressed);
                 if(!oldTabTag.equals(tabFlag) )
                 {
-                    //设置微信的ImageButton为绿色
-                    mQingceImg.setImageResource(R.mipmap.tab_dx_qingce_pressed);
                     //如果微信对应的Fragment没有实例化，则进行实例化，并显示出来
 //                    if (mFragDxQingce == null) {
 //                        mFragDxQingce = new WeixinFragment();
@@ -1600,41 +1595,35 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             case R.id.id_tab_lujing_moxing:
 
                 tabFlag = "在路径模型";
-
+                mLujingMoxingImg.setImageResource(R.mipmap.tab_lujing_moxing_pressed);
                 if(!oldTabTag.equals(tabFlag) )
                 {
                     mLayoutQingCe.setVisibility(View.GONE);
                     mLayoutLujing.setVisibility(View.VISIBLE);
                     mLayoutCompute.setVisibility(View.GONE);
-                    mLujingMoxingImg.setImageResource(R.mipmap.tab_lujing_moxing_pressed);
 //                    if (mFragLujingMoxing == null) {
 //                        mFragLujingMoxing = new AddressFragment();
 //                        transaction.add(R.id.layout_dianxian_qingce_id, mFragLujingMoxing);
 //                    } else {
 //                        transaction.show(mFragLujingMoxing);
 //                    }
-
                     stopScan();
-
                     mNetwork.get(Constant.getLujingListUrl8083, mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
                         handler.sendMessage(msg2);
                     });
-
                 }
 
                 break;
             case R.id.id_tab_caculatecenter:
                 tabFlag = "在计算中心";
+                mJisuanImg.setImageResource(R.mipmap.tab_compute_pressed);
                 if(!oldTabTag.equals(tabFlag) )
                 {
                     mLayoutQingCe.setVisibility(View.GONE);
                     mLayoutLujing.setVisibility(View.GONE);
                     mLayoutCompute.setVisibility(View.VISIBLE);
-
                     // 在计算tab 默认看到的是计算路径电线长度，隐藏两点间距的
                     mLayoutComputeDistance.setVisibility(View.GONE);
-                    mJisuanImg.setImageResource(R.mipmap.tab_compute_pressed);
-
                     mNetwork.get(Constant.getLujingListUrl8083, mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
                         handler.sendMessage(msg);
                     });
