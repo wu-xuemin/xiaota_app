@@ -116,12 +116,12 @@ public class Network {
         //continue process.
 
         if (values!= null && !values.isEmpty()) {
-            url += "?";
+            url += "?1";
 
             for (Object o : values.entrySet()) {
                 HashMap.Entry entry = (HashMap.Entry) o;
 
-                url += (String) entry.getKey() + "=" + (String) entry.getValue();
+                url += "&"+ (String) entry.getKey() + "=" + (String) entry.getValue();
             }
         }
 
