@@ -123,6 +123,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
                         HashMap<String, String> getParams = new HashMap<>();
                         getParams.put("qr_ids",qrIDs);
+                        getParams.put("try_sope","2");
 
                         mNetwork.get(Constant.getLujingListUrl8083, getParams, new FilterPathHandler(getParams),
                                 (handler, msg) -> {

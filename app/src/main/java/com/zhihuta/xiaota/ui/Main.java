@@ -220,6 +220,12 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
 //        mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, getDxListHandler);///ok
 
+		//限定能获取到的范围，
+		// /*try_scope:  0= only itself, 1 = department, 2=company,3=all compay*/
+        mDxQingCeGetParameters.put("try_scope","2");
+        mLujingGetParameters.put("try_scope","2");
+        mLujingCaculateGetParameters.put("try_scope","2");
+
 
         initViewsLujing();
         initViewsCompute();
@@ -813,6 +819,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             @Override
             public void onClick(View v) {
                 mDxQingCeGetParameters.clear();  //重置查询条件
+                mDxQingCeGetParameters.put("try_scope","2");
                 mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
                     handler.sendMessage(msg);
                 });
@@ -825,6 +832,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             public boolean onQueryTextSubmit(String query) {
                 mDxQingCeGetParameters.clear();
                 mDxQingCeGetParameters.put("sn", query);
+                mDxQingCeGetParameters.put("try_scope","2");
                 mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
                     handler.sendMessage(msg);
                 });
@@ -1187,6 +1195,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                 mLujingCaculateGetParameters.clear();
                 mLujingCaculateGetParameters.put("name", query);
+                mLujingCaculateGetParameters.put("try_scope","2");
                 mNetwork.get(Constant.getLujingListUrl8083, mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
                     handler.sendMessage(msg);
                 });
@@ -1209,6 +1218,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             public void onClick(View view) {
 
                 mLujingCaculateGetParameters.clear();
+                mLujingCaculateGetParameters.put("try_scope","2");
 
                 mNetwork.get(Constant.getLujingListUrl8083, mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
                     handler.sendMessage(msg);
@@ -1296,7 +1306,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                 //clear the filters and get all the lujing list
                 mLujingGetParameters.clear();
-
+                mLujingGetParameters.put("try_scope","2");
                 mNetwork.get(Constant.getLujingListUrl8083, mLujingGetParameters, new GetLujingListHandler(tabFlag),
                         (handler, msg) -> {
                             handler.sendMessage(msg);
@@ -1313,6 +1323,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                 mLujingGetParameters.clear();
                 mLujingGetParameters.put("name",query);
+                mLujingGetParameters.put("try_scope","2");
 
                 mNetwork.get(Constant.getLujingListUrl8083, mLujingGetParameters, new GetLujingListHandler(tabFlag),
                         (handler, msg) -> {
@@ -1696,6 +1707,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                     //保存路劲筛选的参数，
                     mLujingGetParameters = params;
+                    mLujingGetParameters.put("try_scope","2");
                 }
                 break;
             case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_CACULATE:
@@ -1725,6 +1737,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                         //保存路劲筛选的参数，
                         mLujingCaculateGetParameters = params;
+                        mLujingCaculateGetParameters.put("try_scope","2");
                     }
                 }
                 break;

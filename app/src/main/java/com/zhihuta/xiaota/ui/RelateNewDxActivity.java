@@ -89,7 +89,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
         mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
 
         /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
-
+        mPostValue.put("try_scope","2");
         mNetwork.get(Constant.getDxListUrl8083, mPostValue, new GetDxListHandler(),(handler, msg)->{
             handler.sendMessage(msg);
         });
