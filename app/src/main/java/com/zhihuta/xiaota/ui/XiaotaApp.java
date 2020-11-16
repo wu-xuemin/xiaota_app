@@ -159,8 +159,8 @@ public class XiaotaApp extends Application {
 
 
         this.isLogined  = Boolean.valueOf(readValue(PersistentValueType.IS_LOGIN, "0"));
-        this.account = readValue(PersistentValueType.ACCOUNT, "a");
-        this.password = readValue(PersistentValueType.PASSWORD, "a");
+        this.account = readValue(PersistentValueType.ACCOUNT, "");
+        this.password = readValue(PersistentValueType.PASSWORD, "");
         this.fullname = readValue(PersistentValueType.FULL_NAME, "");
         String strRoles = readValue(PersistentValueType.ROLE, "customer_worker").toLowerCase();
         //roles = "customer_worker,other else... split by ',' "
@@ -288,27 +288,24 @@ public class XiaotaApp extends Application {
      * @param account
      * @param fullname
      */
-    public void setIsLogined(boolean isLogined, String account, String fullname, String password, String role, int appUserId, int groupId, String groupName, String groupType) {
+    public void setIsLogined(boolean isLogined,
+                             String account,
+                             String fullname,
+                             String password,
+                             String ServiceIpAndPort) {
         writePreferenceValue(PersistentValueType.IS_LOGIN, String.valueOf(isLogined));
         writePreferenceValue(PersistentValueType.ACCOUNT, account);
         writePreferenceValue(PersistentValueType.FULL_NAME, fullname);
         writePreferenceValue(PersistentValueType.PASSWORD, password);
-        writePreferenceValue(PersistentValueType.ROLE, String.valueOf(role));
-        writePreferenceValue(PersistentValueType.USER_ID, String.valueOf(appUserId));
-        writePreferenceValue(PersistentValueType.GROUP_ID, String.valueOf(groupId));
-        writePreferenceValue(PersistentValueType.GROUP_NAME, groupName);
-        writePreferenceValue(PersistentValueType.GROUP_TYPE, groupType);
+        writePreferenceValue(PersistentValueType.SERVICE_IP, ServiceIpAndPort.split(":")[0]);
+        writePreferenceValue(PersistentValueType.SERVICE_PORT, ServiceIpAndPort.split(":")[1]);
+
         try {
             commitValues();
             this.isLogined = isLogined;
             this.account = account;
             this.fullname = fullname;
             this.password = password;
-            this.roles = role.split(",");
-            this.appUserId=appUserId;
-            this.groupId=groupId;
-            this.groupName=groupName;
-            this.groupType=groupType;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -320,22 +317,12 @@ public class XiaotaApp extends Application {
         //writePreferenceValue(PersistentValueType.ACCOUNT, "");
         writePreferenceValue(PersistentValueType.FULL_NAME, "");
         writePreferenceValue(PersistentValueType.PASSWORD, "");
-        writePreferenceValue(PersistentValueType.ROLE, "");
-        writePreferenceValue(PersistentValueType.USER_ID, "");
-        writePreferenceValue(PersistentValueType.GROUP_ID, "");
-        writePreferenceValue(PersistentValueType.GROUP_NAME, "");
-        writePreferenceValue(PersistentValueType.GROUP_TYPE, "");
         try {
             commitValues();
             this.isLogined = false;
             //this.account = "";
             this.fullname = "";
             this.password = "";
-            this.roles = new String[0];
-            this.appUserId = 0;
-            this.groupId = 0;
-            this.groupName = "";
-            this.groupType = "";
         } catch (Exception e) {
             e.printStackTrace();
         }

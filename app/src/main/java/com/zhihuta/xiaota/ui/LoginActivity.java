@@ -56,6 +56,10 @@ public class LoginActivity extends AppCompatActivity {
     private TextView mSystemVersionTv;
     private EditText mAccountText;
     private EditText mPasswordText;
+    private String mPassword = null;
+    private String mAccount = null;
+    private String mServiceIpAndPort = null;
+
     private Button mLoginButton;
     private ProgressDialog mLoadingProcessDialog;
     private Network mNetwork;
@@ -84,6 +88,9 @@ public class LoginActivity extends AppCompatActivity {
         }
         if(XiaotaApp.getApp().getPassword() != null && !"".equals(XiaotaApp.getApp().getPassword())) {
             mPasswordText.setText(XiaotaApp.getApp().getPassword());
+        }
+        if(XiaotaApp.getApp().getServerIPAndPort() != null && !"".equals(XiaotaApp.getApp().getServerIPAndPort())) {
+            mServiceIpAndPort = XiaotaApp.getApp().getServerIPAndPort();
         }
 
         mSystemVersionTv = findViewById(R.id.system_version);
@@ -259,10 +266,10 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginButton.setEnabled(false);
 
-        String account  = mAccountText.getText().toString().trim();
-        String password = mPasswordText.getText().toString();
+        mAccount  = mAccountText.getText().toString().trim();
+        mPassword = mPasswordText.getText().toString();
 
-        if (account.isEmpty() || password.isEmpty())
+        if (mAccount.isEmpty() || mPassword.isEmpty())
         {
             ToastUtils.setMsgColor(0x77000000);
             ToastUtils.setBgColor(0xAAFFFFFF);
@@ -274,10 +281,11 @@ public class LoginActivity extends AppCompatActivity {
             mLoginButton.setEnabled(true);
         }
         else {
-
+            Log.d(TAG, "account: " + mAccount);
+            Log.d(TAG, "password: " + mPassword);
             HashMap<String, String> mPostValue = new LinkedHashMap<>();
-            mPostValue.put("account", account);
-            mPostValue.put("password",password );
+            mPostValue.put("account", mAccount);
+            mPostValue.put("password",mPassword );
 
             if(TextUtils.isEmpty(XiaotaApp.getApp().getServerIPAndPort())){
 
@@ -288,8 +296,8 @@ public class LoginActivity extends AppCompatActivity {
             else {
 
                 //save the config
-                XiaotaApp.getApp().setAccount(account);
-                XiaotaApp.getApp().setPassword(password);
+                XiaotaApp.getApp().setAccount(mAccount);
+                XiaotaApp.getApp().setPassword(mPassword);
 
                 String loginUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_LOGIN;
 
@@ -353,21 +361,29 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginSuccess(LoginResponseData loginResponseData) {
-        /// test
 
-        if (loginResponseData.errorCode == 0) {
+        if( loginResponseData != null) {
+            //Store to memory and preference
+            mApp.setIsLogined(true,
+                    mAccount,
+                    null,
+                    mPassword,
+                    mServiceIpAndPort
+            );
+            if (loginResponseData.errorCode == 0) {
 
-            Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, Main.class);
+                Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, Main.class);
 
-            String strResponseData = JSON.toJSONString(loginResponseData);
+                String strResponseData = JSON.toJSONString(loginResponseData);
 
-            intent.putExtra("loginResponseData", (Serializable)strResponseData);
-            startActivity(intent);
-            finish();//销毁此Activity
-        } else {
+                intent.putExtra("loginResponseData", (Serializable) strResponseData);
+                startActivity(intent);
+                finish();//销毁此Activity
+            } else {
 
-            Toast.makeText(this, "用户名或密码不正确，请重新输入", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "用户名或密码不正确，请重新输入", Toast.LENGTH_SHORT).show();
+            }
         }
 
     }
@@ -407,7 +423,8 @@ public class LoginActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         try {
                             Log.d(TAG, "onClick: 输入ip："+editText.getText().toString());
-                            XiaotaApp.getApp().setServerIPAndPort(editText.getText().toString());
+                            mServiceIpAndPort = editText.getText().toString();
+                            XiaotaApp.getApp().setServerIPAndPort(mServiceIpAndPort);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
