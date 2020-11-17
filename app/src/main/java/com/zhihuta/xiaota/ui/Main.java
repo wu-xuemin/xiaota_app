@@ -262,6 +262,11 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 intentPersonal.putExtra("loginResponseData", (Serializable)strResponseData2);
                 startActivityForResult(intentPersonal, 1);
                 break;
+            case R.id.projects_info:
+
+                Intent intentProjects = new Intent(this, ProjectsCenterActivity.class);
+                startActivity(intentProjects);
+                break;
             case R.id.logout:
 
                 String url = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_LOGOUT.replace("{account_id}", Integer.toString(loginResponseData.getId()));
