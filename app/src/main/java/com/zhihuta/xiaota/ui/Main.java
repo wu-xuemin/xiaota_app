@@ -315,7 +315,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     @Override
     public void onScanQRCodeSuccess(String result) {
 
-        mDisplayScanResultTv.setText(result);
         mSetDistanceLengthInCaculateBt.setEnabled(true);
 
         // 解析数据，并填入
@@ -348,6 +347,22 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                     });
 
         }
+
+        String rst = result.replace("distance","长度");
+        rst = rst.replace("preset_name","展现名称");
+        rst = rst.replace("qr_id","Id号");
+        rst = rst.replace("qr_name","名称");
+        rst = rst.replace("serial_number","序列号");
+        rst = rst.replace("type","类型");
+
+        if(currentDistanceData.getType().equals("0")){
+            rst = rst.replace("类型\":0","类型\": 固定码");
+        } else if(currentDistanceData.getType().equals("1")){
+            rst = rst.replace("类型\":1","类型: 通用码");
+        } else {
+            //不动
+        }
+        mDisplayScanResultTv.setText(rst);
     }
 
     @Override

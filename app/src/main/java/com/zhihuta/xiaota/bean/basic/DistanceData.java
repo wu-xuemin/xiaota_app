@@ -9,6 +9,15 @@ public class DistanceData implements Serializable {
     private String distance; // 距离值
     private Integer qr_sequence; ///二维码的顺序  path distance qr表
     private String flag; ///
+    private String type; // 二维码类型,0固定码，1通用码
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getFlag() {
         return flag;
