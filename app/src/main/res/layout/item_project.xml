@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/projectMingChenTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="项目名称" />
+
+    <TextView
+        android:id="@+id/projectCreaterTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="创建人" />
+
+    <TextView
+        android:id="@+id/projectCreateDateTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="日期" />
+
+    <Button
+        android:id="@+id/button_delete_project"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:text="删除"
+        tools:layout_weight="3" />
+
+    <Button
+        android:id="@+id/button_member_manager"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:text="成员管理" />
+
+</LinearLayout>
