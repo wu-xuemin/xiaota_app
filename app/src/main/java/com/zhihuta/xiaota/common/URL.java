@@ -30,9 +30,6 @@ public class URL {
 
     public static final String GET_LUJING_DISTANCE_EXIST = "/paths/{lujingID}/exsit";   // E.g:  /paths/1/exsit?qr_ids={1,2} "qr_id":1, 数据库里 间距二维码的id
 
-
-
-
     public static final String GET_DX_OF_LUJING = "/paths/{lujingId}/wires?serial_number={dxSN}&parts_code={dxPartsCode}"; //serial_number:电线编号 parts_code:型号
     public static final String PUT_DX_OF_LUJING = "/paths/{lujingId}/wires"; // 参数为电线ID列表  "wires_id":[ 1,2,3]
     public static final String GET_FILTER_LUJING_BY_QR ="/paths?qr_ids=qrIDs"; // 二维码筛选路径 /paths?name={}&qr_ids={1,2,3}&order_by={}&try_scope={}&offset={}&limit={}
@@ -44,4 +41,7 @@ public class URL {
 
     public static final String GET_DX_IMPORT_HISTORY = "/wires/import/files";  //电线导入历史
     public static final String PUT_QR_DISTANCE = "/distance/qr/{qr_id}/{distance}/changeDistance";//设置二维码距离
+
+    public static final String GET_ALL_PROJIECT_LIST = "/project/order_by=create_time&offset=0&limit=0";//获取所有加入过的项目列表
+    public static final String GET_PROJECT_LIST_OF_COMPANY = "/project/。。。";//获取公司自己的项目列表
 }

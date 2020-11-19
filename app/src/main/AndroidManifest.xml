@@ -33,7 +33,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.ProjectsCenterActivity"></activity>
+        <activity android:name=".ui.ProjectMemberManageActivity"></activity>
+        <activity android:name=".ui.ProjectsCenterActivity" />
         <activity
             android:name=".ui.DxImportHistoryActivity"
             android:label="电线导入记录" />

@@ -74,5 +74,7 @@ public class Constant {
     public static final String putPasswordReset = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_PASSWORD_RESET;
     public static final String getAccountExist = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_ACCOUNT_EXIST;
 
+    public static final String getAllProjectListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_ALL_PROJIECT_LIST;
+    public static final String getProjectListOfCompanyUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_PROJECT_LIST_OF_COMPANY;
 
 }
