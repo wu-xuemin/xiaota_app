@@ -43,5 +43,5 @@ public class URL {
     public static final String PUT_QR_DISTANCE = "/distance/qr/{qr_id}/{distance}/changeDistance";//设置二维码距离
 
     public static final String GET_ALL_PROJIECT_LIST = "/project/order_by=create_time&offset=0&limit=0";//获取所有加入过的项目列表
-    public static final String GET_PROJECT_LIST_OF_COMPANY = "/project/。。。";//获取公司自己的项目列表
+    public static final String GET_PROJECT_LIST_OF_COMPANY = "/project/?order_by=create_time&offset=0&limit=0";//获取公司自己的项目列表
 }

@@ -373,6 +373,10 @@ public class LoginActivity extends AppCompatActivity {
             if (loginResponseData.errorCode == 0) {
 
                 Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
+
+//                Intent intentProjects = new Intent(this, ProjectsCenterActivity.class);
+//                startActivity(intentProjects);
+
                 Intent intent = new Intent(this, Main.class);
 
                 String strResponseData = JSON.toJSONString(loginResponseData);

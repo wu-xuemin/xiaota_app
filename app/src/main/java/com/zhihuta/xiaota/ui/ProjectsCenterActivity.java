@@ -3,6 +3,7 @@ package com.zhihuta.xiaota.ui;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
@@ -12,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -24,11 +24,10 @@ import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.adapter.ProjectAdapter;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
-import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.ProjectData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.basic.Wires;
-import com.zhihuta.xiaota.bean.response.GetWiresResponse;
+import com.zhihuta.xiaota.bean.response.GetProjectsResponse;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
 
@@ -37,6 +36,7 @@ import java.util.LinkedHashMap;
 
 public class ProjectsCenterActivity extends AppCompatActivity {
 
+    private static String TAG = "ProjectsCenterActivity";
     private Button mCreateNewProjectBt;
 
     private ArrayList<ProjectData> mProjectList;
@@ -55,7 +55,9 @@ public class ProjectsCenterActivity extends AppCompatActivity {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        mNetwork = Network.Instance(getApplication());
         initViews();
+        showProjectList();
 
     }
 
@@ -71,6 +73,8 @@ public class ProjectsCenterActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+
+        mProjectList = new ArrayList<>();
         mCreateNewProjectBt = (Button)findViewById(R.id.createNewProjectBt);
         mCreateNewProjectBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,12 +102,23 @@ public class ProjectsCenterActivity extends AppCompatActivity {
             }
         });
 
-        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-        /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
-        mPostValue.put("company","2");
-        mNetwork.get(Constant.getProjectListOfCompanyUrl, mPostValue, new GetProjectListOfCompanyHandler(),(handler, msg)->{
+        mNetwork.get(Constant.getProjectListOfCompanyUrl, null, new GetProjectListOfCompanyHandler(),(handler, msg)->{
             handler.sendMessage(msg);
         });
+
+    }
+    private void showProjectList(){
+        //电线列表
+        mProjectRV = (RecyclerView) findViewById(R.id.rv_project);
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
+        mProjectRV.setLayoutManager(manager);
+        mProjectAdapter = new ProjectAdapter(mProjectList,this, null);
+        mProjectRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        mProjectRV.setAdapter(mProjectAdapter);
+
+        // 设置item及item中控件的点击事件
+        mProjectAdapter.setOnItemClickListener(MyItemClickListener);
 
     }
     @SuppressLint("HandlerLeak")
@@ -126,77 +141,104 @@ public class ProjectsCenterActivity extends AppCompatActivity {
         public void handleMessage(final Message msg) {
             String errorMsg = "";
 
-//            try {
-//
-//                if (msg.what == Network.OK) {
-//                    Result result= (Result)(msg.obj);
-//
-//                    GetWiresResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetWiresResponse.class);
-//
-//                    if (responseData != null &&responseData.errorCode == 0)
-//                    {
-//                        mDianxianTobeSelectList = new ArrayList<>();
-//
-//                        for (Wires wire : responseData.wires) {
-//
-//                            DianxianQingCeData dianxianQingCeData = new DianxianQingCeData();
-//                            dianxianQingCeData.setId(wire.getId());
-//                            dianxianQingCeData.setEnd_point(wire.getEndPoint());
-//                            dianxianQingCeData.setHose_redundancy(Double.toString(wire.getHoseRedundancy()));
-//                            dianxianQingCeData.setLength(wire.getLength());
-//                            dianxianQingCeData.setParts_code(wire.getPartsCode());
-//                            dianxianQingCeData.setSerial_number(wire.getSerialNumber());
-//                            dianxianQingCeData.setStart_point(wire.getStartPoint());
-//                            dianxianQingCeData.setSteel_redundancy(Double.toString(wire.getSteelRedundancy()));
-//                            dianxianQingCeData.setWickes_cross_section(wire.getWickesCrossSection());
-//
-//                            mDianxianTobeSelectList.add( dianxianQingCeData);
-//                        }
-//
-//                        Log.d(TAG, "电线数量: size: " + mDianxianTobeSelectList.size());
-//
-//                        if (mDianxianTobeSelectList.size() == 0) {
-//                            Toast.makeText(RelateNewDxActivity.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
-//                        }
-//
-//                        for (int k = 0; k < mDianxianTobeSelectList.size(); k++) {
-//                            mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_TOBE_SELECT_DX);
-//                            checkedList.add(false); //初始时都是未选中。
-//                        }
-//
-//                        if (mDianXianToBeSelectedAdapter == null)
-//                        {
-//                            mDianXianToBeSelectedAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList, RelateNewDxActivity.this);
-//                            mDxRV.addItemDecoration(new DividerItemDecoration(RelateNewDxActivity.this, DividerItemDecoration.VERTICAL));
-//                            mDxRV.setAdapter(mDianXianToBeSelectedAdapter);
-//                            mDianXianToBeSelectedAdapter.setOnItemClickListener(MyItemClickListener);
-//                        }
-//                        mDianXianToBeSelectedAdapter.updateDataSoruce(mDianxianTobeSelectList);
-//                    }
-//                    else
-//                    {
-//                        errorMsg =  "电线获取异常:"+ result.getCode() + result.getMessage();
-//                        Log.d(TAG, errorMsg );
-//                    }
-//                }
-//                else
-//                {
-//                    errorMsg = (String) msg.obj;
-//                }
-//
-//                if (!errorMsg.isEmpty())
-//                {
-//                    Log.d("项目列表获取 NG:", errorMsg);
-//                    Toast.makeText(ProjectsCenterActivity.this, "项目列表获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//            catch (Exception ex)
-//            {
-//                Log.d("项目列表获取 NG:", ex.getMessage());
-//            }
-//            finally {
-//                setIsGetting(false);
-//            }
+            try {
+
+                if (msg.what == Network.OK) {
+                    Result result= (Result)(msg.obj);
+
+                    GetProjectsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetProjectsResponse.class);
+
+                    if (responseData != null &&responseData.errorCode == 0) {
+                        mProjectList = new ArrayList<>();
+
+                        for (ProjectData projectData : responseData.project_list) {
+
+                            ProjectData projectData1 = new ProjectData();
+                            projectData1.setId(projectData.getId());
+                            projectData1.setCompanyId(projectData.getCompanyId());
+                            projectData1.setCreateTime((projectData.getCreateTime()));
+                            projectData1.setCreatorId(projectData.getCreatorId());
+                            projectData1.setDepartmentId(projectData.getDepartmentId());
+                            projectData1.setModiferId(projectData.getModiferId());
+                            projectData1.setModifyTime(projectData.getModifyTime());
+                            projectData1.setProjectName((projectData.getProjectName()));
+                            projectData1.setStatus(projectData.getStatus());
+
+                            mProjectList.add(projectData1);
+                        }
+
+                        Log.d(TAG, "项目数量: size: " + mProjectList.size());
+
+                        if (mProjectList.size() == 0) {
+                            Toast.makeText(ProjectsCenterActivity.this, "项目数量为0！", Toast.LENGTH_SHORT).show();
+                        }
+                        mProjectAdapter = null;
+                        mProjectAdapter = new ProjectAdapter(mProjectList, ProjectsCenterActivity.this, null);
+                        mProjectRV.addItemDecoration(new DividerItemDecoration(ProjectsCenterActivity.this, DividerItemDecoration.VERTICAL));
+                        mProjectRV.setAdapter(mProjectAdapter);
+                        mProjectAdapter.setOnItemClickListener(MyItemClickListener);
+
+                        mProjectAdapter.notifyDataSetChanged();
+//                        mProjectAdapter.updateDataSoruce(mProjectList);
+                    }
+                    else
+                    {
+                        errorMsg =  "电线获取异常:"+ result.getCode() + result.getMessage();
+                        Log.d(TAG, errorMsg );
+                    }
+                }
+                else
+                {
+                    errorMsg = (String) msg.obj;
+                }
+
+                if (!errorMsg.isEmpty())
+                {
+                    Log.d("电线获取 NG:", errorMsg);
+                    Toast.makeText(ProjectsCenterActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.d("电线获取 NG:", ex.getMessage());
+            }
+            finally {
+                setIsGetting(false);
+            }
         }
     }
+
+    /**
+     * 项目中心item 里的控件点击监听事件
+     */
+    private ProjectAdapter.OnItemClickListener MyItemClickListener = new ProjectAdapter.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(View v, ProjectAdapter.ViewName viewName, int position) {
+            //viewName可区分item及item内部控件
+            switch (v.getId()) {
+
+                case R.id.projectMingChenTextView:
+                    Toast.makeText(ProjectsCenterActivity.this, "你点击了 项目名称" + (position + 1), Toast.LENGTH_SHORT).show();
+                    //
+
+                    break;
+                case R.id.button_delete_project:
+                    Toast.makeText(ProjectsCenterActivity.this, "你点击了 项目删除" + (position + 1), Toast.LENGTH_SHORT).show();
+
+                    break;
+                case R.id.button_member_manager:
+                    Toast.makeText(ProjectsCenterActivity.this, "你点击了 项目 成员管理" + (position + 1), Toast.LENGTH_SHORT).show();
+
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void onItemLongClick(View v) {
+
+        }
+    };
 }

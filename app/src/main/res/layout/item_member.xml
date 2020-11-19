@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/projectMemberAccountTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="成员账号" />
+
+    <TextView
+        android:id="@+id/projectMemberAccountDisableTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="禁用" />
+
+
+</LinearLayout>

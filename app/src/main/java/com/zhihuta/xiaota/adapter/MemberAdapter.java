@@ -12,20 +12,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.ProjectData;
-import com.zhihuta.xiaota.common.Constant;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ItemViewProjectViewHolder> implements View.OnClickListener {
+
+public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.ItemViewProjectViewHolder> implements View.OnClickListener {
     private SimpleDateFormat sf3 = new SimpleDateFormat("yy/MM/dd");
-    private static String TAG = "ProjectAdapter";
+    private static String TAG = "MemberAdapter";
 
     private List<ProjectData> dataList;//数据源
     private Context context;//上下文
 
     private String  strMode;
     /// 这里，传数据
-    public ProjectAdapter(List<ProjectData> list, Context context, String strMode) {
+    public MemberAdapter(List<ProjectData> list, Context context, String strMode) {
         this.dataList = list;
         this.context = context;
         this.strMode = strMode;
@@ -54,17 +54,17 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ItemView
     //绑定数据
     @Override
     public void onBindViewHolder(@NonNull ItemViewProjectViewHolder holder, int position) {
-
-        ProjectData data = dataList.get(position);
-        holder.projectNameTv.setText(data.getProjectName());
-        holder.projectCreatedDateTv.setText(sf3.format(data.getCreateTime()));// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
-        holder.projectCreaterTv.setText(data.getCreatorId().toString());
-        holder.memberManageBt.setTag(position);
-        holder.deleteProjectBt.setTag(position);
-
-        holder.projectNameTv.setTag(position);
-        holder.projectCreaterTv.setTag(position);
-        holder.projectCreatedDateTv.setTag(position);
+//
+//        ProjectData data = dataList.get(position);
+//        holder.projectNameTv.setText(data.getName());
+//        holder.projectCreatedDateTv.setText(data.getCreate_time().substring(2));// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
+//        holder.projectCreaterTv.setText(data.getCreator());
+//        holder.memberManageBt.setTag(position);
+//        holder.deleteProjectBt.setTag(position);
+//
+//        holder.projectNameTv.setTag(position);
+//        holder.projectCreaterTv.setTag(position);
+//        holder.projectCreatedDateTv.setTag(position);
 
     }
 
@@ -85,19 +85,19 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ItemView
 
         ItemViewProjectViewHolder(View itemView) {
             super(itemView);
-            projectNameTv = itemView.findViewById(R.id.projectMingChenTextView);
-            projectCreatedDateTv = itemView.findViewById(R.id.projectCreateDateTextView);
-            projectCreaterTv = itemView.findViewById(R.id.projectCreaterTextView);
-            memberManageBt = itemView.findViewById(R.id.button_member_manager);
-            deleteProjectBt = itemView.findViewById(R.id.button_delete_project);
+            projectNameTv = itemView.findViewById(R.id.lujingMingChenTextView);
+            projectCreatedDateTv = itemView.findViewById(R.id.lujingCreateDateTextView);
+            projectCreaterTv = itemView.findViewById(R.id.lujingCreaterTextView);
+            memberManageBt = itemView.findViewById(R.id.button_create_lujing_base_exist);
+            deleteProjectBt = itemView.findViewById(R.id.button_delete_lujing);
 
             // 为ItemView添加点击事件
-            memberManageBt.setOnClickListener(ProjectAdapter.this);
-            deleteProjectBt.setOnClickListener(ProjectAdapter.this);
+            memberManageBt.setOnClickListener(MemberAdapter.this);
+            deleteProjectBt.setOnClickListener(MemberAdapter.this);
 
-            projectNameTv.setOnClickListener(ProjectAdapter.this);
-            projectCreaterTv.setOnClickListener(ProjectAdapter.this);
-            projectCreatedDateTv.setOnClickListener(ProjectAdapter.this);
+            projectNameTv.setOnClickListener(MemberAdapter.this);
+            projectCreaterTv.setOnClickListener(MemberAdapter.this);
+            projectCreatedDateTv.setOnClickListener(MemberAdapter.this);
         }
     }
 
