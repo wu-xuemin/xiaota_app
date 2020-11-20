@@ -161,11 +161,11 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                 }
 
                 if (!errorMsg.isEmpty()) {
-                    Log.d("电线获取 NG:", errorMsg);
-                    Toast.makeText(ProjectsCenterActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                    Log.d("添加项目 NG:", errorMsg);
+                    Toast.makeText(ProjectsCenterActivity.this, "添加项目失败！" + errorMsg, Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception ex) {
-                Log.d("电线获取 NG:", ex.getMessage());
+                Log.d("添加项目 NG:", ex.getMessage());
             }
             finally {
                 setIsGetting(false);
@@ -173,6 +173,53 @@ public class ProjectsCenterActivity extends AppCompatActivity {
         }
     }
 
+    class DeleteProjectHandler extends Handler {
+
+        private boolean bIsGetting = false;
+
+        public boolean getIsGetting()
+        {
+            return bIsGetting;
+        }
+
+        public void setIsGetting(boolean getting)
+        {
+            bIsGetting = getting;
+        }
+
+
+        @Override
+        public void handleMessage(final Message msg) {
+            String errorMsg = "";
+
+            try {
+                if (msg.what == Network.OK) {
+                    Result result= (Result)(msg.obj);
+                    if(result.getMessage().equals("SUCCESS")){
+                        Toast.makeText(ProjectsCenterActivity.this, "删除项目成功", Toast.LENGTH_SHORT).show();
+                        //删除添加成功，再刷新一次
+                        mNetwork.get(Constant.getProjectListOfCompanyUrl, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
+                            handler.sendMessage(msgGetProject);
+                        });
+                    } else {
+                        Toast.makeText(ProjectsCenterActivity.this, "删除项目异常", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    errorMsg = (String) msg.obj;
+                }
+
+                if (!errorMsg.isEmpty()) {
+                    Log.d("删除项目 NG:", errorMsg);
+                    Toast.makeText(ProjectsCenterActivity.this, "删除项目失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                Log.d("删除项目 NG:", ex.getMessage());
+            }
+            finally {
+                setIsGetting(false);
+            }
+        }
+    }
     @SuppressLint("HandlerLeak")
     class GetProjectListOfCompanyHandler extends Handler {
 
@@ -235,7 +282,7 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        errorMsg =  "电线获取异常:"+ result.getCode() + result.getMessage();
+                        errorMsg =  "项目获取异常:"+ result.getCode() + result.getMessage();
                         Log.d(TAG, errorMsg );
                     }
                 }
@@ -246,13 +293,13 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 
                 if (!errorMsg.isEmpty())
                 {
-                    Log.d("电线获取 NG:", errorMsg);
-                    Toast.makeText(ProjectsCenterActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                    Log.d("项目获取 NG:", errorMsg);
+                    Toast.makeText(ProjectsCenterActivity.this, "项目获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
                 }
             }
             catch (Exception ex)
             {
-                Log.d("电线获取 NG:", ex.getMessage());
+                Log.d("项目获取 NG:", ex.getMessage());
             }
             finally {
                 setIsGetting(false);
@@ -276,8 +323,21 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 
                     break;
                 case R.id.button_delete_project:
-                    Toast.makeText(ProjectsCenterActivity.this, "你点击了 项目删除" + (position + 1), Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProjectsCenterActivity.this);
+                    alertDialogBuilder.setTitle("确认删除项目 " + mProjectList.get(position).getProjectName() + "吗？" )
+//                            .setView(et)
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
+                                    String theUrl = Constant.deleteProjectUrl.replace("{id}", String.valueOf(mProjectList.get(position).getId()));
+                                    mNetwork.delete(theUrl, null, new DeleteProjectHandler(),(handler, msg)->{
+                                        handler.sendMessage(msg);
+                                    });
+                                }
+                            })
+                            .show();
                     break;
                 case R.id.button_member_manager:
                     Toast.makeText(ProjectsCenterActivity.this, "你点击了 项目 成员管理" + (position + 1), Toast.LENGTH_SHORT).show();
