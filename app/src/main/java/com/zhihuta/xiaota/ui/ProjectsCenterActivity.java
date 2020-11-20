@@ -21,13 +21,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
-import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.adapter.ProjectAdapter;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
-import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.ProjectData;
 import com.zhihuta.xiaota.bean.basic.Result;
-import com.zhihuta.xiaota.bean.basic.Wires;
 import com.zhihuta.xiaota.bean.response.GetProjectsResponse;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
@@ -90,13 +87,17 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 LinkedHashMap<String, String> newProjectParameters = new LinkedHashMap<>();
-                                String strNewPathName = et.getText().toString();
-                                if (strNewPathName == null || strNewPathName.isEmpty()) { //不允许名称为空
+                                String strNewProjectName = et.getText().toString();
+                                if (strNewProjectName == null || strNewProjectName.isEmpty()) { //不允许名称为空
                                     Toast.makeText(ProjectsCenterActivity.this, "名称不能为空", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    newProjectParameters.put("name",  strNewPathName);
-                                    //TODO
-//                                    mNetwork.addNewLujing(Constant.addNewLujingUrl, newPathParameters, new Main.NewLujingHandler(strNewPathName));
+                                    newProjectParameters.put("project_name",  strNewProjectName);
+                                    //新建项目
+                                    mNetwork.post(Constant.postAddProjectUrl,newProjectParameters,new AddNewProjectHandler(),
+                                            (handler, msg)->{
+                                                handler.sendMessage(msg);
+                                            } );
+
                                 }
                             }
                         })
@@ -123,6 +124,55 @@ public class ProjectsCenterActivity extends AppCompatActivity {
         mProjectAdapter.setOnItemClickListener(MyItemClickListener);
 
     }
+
+    class AddNewProjectHandler extends Handler {
+
+        private boolean bIsGetting = false;
+
+        public boolean getIsGetting()
+        {
+            return bIsGetting;
+        }
+
+        public void setIsGetting(boolean getting)
+        {
+            bIsGetting = getting;
+        }
+
+
+        @Override
+        public void handleMessage(final Message msg) {
+            String errorMsg = "";
+
+            try {
+                if (msg.what == Network.OK) {
+                    Result result= (Result)(msg.obj);
+                    if(result.getMessage().equals("SUCCESS")){
+                        Toast.makeText(ProjectsCenterActivity.this, "添加项目成功", Toast.LENGTH_SHORT).show();
+                        //项目添加成功，再刷新一次
+                        mNetwork.get(Constant.getProjectListOfCompanyUrl, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
+                            handler.sendMessage(msgGetProject);
+                        });
+                    } else {
+                        Toast.makeText(ProjectsCenterActivity.this, "添加项目异常", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    errorMsg = (String) msg.obj;
+                }
+
+                if (!errorMsg.isEmpty()) {
+                    Log.d("电线获取 NG:", errorMsg);
+                    Toast.makeText(ProjectsCenterActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                Log.d("电线获取 NG:", ex.getMessage());
+            }
+            finally {
+                setIsGetting(false);
+            }
+        }
+    }
+
     @SuppressLint("HandlerLeak")
     class GetProjectListOfCompanyHandler extends Handler {
 

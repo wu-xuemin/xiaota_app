@@ -77,4 +77,5 @@ public class Constant {
     public static final String getAllProjectListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_ALL_PROJIECT_LIST;
     public static final String getProjectListOfCompanyUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_PROJECT_LIST_OF_COMPANY;
 
+    public static final String postAddProjectUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_PROJECT;
 }

@@ -51,6 +51,7 @@ import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
+import com.zhihuta.xiaota.bean.basic.ProjectData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.basic.Wires;
 
@@ -195,6 +196,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     LoginResponseData loginResponseData;
 
     boolean mConfirmedExit = false;
+
+    //进入的是哪个项目
+    private ProjectData mProject;
 
     //******method******/
     @Override
@@ -995,6 +999,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                             } else {
 
                                 newPathParameters.put("name",  strNewPathName);
+                                //todo
+                                String theUrl = Constant.addNewLujingUrl.replace("{project_id}", String.valueOf(mProject.getId()));
                                 mNetwork.addNewLujing(Constant.addNewLujingUrl, newPathParameters, new NewLujingHandler(strNewPathName));
                             }
                         }
