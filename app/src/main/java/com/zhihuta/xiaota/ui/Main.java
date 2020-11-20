@@ -81,6 +81,8 @@ import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 //FragmentActivity 无法创建菜单.
 public class Main extends AppCompatActivity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate, QRCodeView.Delegate {
 
+    public static int project_id = 0;
+
     private static String TAG = "Main";
     private String tabFlag = "在路径模型"; // 还有： 在电线清册、在计算中心
     //声明3个Tab的布局文件
@@ -214,6 +216,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         loginResponseData =JSON.parseObject(strLoginResponseJson, LoginResponseData.class);
         //
 
+        //get project_id from project center.
+
+        Serializable  projectSerialable = intent.getExtras().getSerializable("project_id");
+        if (projectSerialable != null)
+        {
+            project_id = Integer.valueOf( projectSerialable.toString());
+        }
+        //
 
         mNetwork = Network.Instance(getApplication());
         getUserHandler = new Main.GetUserHandler();
@@ -844,7 +854,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             @Override
             public void onClick(View v) {
                 mDxQingCeGetParameters.clear();  //重置查询条件
-                mDxQingCeGetParameters.put("try_scope","2");
+                mDxQingCeGetParameters.put("project_id","2");
                 mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
                     handler.sendMessage(msg);
                 });

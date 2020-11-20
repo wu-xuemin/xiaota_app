@@ -109,6 +109,21 @@ public class ProjectsCenterActivity extends AppCompatActivity {
             handler.sendMessage(msg);
         });
 
+        Button openProject =  (Button)findViewById(R.id.button_open_project);
+
+        openProject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                Intent intent = new Intent(ProjectsCenterActivity.this, Main.class);
+                intent.putExtra("project_id",  2);
+
+                startActivity(intent);
+
+                finish();
+            }
+        });
     }
     private void showProjectList(){
         //电线列表
