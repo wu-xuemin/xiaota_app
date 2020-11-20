@@ -59,6 +59,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ItemView
         holder.projectNameTv.setText(data.getProjectName());
         holder.projectCreatedDateTv.setText(sf3.format(data.getCreateTime()));// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
         holder.projectCreaterTv.setText(data.getCreatorId().toString());
+
+        holder.openProject.setTag(position);
         holder.memberManageBt.setTag(position);
         holder.deleteProjectBt.setTag(position);
 
@@ -82,8 +84,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ItemView
         Button deleteProjectBt;
         Button memberManageBt;
 
+        Button openProject;
 
         ItemViewProjectViewHolder(View itemView) {
+
             super(itemView);
             projectNameTv = itemView.findViewById(R.id.projectMingChenTextView);
             projectCreatedDateTv = itemView.findViewById(R.id.projectCreateDateTextView);
@@ -98,6 +102,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ItemView
             projectNameTv.setOnClickListener(ProjectAdapter.this);
             projectCreaterTv.setOnClickListener(ProjectAdapter.this);
             projectCreatedDateTv.setOnClickListener(ProjectAdapter.this);
+
+            openProject =  (Button)itemView.findViewById(R.id.button_open_project);
+
+            openProject.setOnClickListener( ProjectAdapter.this);
         }
     }
 
@@ -126,7 +134,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ItemView
         int position = (int) v.getTag();      //getTag()获取数据
         if (mOnItemClickListener != null) {
             switch (v.getId()){
-                default:
+                 default:
                     mOnItemClickListener.onItemClick(v, ViewName.ITEM, position);
                     break;
             }

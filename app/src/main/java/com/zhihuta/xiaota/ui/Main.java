@@ -210,7 +210,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
         setContentView(R.layout.activity_main);
 
-        //get login infor from Loginactivity
+        //get login infor from previous activity
         Intent intent = getIntent();
         String strLoginResponseJson = (String) intent.getExtras().getSerializable("loginResponseData");
         loginResponseData =JSON.parseObject(strLoginResponseJson, LoginResponseData.class);
@@ -279,6 +279,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             case R.id.projects_info:
 
                 Intent intentProjects = new Intent(this, ProjectsCenterActivity.class);
+                String strResponseData = JSON.toJSONString(loginResponseData);
+                intentProjects.putExtra("loginResponseData", (Serializable)strResponseData);
+
                 startActivity(intentProjects);
                 break;
             case R.id.logout:
@@ -296,8 +299,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                 Intent intent = new Intent(this, LoginActivity.class);
 
-                String strResponseData = JSON.toJSONString(loginResponseData);
-
+                strResponseData = JSON.toJSONString(loginResponseData);
                 intent.putExtra("loginResponseData", (Serializable)strResponseData);
                 startActivity(intent);
                 finish();//销毁此Activity

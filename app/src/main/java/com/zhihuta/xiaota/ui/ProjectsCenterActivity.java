@@ -20,12 +20,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.ProjectAdapter;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.ProjectData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.GetProjectsResponse;
+import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
 
@@ -44,6 +46,8 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 
     private Network mNetwork;
 
+    LoginResponseData loginResponseData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,9 +59,15 @@ public class ProjectsCenterActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         mNetwork = Network.Instance(getApplication());
+
+        //get login infor from Loginactivity
+        Intent intent = getIntent();
+        String strLoginResponseJson = (String) intent.getExtras().getSerializable("loginResponseData");
+        loginResponseData = JSON.parseObject(strLoginResponseJson, LoginResponseData.class);
+        //
+
         initViews();
         showProjectList();
-
     }
 
     @Override
@@ -109,21 +119,6 @@ public class ProjectsCenterActivity extends AppCompatActivity {
             handler.sendMessage(msg);
         });
 
-        Button openProject =  (Button)findViewById(R.id.button_open_project);
-
-        openProject.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                Intent intent = new Intent(ProjectsCenterActivity.this, Main.class);
-                intent.putExtra("project_id",  2);
-
-                startActivity(intent);
-
-                finish();
-            }
-        });
     }
     private void showProjectList(){
         //电线列表
@@ -359,6 +354,29 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                     Intent intent = new Intent(ProjectsCenterActivity.this, ProjectMemberManageActivity.class);
                     intent.putExtra("mProject", (Serializable) mProjectList.get(position));
                     startActivity(intent);
+                    break;
+
+                case R.id.button_open_project:
+
+
+                    alertDialogBuilder = new AlertDialog.Builder(ProjectsCenterActivity.this);
+                    alertDialogBuilder.setTitle("确认打开项目 " + mProjectList.get(position).getProjectName() + "吗？" )
+//                            .setView(et)
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intentMain = new Intent(ProjectsCenterActivity.this, Main.class);
+                                    String strResponseData = JSON.toJSONString(loginResponseData);
+                                    intentMain.putExtra("loginResponseData", (Serializable) strResponseData);
+                                    intentMain.putExtra("project_id", (Serializable) String.valueOf(mProjectList.get(position).getId()));
+
+                                    startActivity(intentMain);
+                                    finish();
+                                }
+                            })
+                            .show();
+
                     break;
                 default:
                     break;

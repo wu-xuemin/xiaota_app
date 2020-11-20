@@ -374,16 +374,20 @@ public class LoginActivity extends AppCompatActivity {
 
                 Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
 
-//                Intent intentProjects = new Intent(this, ProjectsCenterActivity.class);
-//                startActivity(intentProjects);
-
-                Intent intent = new Intent(this, Main.class);
+                Intent intentProjects = new Intent(this, ProjectsCenterActivity.class);
 
                 String strResponseData = JSON.toJSONString(loginResponseData);
+                intentProjects.putExtra("loginResponseData", (Serializable) strResponseData);
 
-                intent.putExtra("loginResponseData", (Serializable) strResponseData);
-                startActivity(intent);
+                startActivity(intentProjects);
+
+//                Intent intent = new Intent(this, Main.class);
+//
+//                String strResponseData = JSON.toJSONString(loginResponseData);
+//                intent.putExtra("loginResponseData", (Serializable) strResponseData);
+//                startActivity(intent);
                 finish();//销毁此Activity
+                
             } else {
 
                 Toast.makeText(this, "用户名或密码不正确，请重新输入", Toast.LENGTH_SHORT).show();
