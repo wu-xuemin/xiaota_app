@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,6 +32,7 @@ import com.zhihuta.xiaota.bean.response.GetProjectsResponse;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -229,7 +231,9 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                     break;
                 case R.id.button_member_manager:
                     Toast.makeText(ProjectsCenterActivity.this, "你点击了 项目 成员管理" + (position + 1), Toast.LENGTH_SHORT).show();
-
+                    Intent intent = new Intent(ProjectsCenterActivity.this, ProjectMemberManageActivity.class);
+                    intent.putExtra("mProject", (Serializable) mProjectList.get(position));
+                    startActivity(intent);
                     break;
                 default:
                     break;

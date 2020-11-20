@@ -29,8 +29,6 @@
         </LinearLayout>
 
     </LinearLayout>
-    <!--横线-->
-    <!--横线-->
 
     <View
         android:id="@+id/dividerDxProject"
@@ -78,14 +76,13 @@
             android:id="@+id/textViewProOperate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:layout_weight="4"
             android:gravity="center"
             android:text="操作" />
 
     </LinearLayout>
 
     <!--横线-->
-
     <View
         android:id="@+id/dividerDxProject22"
         android:layout_width="match_parent"

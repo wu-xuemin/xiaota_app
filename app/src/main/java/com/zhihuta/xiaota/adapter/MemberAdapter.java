@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhihuta.xiaota.R;
+import com.zhihuta.xiaota.bean.basic.MemberData;
 import com.zhihuta.xiaota.bean.basic.ProjectData;
 
 import java.text.SimpleDateFormat;
@@ -20,18 +21,18 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.ItemViewPr
     private SimpleDateFormat sf3 = new SimpleDateFormat("yy/MM/dd");
     private static String TAG = "MemberAdapter";
 
-    private List<ProjectData> dataList;//数据源
+    private List<MemberData> dataList;//数据源
     private Context context;//上下文
 
     private String  strMode;
     /// 这里，传数据
-    public MemberAdapter(List<ProjectData> list, Context context, String strMode) {
+    public MemberAdapter(List<MemberData> list, Context context, String strMode) {
         this.dataList = list;
         this.context = context;
         this.strMode = strMode;
     }
 
-    public void updateDataSource(List<ProjectData> list, String strMode)
+    public void updateDataSource(List<MemberData> list, String strMode)
     {
         this.strMode = strMode;
         this.dataList = list;
