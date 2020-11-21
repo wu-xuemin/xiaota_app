@@ -95,16 +95,15 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                                 if (strNewMember == null || strNewMember.isEmpty()) { //不允许名称为空
                                     Toast.makeText(ProjectMemberManageActivity.this, "账号不能为空", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    newProjectParameters.put("name",  strNewMember);
 //                                    {
 //                                        member_ids:[1,2,10,15,]//账号id列表,
 //                                        member_accounts:[ a, test,myaccount]//账号列表，账号列表和账号ID列表任意一个都可以实现添加功能，主要是为了调用使用，用id列表效率会更高点。后台会处理两个列表，如果账号和账号id指向同一个人，那么也只会添加一次。
 //                                    }
                                     LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-
-                                    mPostValue.put("member_accounts", strNewMember);
+//"member_accounts":["ft"]
+                                    mPostValue.put("member_accounts", strNewMember );
                                     String url = Constant.putProjectMemberUrl.replace("{id}", String.valueOf(mProject.getId()));
-                                    mNetwork.put( url, null, new PutProjectMemberHandler(),(handler, msg)->{
+                                    mNetwork.put( url, mPostValue, new PutProjectMemberHandler(),(handler, msg)->{
                                         handler.sendMessage(msg);
                                     });
                                 }
