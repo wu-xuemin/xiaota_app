@@ -334,7 +334,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                     LinkedHashMap<String, String> deleteProjectMemberParameters = new LinkedHashMap<>();
                     deleteProjectMemberParameters.put("member_accounts",mMemberList.get(position).getAccount());
                     String  url = Constant.deleteProjectMemberUrl.replace("{id}", String.valueOf(mProject.getId()));
-                    mNetwork.delete(url, deleteProjectMemberParameters, new DeleteProjectMemberListHandler(),(handler, msgGetMember)->{
+                    mNetwork.put(url, deleteProjectMemberParameters, new DeleteProjectMemberListHandler(),(handler, msgGetMember)->{
                         handler.sendMessage(msgGetMember);
                     });
                     break;
