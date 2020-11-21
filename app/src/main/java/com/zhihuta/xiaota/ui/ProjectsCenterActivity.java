@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -49,6 +50,7 @@ public class ProjectsCenterActivity extends AppCompatActivity {
     private Network mNetwork;
 
     LoginResponseData loginResponseData;
+    int  mRequestCodeFroPrev = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,7 @@ public class ProjectsCenterActivity extends AppCompatActivity {
         String strLoginResponseJson = (String) intent.getExtras().getSerializable("loginResponseData");
         loginResponseData = JSON.parseObject(strLoginResponseJson, LoginResponseData.class);
         //
+        mRequestCodeFroPrev = intent.getIntExtra("requestCode", 0);
 
         initViews();
         showProjectList();
@@ -395,4 +398,39 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 
         }
     };
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        //if (mConfirmedExit == false)
+        {
+
+            if (mRequestCodeFroPrev == "initialSelectEntry".hashCode())
+            {
+                if(keyCode== KeyEvent.KEYCODE_BACK&&event.getAction()==KeyEvent.ACTION_DOWN){
+
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProjectsCenterActivity.this);
+                    alertDialogBuilder.setTitle("确定退出程序？")
+                            .setNegativeButton("否", null)
+                            .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+//                                if (MyActivityManager.getInstance().getCurrentActivity().equals(Main.this))
+//                                {
+//                                    mConfirmedExit = true;
+//                                    Main.this.onKeyDown(keyCode, event);
+//                                }
+
+                                    finish();
+                                }
+                            })
+                            .show();
+
+                    return  true;
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

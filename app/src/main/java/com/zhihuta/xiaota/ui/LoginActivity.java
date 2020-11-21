@@ -378,7 +378,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 String strResponseData = JSON.toJSONString(loginResponseData);
                 intentProjects.putExtra("loginResponseData", (Serializable) strResponseData);
-
+                intentProjects.putExtra("requestCode", "initialSelectEntry".hashCode());
                 startActivity(intentProjects);
 
 //                Intent intent = new Intent(this, Main.class);
