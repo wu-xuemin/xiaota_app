@@ -40,10 +40,10 @@ public class Constant {
 
 //    public static final String getUserListUrl8004 = URL.HTTP_HEAD + "172.20.10.3:8004"+ URL.GET_USER_LIST;
 //    public static final String loginUrl8004 = URL.HTTP_HEAD +"172.20.10.3:8004"+ URL.USER_LOGIN;
-   public static final String importFromDianxianFile = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_DIANXIAN_QINGCE_IMPORT;
+//   public static final String importFromDianxianFile = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_DIANXIAN_QINGCE_IMPORT;
 
 
-    public static final String getDxListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DIANXIAN_QINGCE_LIST;
+//    public static final String getDxListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DIANXIAN_QINGCE_LIST;
     public static final String getLujingListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_LUJING_LIST;
     public static final String getFilterLujingListByQrUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_FILTER_LUJING_BY_QR;
     //public static final String getFilterLujingListByNameUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_FILTER_LUJING_BY_NAME;
@@ -68,7 +68,7 @@ public class Constant {
     public static final String getExportWiresOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_EXPORT_WIRES_OF_LUJING;
     public static final String getDistanceListByTwoDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DISTANCE_LIST_BY_TWO_DISTANCE;
 
-    public static final String getDxImportHistoryUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DX_IMPORT_HISTORY;
+    //public static final String getDxImportHistoryUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DX_IMPORT_HISTORY;
     public static final String putQrDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.PUT_QR_DISTANCE;
 
     public static final String putPasswordReset = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_PASSWORD_RESET;

@@ -64,6 +64,7 @@ import com.zhihuta.xiaota.bean.response.PathGetObject;
 import com.zhihuta.xiaota.bean.response.PathsResponse;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.common.MyActivityManager;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
@@ -81,7 +82,7 @@ import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 //FragmentActivity 无法创建菜单.
 public class Main extends AppCompatActivity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate, QRCodeView.Delegate {
 
-    public static int project_id = 0;
+    public static String project_id = "0";
 
     private static String TAG = "Main";
     private String tabFlag = "在路径模型"; // 还有： 在电线清册、在计算中心
@@ -221,7 +222,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         Serializable  projectSerialable = intent.getExtras().getSerializable("project_id");
         if (projectSerialable != null)
         {
-            project_id = Integer.valueOf( projectSerialable.toString());
+            project_id = projectSerialable.toString();
         }
         //
 
@@ -856,8 +857,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             @Override
             public void onClick(View v) {
                 mDxQingCeGetParameters.clear();  //重置查询条件
-                mDxQingCeGetParameters.put("project_id","2");
-                mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+                mDxQingCeGetParameters.put("project_id",Main.project_id);
+                String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
                     handler.sendMessage(msg);
                 });
             }
@@ -869,8 +871,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             public boolean onQueryTextSubmit(String query) {
                 mDxQingCeGetParameters.clear();
                 mDxQingCeGetParameters.put("sn", query);
-                mDxQingCeGetParameters.put("try_scope","2");
-                mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+                mDxQingCeGetParameters.put("project_id", Main.project_id);
+                String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
                     handler.sendMessage(msg);
                 });
                 return false;
@@ -1539,7 +1542,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         Log.i(TAG, "onRestart");
         if (tabFlag.equals("在电线清册") )
         {
-            mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+            String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+            mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
                 handler.sendMessage(msg);
             });
         }
@@ -1624,7 +1628,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                     stopScan();
 
                     //get list
-                    mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+                    String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+                    mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
                         handler.sendMessage(msg);
                     });
                 }

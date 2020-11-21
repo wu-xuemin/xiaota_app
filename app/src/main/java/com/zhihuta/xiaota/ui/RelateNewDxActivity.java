@@ -29,6 +29,8 @@ import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.basic.Wires;
 import com.zhihuta.xiaota.bean.response.GetWiresResponse;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
+import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
 import java.io.Serializable;
@@ -90,13 +92,13 @@ public class RelateNewDxActivity extends AppCompatActivity {
         mDxRV.setLayoutManager(manager);
 
         LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-        mPostValue.put("account","z");
-        mPostValue.put("password", "a");
+
         mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
 
         /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
-        mPostValue.put("try_scope","2");
-        mNetwork.get(Constant.getDxListUrl8083, mPostValue, new GetDxListHandler(),(handler, msg)->{
+        mPostValue.put("project_id",Main.project_id);
+        String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+        mNetwork.get(url, mPostValue, new GetDxListHandler(),(handler, msg)->{
             handler.sendMessage(msg);
         });
 
@@ -154,8 +156,10 @@ public class RelateNewDxActivity extends AppCompatActivity {
 
                 mDxQingCeGetParameters.clear();
                 mDxQingCeGetParameters.put("sn", query);
-                mDxQingCeGetParameters.put("try_scope","2");
-                mNetwork.get(Constant.getDxListUrl8083, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+                mDxQingCeGetParameters.put("project_id",Main.project_id);
+
+                String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
                     handler.sendMessage(msg);
                 });
                 return false;

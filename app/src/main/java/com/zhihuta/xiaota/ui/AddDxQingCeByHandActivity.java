@@ -27,13 +27,14 @@ import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.basic.Wires;
 import com.zhihuta.xiaota.bean.response.GetWiresResponse;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
+import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import static com.zhihuta.xiaota.common.Constant.getDxListUrl8083;
 
 public class AddDxQingCeByHandActivity extends AppCompatActivity {
 
@@ -175,8 +176,8 @@ public class AddDxQingCeByHandActivity extends AppCompatActivity {
                 }
                 mPostValue.put("hose_redundancy", strTemp);
 
-
-                network.post(getDxListUrl8083,mPostValue,new AddDxQinceHandler(), (handler, msg)->{
+                String url = RequestUrlUtility.build(URL.ADD_DIANXIAN_QINGCE_LIST.replace("{project_id}", Main.project_id));
+                network.post(url,mPostValue,new AddDxQinceHandler(), (handler, msg)->{
 
                     handler.sendMessage(msg);
 

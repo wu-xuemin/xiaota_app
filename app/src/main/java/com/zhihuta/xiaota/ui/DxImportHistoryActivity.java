@@ -21,11 +21,14 @@ import com.zhihuta.xiaota.bean.basic.DxImportHistoryData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.DxImportHistoryResponse;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
+import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class DxImportHistoryActivity extends AppCompatActivity {
 
@@ -71,8 +74,10 @@ public class DxImportHistoryActivity extends AppCompatActivity {
     private void getHistoryList(  ) {
         //获取 路径对应的间距列表
 
-
-        mNetwork.get(Constant.getDxImportHistoryUrl,null,new GetDxImportHistoryListHandler(Constant.FLAG_DISTANCE_IN_LUJING),
+        String url = RequestUrlUtility.build(URL.GET_DX_IMPORT_HISTORY);
+        HashMap<String,String> queryValue = new HashMap<>();
+        queryValue.put("project_id",Main.project_id);
+        mNetwork.get(url,queryValue,new GetDxImportHistoryListHandler(Constant.FLAG_DISTANCE_IN_LUJING),
                 (handler, msg)->{
                     handler.sendMessage(msg);
                 });

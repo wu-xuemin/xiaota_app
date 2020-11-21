@@ -48,9 +48,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import com.zhihuta.xiaota.common.PathUtils;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
+import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
-
-import static com.zhihuta.xiaota.common.Constant.importFromDianxianFile;
 
 
 public class AddDxQingCeFromFileActivity extends AppCompatActivity {
@@ -126,7 +126,8 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
                             {
                                 importDianxianQinceHandler.setIsGetting(true);
 
-                                Network.Instance(getApplication()).putMultiForm( importFromDianxianFile,mPostValue,
+                                String url = RequestUrlUtility.build(URL.PUT_DIANXIAN_QINGCE_IMPORT.replace("{project_id}", Main.project_id));
+                                Network.Instance(getApplication()).putMultiForm( url,mPostValue,
                                         importDianxianQinceHandler,
                                         (handler,msg)->{
                                             handler.sendMessage(msg);
