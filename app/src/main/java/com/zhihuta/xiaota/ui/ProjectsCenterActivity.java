@@ -79,7 +79,15 @@ public class ProjectsCenterActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                this.finish(); // back button
+
+                if (mRequestCodeFroPrev == "initialSelectEntry".hashCode()) {
+                    confirmExitOrNot();
+                }
+                else
+                {
+                    this.finish(); // back button
+                }
+
                 return true;
             default:
         }
@@ -399,22 +407,14 @@ public class ProjectsCenterActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-        //if (mConfirmedExit == false)
-        {
-
-            if (mRequestCodeFroPrev == "initialSelectEntry".hashCode())
-            {
-                if(keyCode== KeyEvent.KEYCODE_BACK&&event.getAction()==KeyEvent.ACTION_DOWN){
-
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProjectsCenterActivity.this);
-                    alertDialogBuilder.setTitle("确定退出程序？")
-                            .setNegativeButton("否", null)
-                            .setPositiveButton("是", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
+    private void confirmExitOrNot()
+    {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProjectsCenterActivity.this);
+        alertDialogBuilder.setTitle("确定退出程序？")
+                .setNegativeButton("否", null)
+                .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
 
 //                                if (MyActivityManager.getInstance().getCurrentActivity().equals(Main.this))
 //                                {
@@ -422,12 +422,25 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 //                                    Main.this.onKeyDown(keyCode, event);
 //                                }
 
-                                    finish();
-                                }
-                            })
-                            .show();
+                        finish();
+                    }
+                })
+                .show();
 
-                    return  true;
+        return ;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        //if (mConfirmedExit == false)
+        {
+            if(keyCode== KeyEvent.KEYCODE_BACK&&event.getAction()==KeyEvent.ACTION_DOWN) {
+                if (mRequestCodeFroPrev == "initialSelectEntry".hashCode()) {
+
+                    confirmExitOrNot();
+
+                    return true;
                 }
             }
         }

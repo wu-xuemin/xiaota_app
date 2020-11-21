@@ -28,6 +28,8 @@ import com.zhihuta.xiaota.bean.basic.ProjectData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.ProjectMembersResponse;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
+import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
 import java.util.ArrayList;
@@ -37,6 +39,9 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
 
     private static String TAG = "ProjectMemberManageActivity";
     private Button mCreateNewMemberBt;
+    private Button mInviteAllCompanyMemberBt;
+    private Button mRemoveAllCompanyMemberBt;
+
     private ProjectData mProject = null;
     private ArrayList<MemberData> mMemberList;
     private MemberAdapter mMemberAdapter;
@@ -112,6 +117,41 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                         .show();
             }
         });
+
+        mInviteAllCompanyMemberBt = (Button)findViewById(R.id.inviteAllCompanyMemberBt);
+        mInviteAllCompanyMemberBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.app.AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProjectMemberManageActivity.this);
+                alertDialogBuilder.setTitle("确定要邀请所有公司人员?")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                String url = RequestUrlUtility.build(URL.PUT_PROJECT_MEMBERS_COMPANY.replace("{id}",String.valueOf(mProject.getId())));
+                                mNetwork.put( url, null, new PutProjectMemberHandler(),(handler, msg)->{
+                                    handler.sendMessage(msg);
+                                });
+                            }
+                        })
+                        .show();
+            }
+        });
+
+        mRemoveAllCompanyMemberBt = (Button)findViewById(R.id.removeAllCompanyMemberBt);
+        mRemoveAllCompanyMemberBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String url = RequestUrlUtility.build(URL.DELETE_PROJECT_MEMBERS_COMPANY.replace("{id}",String.valueOf(mProject.getId())));
+                mNetwork.delete( url, null, new DeleteProjectMemberListHandler(),(handler, msg)->{
+                    handler.sendMessage(msg);
+                });
+            }
+        });
+
+
         String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
         mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msg)->{
             handler.sendMessage(msg);
@@ -199,7 +239,6 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
             }
         }
     }
-
 
     @SuppressLint("HandlerLeak")
     class PutProjectMemberHandler extends Handler {
@@ -334,7 +373,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                     LinkedHashMap<String, String> deleteProjectMemberParameters = new LinkedHashMap<>();
                     deleteProjectMemberParameters.put("member_accounts",mMemberList.get(position).getAccount());
                     String  url = Constant.deleteProjectMemberUrl.replace("{id}", String.valueOf(mProject.getId()));
-                    mNetwork.put(url, deleteProjectMemberParameters, new DeleteProjectMemberListHandler(),(handler, msgGetMember)->{
+                    mNetwork.delete(url, deleteProjectMemberParameters, new DeleteProjectMemberListHandler(),(handler, msgGetMember)->{
                         handler.sendMessage(msgGetMember);
                     });
                     break;

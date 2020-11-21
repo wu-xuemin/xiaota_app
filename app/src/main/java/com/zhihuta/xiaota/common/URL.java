@@ -56,4 +56,6 @@ public class URL {
     public static final String GET_PROJECT_MEMBERS = "/project/{id}/member";//
     public static final String PUT_PROJECT_MEMBERS = "/project/{id}/invitemember";//邀请项目组新成员
     public static final String DELETE_PROJECT_MEMBERS = "/project/{id}/removemember";//
+    public static final String PUT_PROJECT_MEMBERS_COMPANY = "/project/{id}/invitemember/company";
+    public static final String DELETE_PROJECT_MEMBERS_COMPANY = "/project/{id}/removemember/company";
 }
