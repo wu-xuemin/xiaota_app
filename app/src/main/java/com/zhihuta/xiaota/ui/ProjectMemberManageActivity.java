@@ -250,6 +250,56 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
             }
         }
     }
+
+    @SuppressLint("HandlerLeak")
+    class DeleteProjectMemberListHandler extends Handler {
+
+        private boolean bIsGetting = false;
+
+        public boolean getIsGetting()
+        {
+            return bIsGetting;
+        }
+
+        public void setIsGetting(boolean getting)
+        {
+            bIsGetting = getting;
+        }
+
+
+        @Override
+        public void handleMessage(final Message msg) {
+            String errorMsg = "";
+
+            try {
+                if (msg.what == Network.OK) {
+                    Result result= (Result)(msg.obj);
+                    if(result.getMessage().equals("SUCCESS")){
+                        Toast.makeText(ProjectMemberManageActivity.this, "删除成员成功", Toast.LENGTH_SHORT).show();
+                        //成员删除成功，再刷新一次
+                        String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
+                        mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msgGetMember)->{
+                            handler.sendMessage(msgGetMember);
+                        });
+                    } else {
+                        Toast.makeText(ProjectMemberManageActivity.this, "删除成员异常", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    errorMsg = (String) msg.obj;
+                }
+
+                if (!errorMsg.isEmpty()) {
+                    Log.d("删除成员 NG:", errorMsg);
+                    Toast.makeText(ProjectMemberManageActivity.this, "删除成员失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                Log.d("删除成员 NG:", ex.getMessage());
+            }
+            finally {
+                setIsGetting(false);
+            }
+        }
+    }
     private void showMemberList(){
         //成员列表
         mMemberRV = (RecyclerView) findViewById(R.id.rv_project_member);
@@ -280,8 +330,13 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
 
                     break;
                 case R.id.projectMemberAccountDisableBt:
-                    Toast.makeText(ProjectMemberManageActivity.this, "你点击了 禁用" + (position + 1), Toast.LENGTH_SHORT).show();
-
+//                    Toast.makeText(ProjectMemberManageActivity.this, "你点击了 禁用" + (position + 1), Toast.LENGTH_SHORT).show();
+                    LinkedHashMap<String, String> deleteProjectMemberParameters = new LinkedHashMap<>();
+                    deleteProjectMemberParameters.put("member_accounts",mMemberList.get(position).getAccount());
+                    String  url = Constant.deleteProjectMemberUrl.replace("{id}", String.valueOf(mProject.getId()));
+                    mNetwork.delete(url, deleteProjectMemberParameters, new DeleteProjectMemberListHandler(),(handler, msgGetMember)->{
+                        handler.sendMessage(msgGetMember);
+                    });
                     break;
                 default:
                     break;
