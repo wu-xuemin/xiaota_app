@@ -289,15 +289,13 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                 String url = RequestUrlUtility.build(URL.USER_LOGOUT.replace("{account_id}", Integer.toString(loginResponseData.getId())));
                 mNetwork.delete(url,null,new Handler(),(handler, msg)->{
+                    XiaotaApp.getApp().ClearCookieStore();
                     if (handler!= null)
                     {
                         handler.sendMessage(msg);
                     }
                     //do not care about the response from server.
                 });
-
-
-                XiaotaApp.getApp().ClearCookieStore();
 
                 Intent intent = new Intent(this, LoginActivity.class);
 
@@ -355,11 +353,13 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             //扫到第二个码时,程序自动将两个码之间所有的码自动添加进列表, 方便查看
 //            mNetwork.();
             Log.i(TAG,"扫到第二个码" + mScanResultDistanceList.get(0).getName() +"," + mScanResultDistanceList.get(1).getName());
-            LinkedHashMap<String, String> mLujingGetParameters = new LinkedHashMap<>();
 
-            String url = Constant.getDistanceListByTwoDistanceUrl.replace("qrId1",String.valueOf( mScanResultDistanceList.get(0).getQr_id()));//"caculate/distance?qr_id=qrId1,qrId2";
-            url = url.replace("qrId2",String.valueOf( mScanResultDistanceList.get(1).getQr_id()));
-            mNetwork.get(url,mLujingGetParameters,getDistanceListHandler,
+            String url = RequestUrlUtility.build(URL.GET_DISTANCE_LIST_BY_TWO_DISTANCE
+                    .replace("qrId1",String.valueOf( mScanResultDistanceList.get(0).getQr_id()))
+                    .replace("qrId2",String.valueOf( mScanResultDistanceList.get(1).getQr_id()))
+                    .replace("{project_id}",Main.project_id)
+            );
+            mNetwork.get(url,null,getDistanceListHandler,
                     (handler, msg)->{
                         getDistanceListHandler.sendMessage(msg);
                     });
@@ -572,7 +572,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                         distanceData.setDistance(String.valueOf(distanceObj.distance));
                         distanceData.setName(distanceObj.name);
                         distanceData.setQr_sequence(distanceObj.qrSequence);
-                        distanceData.setSerial_number(distanceObj.serialNumber.substring(0,distanceObj.serialNumber.length()-4));
+                        String strSerialNumber = distanceObj.serialNumber;
+                            //strSerialNumber = strSerialNumber.substring(0,distanceObj.serialNumber.length()-4);
+                        distanceData.setSerial_number(strSerialNumber);
                         distanceData.setFlag(Constant.FLAG_DISTANCE_IN_CALCULATE);
 
                         mDistanceList.add( distanceData);
