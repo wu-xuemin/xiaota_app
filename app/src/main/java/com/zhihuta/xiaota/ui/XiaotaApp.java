@@ -514,4 +514,9 @@ public class XiaotaApp extends Application {
     public CacheUtils getCache() {
         return mCache;
     }
+
+    public void ClearCookieStore()
+    {
+        cookieStore.clear();
+    }
 }

@@ -29,6 +29,8 @@ import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.GetProjectsResponse;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
+import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
 import java.io.Serializable;
@@ -114,8 +116,8 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                         .show();
             }
         });
-
-        mNetwork.get(Constant.getProjectListOfCompanyUrl, null, new GetProjectListOfCompanyHandler(),(handler, msg)->{
+        String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
+        mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msg)->{
             handler.sendMessage(msg);
         });
 
@@ -161,7 +163,8 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                     if(result.getMessage().equals("SUCCESS")){
                         Toast.makeText(ProjectsCenterActivity.this, "添加项目成功", Toast.LENGTH_SHORT).show();
                         //项目添加成功，再刷新一次
-                        mNetwork.get(Constant.getProjectListOfCompanyUrl, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
+                        String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
+                        mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
                             handler.sendMessage(msgGetProject);
                         });
                     } else {
@@ -210,7 +213,9 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                     if(result.getMessage().equals("SUCCESS")){
                         Toast.makeText(ProjectsCenterActivity.this, "删除项目成功", Toast.LENGTH_SHORT).show();
                         //删除添加成功，再刷新一次
-                        mNetwork.get(Constant.getProjectListOfCompanyUrl, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
+
+                        String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
+                        mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
                             handler.sendMessage(msgGetProject);
                         });
                     } else {

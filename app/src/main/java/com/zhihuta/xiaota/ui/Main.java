@@ -287,8 +287,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 break;
             case R.id.logout:
 
-                String url = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_LOGOUT.replace("{account_id}", Integer.toString(loginResponseData.getId()));
-
+                String url = RequestUrlUtility.build(URL.USER_LOGOUT.replace("{account_id}", Integer.toString(loginResponseData.getId())));
                 mNetwork.delete(url,null,new Handler(),(handler, msg)->{
                     if (handler!= null)
                     {
@@ -297,6 +296,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                     //do not care about the response from server.
                 });
 
+
+                XiaotaApp.getApp().ClearCookieStore();
 
                 Intent intent = new Intent(this, LoginActivity.class);
 
