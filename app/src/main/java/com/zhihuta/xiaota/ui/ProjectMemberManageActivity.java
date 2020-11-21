@@ -6,22 +6,33 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
 import com.zhihuta.xiaota.R;
+import com.zhihuta.xiaota.User;
 import com.zhihuta.xiaota.adapter.MemberAdapter;
 import com.zhihuta.xiaota.adapter.ProjectAdapter;
+import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.MemberData;
 import com.zhihuta.xiaota.bean.basic.ProjectData;
+import com.zhihuta.xiaota.bean.basic.Result;
+import com.zhihuta.xiaota.bean.response.GetProjectsResponse;
+import com.zhihuta.xiaota.bean.response.ProjectMembersResponse;
+import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
 
 import java.util.ArrayList;
@@ -55,7 +66,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
             Toast.makeText(ProjectMemberManageActivity.this, "异常：没有获取到项目"  , Toast.LENGTH_SHORT).show();
         }
         initViews();
-
+        showMemberList();
     }
 
     @Override
@@ -70,6 +81,8 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+
+        mMemberList = new ArrayList<>();
         mCreateNewMemberBt = (Button)findViewById(R.id.createNewMemberBt);
         mCreateNewMemberBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +109,94 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                         .show();
             }
         });
+        String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
+        mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msg)->{
+            handler.sendMessage(msg);
+        });
     }
+
+    @SuppressLint("HandlerLeak")
+    class GetProjectMemberListHandler extends Handler {
+
+        private boolean bIsGetting = false;
+        public boolean getIsGetting()
+        {
+            return bIsGetting;
+        }
+        public void setIsGetting(boolean getting) {
+            bIsGetting = getting;
+        }
+
+        @Override
+        public void handleMessage(final Message msg) {
+            String errorMsg = "";
+
+            try {
+                if (msg.what == Network.OK) {
+                    Result result= (Result)(msg.obj);
+
+                    ProjectMembersResponse responseData = CommonUtility.objectToJavaObject(( result.getData()), ProjectMembersResponse.class);// CommonUtility.objectToJavaObject(result.getData()).get("accounts"), ProjectMembersResponse.class);
+
+                    if (responseData != null &&responseData.errorCode == 0) {
+                        mMemberList = new ArrayList<>();
+
+                        for (MemberData memberData : responseData.accounts) {
+
+                            MemberData memberData1 = new MemberData();
+                            memberData1.setId(memberData.getId());
+                            memberData1.setAccount((memberData.getAccount()));
+                            memberData1.setAddress(memberData.getAddress());
+                            memberData1.setCompany(memberData.getCompany());
+                            memberData1.setDeleted(memberData.getDeleted());
+                            memberData1.setDepartment((memberData.getDepartment()));
+                            memberData1.setEmail(memberData.getEmail());
+                            memberData1.setName(memberData.getName());
+                            memberData1.setPhone(memberData.getPhone());
+
+                            mMemberList.add(memberData1);
+                        }
+
+                        Log.d(TAG, "成员数量: size: " + mMemberList.size());
+
+                        if (mMemberList.size() == 0) {
+                            Toast.makeText(ProjectMemberManageActivity.this, "项目成员数量为0！", Toast.LENGTH_SHORT).show();
+                        }
+                        mMemberAdapter = null;
+                        mMemberAdapter = new MemberAdapter(mMemberList, ProjectMemberManageActivity.this, null);
+                        mMemberRV.addItemDecoration(new DividerItemDecoration(ProjectMemberManageActivity.this, DividerItemDecoration.VERTICAL));
+                        mMemberRV.setAdapter(mMemberAdapter);
+                        mMemberAdapter.setOnItemClickListener(MyItemClickListener);
+
+                        mMemberAdapter.notifyDataSetChanged();
+//                        mProjectAdapter.updateDataSoruce(mProjectList);
+                    }
+                    else
+                    {
+                        errorMsg =  "项目成员获取异常:"+ result.getCode() + result.getMessage();
+                        Log.d(TAG, errorMsg );
+                    }
+                }
+                else
+                {
+                    errorMsg = (String) msg.obj;
+                }
+
+                if (!errorMsg.isEmpty())
+                {
+                    Log.d("项目成员获取 NG:", errorMsg);
+                    Toast.makeText(ProjectMemberManageActivity.this, "项目成员获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.d("项目成员获取 NG:", ex.getMessage());
+            }
+            finally {
+                setIsGetting(false);
+            }
+        }
+    }
+
     private void showMemberList(){
         //成员列表
         mMemberRV = (RecyclerView) findViewById(R.id.rv_project_member);
@@ -126,7 +226,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                     Toast.makeText(ProjectMemberManageActivity.this, "你点击了账号名称" + (position + 1), Toast.LENGTH_SHORT).show();
 
                     break;
-                case R.id.projectMemberAccountDisableTextView:
+                case R.id.projectMemberAccountDisableBt:
                     Toast.makeText(ProjectMemberManageActivity.this, "你点击了 禁用" + (position + 1), Toast.LENGTH_SHORT).show();
 
                     break;

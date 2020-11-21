@@ -2,9 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:layout_height="wrap_content">
+    android:gravity="center">
 
     <TextView
         android:id="@+id/projectMemberAccountTextView"
@@ -12,15 +13,17 @@
         android:layout_height="wrap_content"
         android:layout_weight="4"
         android:ellipsize="marquee"
+        android:gravity="center"
         android:singleLine="true"
         android:text="成员账号" />
 
-    <TextView
-        android:id="@+id/projectMemberAccountDisableTextView"
+    <Button
+        android:id="@+id/projectMemberAccountDisableBt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"
         android:ellipsize="marquee"
+        android:gravity="center"
         android:singleLine="true"
         android:text="禁用" />
 
