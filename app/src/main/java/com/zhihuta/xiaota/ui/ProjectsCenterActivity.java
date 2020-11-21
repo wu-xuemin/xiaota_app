@@ -135,6 +135,7 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("HandlerLeak")
     class AddNewProjectHandler extends Handler {
 
         private boolean bIsGetting = false;
@@ -183,6 +184,7 @@ public class ProjectsCenterActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("HandlerLeak")
     class DeleteProjectHandler extends Handler {
 
         private boolean bIsGetting = false;

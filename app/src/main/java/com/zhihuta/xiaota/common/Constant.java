@@ -81,4 +81,7 @@ public class Constant {
     public static final String deleteProjectUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.DELETE_REMOVE_PROJECT;
     public static final String getProjectMemberListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_PROJECT_MEMBERS;
 
+    public static final String putProjectMemberUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.PUT_PROJECT_MEMBERS;
+
+
 }

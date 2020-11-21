@@ -47,4 +47,6 @@ public class URL {
     public static final String POST_ADD_NEW_PROJECT = "/project";//新建项目
     public static final String DELETE_REMOVE_PROJECT =  "/project/{id}";//移除所有和项目相关的资源， 项目组，电线，路径
     public static final String GET_PROJECT_MEMBERS = "/project/{id}/member";//
+
+    public static final String PUT_PROJECT_MEMBERS = "/project/{id}/invitemember";//邀请项目组新成员
 }

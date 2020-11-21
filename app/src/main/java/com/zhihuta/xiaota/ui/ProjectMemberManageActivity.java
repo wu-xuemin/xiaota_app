@@ -20,17 +20,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSONObject;
 import com.zhihuta.xiaota.R;
-import com.zhihuta.xiaota.User;
 import com.zhihuta.xiaota.adapter.MemberAdapter;
-import com.zhihuta.xiaota.adapter.ProjectAdapter;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
-import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.MemberData;
 import com.zhihuta.xiaota.bean.basic.ProjectData;
 import com.zhihuta.xiaota.bean.basic.Result;
-import com.zhihuta.xiaota.bean.response.GetProjectsResponse;
 import com.zhihuta.xiaota.bean.response.ProjectMembersResponse;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.net.Network;
@@ -96,13 +91,22 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 LinkedHashMap<String, String> newProjectParameters = new LinkedHashMap<>();
-                                String strNewPathName = et.getText().toString();
-                                if (strNewPathName == null || strNewPathName.isEmpty()) { //不允许名称为空
+                                String strNewMember = et.getText().toString();
+                                if (strNewMember == null || strNewMember.isEmpty()) { //不允许名称为空
                                     Toast.makeText(ProjectMemberManageActivity.this, "账号不能为空", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    newProjectParameters.put("name",  strNewPathName);
-                                    //TODO
-//                                    mNetwork.addNewLujing(Constant.addNewLujingUrl, newPathParameters, new Main.NewLujingHandler(strNewPathName));
+                                    newProjectParameters.put("name",  strNewMember);
+//                                    {
+//                                        member_ids:[1,2,10,15,]//账号id列表,
+//                                        member_accounts:[ a, test,myaccount]//账号列表，账号列表和账号ID列表任意一个都可以实现添加功能，主要是为了调用使用，用id列表效率会更高点。后台会处理两个列表，如果账号和账号id指向同一个人，那么也只会添加一次。
+//                                    }
+                                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+
+                                    mPostValue.put("member_accounts", strNewMember);
+                                    String url = Constant.putProjectMemberUrl.replace("{id}", String.valueOf(mProject.getId()));
+                                    mNetwork.put( url, null, new PutProjectMemberHandler(),(handler, msg)->{
+                                        handler.sendMessage(msg);
+                                    });
                                 }
                             }
                         })
@@ -197,6 +201,56 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
         }
     }
 
+
+    @SuppressLint("HandlerLeak")
+    class PutProjectMemberHandler extends Handler {
+
+        private boolean bIsGetting = false;
+
+        public boolean getIsGetting()
+        {
+            return bIsGetting;
+        }
+
+        public void setIsGetting(boolean getting)
+        {
+            bIsGetting = getting;
+        }
+
+
+        @Override
+        public void handleMessage(final Message msg) {
+            String errorMsg = "";
+
+            try {
+                if (msg.what == Network.OK) {
+                    Result result= (Result)(msg.obj);
+                    if(result.getMessage().equals("SUCCESS")){
+                        Toast.makeText(ProjectMemberManageActivity.this, "添加成员成功", Toast.LENGTH_SHORT).show();
+                        //成员添加成功，再刷新一次
+                        String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
+                        mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msgGetMember)->{
+                            handler.sendMessage(msgGetMember);
+                        });
+                    } else {
+                        Toast.makeText(ProjectMemberManageActivity.this, "添加成员异常", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    errorMsg = (String) msg.obj;
+                }
+
+                if (!errorMsg.isEmpty()) {
+                    Log.d("添加成员 NG:", errorMsg);
+                    Toast.makeText(ProjectMemberManageActivity.this, "添加成员失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                Log.d("添加成员 NG:", ex.getMessage());
+            }
+            finally {
+                setIsGetting(false);
+            }
+        }
+    }
     private void showMemberList(){
         //成员列表
         mMemberRV = (RecyclerView) findViewById(R.id.rv_project_member);
