@@ -28,6 +28,8 @@ import com.zhihuta.xiaota.bean.response.PathGetObject;
 import com.zhihuta.xiaota.bean.response.PathsResponse;
 import com.zhihuta.xiaota.bean.response.pathContainsQRResponse;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
+import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
@@ -123,9 +125,9 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
                         HashMap<String, String> getParams = new HashMap<>();
                         getParams.put("qr_ids",qrIDs);
-                        getParams.put("try_sope","2");
+                        getParams.put("project_id",Main.project_id);
 
-                        mNetwork.get(Constant.getLujingListUrl8083, getParams, new FilterPathHandler(getParams),
+                        mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), getParams, new FilterPathHandler(getParams),
                                 (handler, msg) -> {
                                     handler.sendMessage(msg);
                                 });

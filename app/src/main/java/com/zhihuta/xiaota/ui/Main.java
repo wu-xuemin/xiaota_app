@@ -201,7 +201,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     boolean mConfirmedExit = false;
 
     //进入的是哪个项目
-    private ProjectData mProject;
+    //private ProjectData mProject;
 
     //******method******/
     @Override
@@ -238,9 +238,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
 		//限定能获取到的范围，
 		// /*try_scope:  0= only itself, 1 = department, 2=company,3=all compay*/
-        mDxQingCeGetParameters.put("try_scope","2");
-        mLujingGetParameters.put("try_scope","2");
-        mLujingCaculateGetParameters.put("try_scope","2");
+        mDxQingCeGetParameters.put("project_id", Main.project_id);
+        mLujingGetParameters.put("project_id", Main.project_id);
+        mLujingCaculateGetParameters.put("project_id", Main.project_id);
 
 
         initViewsLujing();
@@ -628,7 +628,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 Log.d("DeleteLujingHandler", "OKKK");
                 //删除后真实刷新列表
                 //remove the one and use the filter to get the lujing list again.
-                mNetwork.get(Constant.getLujingListUrl8083, mLujingGetParameters, new GetLujingListHandler( tabFlag ),(handler,msg2)->{
+
+                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler( tabFlag ),(handler,msg2)->{
                     handler.sendMessage(msg2);
                 });
 
@@ -1015,8 +1016,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                                 newPathParameters.put("name",  strNewPathName);
                                 //todo
-                                String theUrl = Constant.addNewLujingUrl.replace("{project_id}", String.valueOf(mProject.getId()));
-                                mNetwork.addNewLujing(Constant.addNewLujingUrl, newPathParameters, new NewLujingHandler(strNewPathName));
+                                String theUrl =  RequestUrlUtility.build(URL.POST_ADD_NEW_LUJING.replace("{project_id}",  project_id));
+                                mNetwork.addNewLujing(theUrl, newPathParameters, new NewLujingHandler(strNewPathName));
                             }
                         }
                     })
@@ -1245,8 +1246,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                 mLujingCaculateGetParameters.clear();
                 mLujingCaculateGetParameters.put("name", query);
-                mLujingCaculateGetParameters.put("try_scope","2");
-                mNetwork.get(Constant.getLujingListUrl8083, mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
+                mLujingCaculateGetParameters.put("project_id",Main.project_id);
+                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
                     handler.sendMessage(msg);
                 });
 
@@ -1277,9 +1278,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             public void onClick(View view) {
 
                 mLujingCaculateGetParameters.clear();
-                mLujingCaculateGetParameters.put("try_scope","2");
+                mLujingCaculateGetParameters.put("project_id",Main.project_id);
 
-                mNetwork.get(Constant.getLujingListUrl8083, mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
+                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
                     handler.sendMessage(msg);
                 });
             }
@@ -1365,8 +1366,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                 //clear the filters and get all the lujing list
                 mLujingGetParameters.clear();
-                mLujingGetParameters.put("try_scope","2");
-                mNetwork.get(Constant.getLujingListUrl8083, mLujingGetParameters, new GetLujingListHandler(tabFlag),
+                mLujingGetParameters.put("project_id",Main.project_id);
+                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),
                         (handler, msg) -> {
                             handler.sendMessage(msg);
                         });
@@ -1382,9 +1383,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                 mLujingGetParameters.clear();
                 mLujingGetParameters.put("name",query);
-                mLujingGetParameters.put("try_scope","2");
+                mLujingGetParameters.put("project_id",Main.project_id);
 
-                mNetwork.get(Constant.getLujingListUrl8083, mLujingGetParameters, new GetLujingListHandler(tabFlag),
+                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),
                         (handler, msg) -> {
                             handler.sendMessage(msg);
                         });
@@ -1550,14 +1551,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         else if (tabFlag.equals("在路径模型") )
         {
             //筛选界面负责将参数传进来！
-            mNetwork.get(Constant.getLujingListUrl8083, mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
+            mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
                 handler.sendMessage(msg2);
             });
 
         }
         else if (tabFlag.equals ("在计算中心"))
         {
-            mNetwork.get(Constant.getLujingListUrl8083, mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
+            mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
                 handler.sendMessage(msg2);
             });
 
@@ -1651,7 +1652,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 //                        transaction.show(mFragLujingMoxing);
 //                    }
                     stopScan();
-                    mNetwork.get(Constant.getLujingListUrl8083, mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
+                    mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
                         handler.sendMessage(msg2);
                     });
                 }
@@ -1667,7 +1668,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                     mLayoutCompute.setVisibility(View.VISIBLE);
                     // 在计算tab 默认看到的是计算路径电线长度，隐藏两点间距的
                     mLayoutComputeDistance.setVisibility(View.GONE);
-                    mNetwork.get(Constant.getLujingListUrl8083, mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
+                    mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
                         handler.sendMessage(msg);
                     });
 

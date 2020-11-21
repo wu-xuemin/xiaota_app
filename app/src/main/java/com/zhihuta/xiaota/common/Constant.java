@@ -44,13 +44,13 @@ public class Constant {
 
 
 //    public static final String getDxListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DIANXIAN_QINGCE_LIST;
-    public static final String getLujingListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_LUJING_LIST;
+    //public static final String getLujingListUrl8083 = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_LUJING_LIST;
     public static final String getFilterLujingListByQrUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_FILTER_LUJING_BY_QR;
     //public static final String getFilterLujingListByNameUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_FILTER_LUJING_BY_NAME;
 
     //获取 路径对应的间距列表 (编辑路径时，或 在基于已有路径 新建路径时)
     public static final String getLujingDistanceListUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_LUJING_DISTANCE_LIST;
-    public static final String addNewLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING;
+    //public static final String addNewLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING;
     public static final String addNewLujingCopyOnOldUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING_BASE_ON_OLD;
     public static final String addNewLujingBranchOnOldUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING_BRANCH_ON_OLD;
     public static final String addNewLujingSubOnOldUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.POST_ADD_NEW_LUJING_SUB_ON_OLD;
