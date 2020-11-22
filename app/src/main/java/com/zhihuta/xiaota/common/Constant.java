@@ -67,7 +67,7 @@ public class Constant {
     public static final String putDxOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.PUT_DX_OF_LUJING;
     public static final String getDxOfLujingInCaculateUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_CAL_WIRES_OF_LUJING;
 
-    public static final String getDxListOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DX_OF_LUJING;
+//    public static final String getDxListOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DX_OF_LUJING;
     public static final String getExportWiresOfLujingUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_EXPORT_WIRES_OF_LUJING;
     //public static final String getDistanceListByTwoDistanceUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_DISTANCE_LIST_BY_TWO_DISTANCE;
 

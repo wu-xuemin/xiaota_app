@@ -25,6 +25,8 @@ import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
+import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
 import java.io.Serializable;
@@ -46,9 +48,6 @@ public class RelatedDxActivity extends AppCompatActivity {
     private Network mNetwork;
     //从路径界面传给电线界面的路径信息，在电线界面查看已绑定的电线，也在该路径里添加电线
     private LujingData mLujing;
-
-    private GetDxListOfLujingHandler getDxListOfLujingHandler;
-    private int mRequestCodeFromMain =0 ; //标记, 来自Main界面， 是 全新新建/修改/基于旧的新建
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,12 +115,15 @@ public class RelatedDxActivity extends AppCompatActivity {
         /**
          * 获取该路径的电线列表
          */
-            LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-            mPostValue.put("account", "NO USE"); //paths/{lujingId}/wires?serial_number={dxSN}&parts_code={dxPartsCode}
-            String theUrl = Constant.getDxListOfLujingUrl.replace("{lujingId}", String.valueOf(mLujing.getId()));
-            theUrl = theUrl.replace("{dxSN}", "").replace("{dxPartsCode}", "");
+            LinkedHashMap<String, String> quereyValue = new LinkedHashMap<>();
+
+            String theUrl = RequestUrlUtility.build(URL.GET_DX_OF_LUJING
+                    .replace("{lujingId}", String.valueOf(mLujing.getId()))
+                    .replace("{dxSN}", "").replace("{dxPartsCode}", "")
+            );
+
             Log.i(TAG, "获取该路径的电线列表 " + theUrl);
-            mNetwork.fetchDxListOfLujing(theUrl, mPostValue, new GetDxListOfLujingHandler());///
+            mNetwork.fetchDxListOfLujing(theUrl, quereyValue, new GetRelatedDxListOfLujingHandler());///
 
     }
 
@@ -224,7 +226,7 @@ public class RelatedDxActivity extends AppCompatActivity {
     }
 
     @SuppressLint("HandlerLeak")
-    class GetDxListOfLujingHandler extends Handler {
+    class GetRelatedDxListOfLujingHandler extends Handler {
 
 
         @Override
