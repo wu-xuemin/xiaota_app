@@ -351,7 +351,7 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                             .show();
                     break;
                 case R.id.button_member_manager:
-                    Toast.makeText(ProjectsCenterActivity.this, "你点击了 项目 成员管理" + (position + 1), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ProjectsCenterActivity.this, "你点击了 项目 成员管理" + (position + 1), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(ProjectsCenterActivity.this, ProjectMemberManageActivity.class);
                     intent.putExtra("mProject", (Serializable) mProjectList.get(position));
                     startActivity(intent);

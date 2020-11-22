@@ -318,7 +318,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
             switch (v.getId()){
 
                 case R.id.checkBox_dx_to_be_select:
-                    Toast.makeText(RelateNewDxActivity.this,"你点击了 备选电线的 checkbox" + (position+1),Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(RelateNewDxActivity.this,"你点击了 备选电线的 checkbox" + (position+1),Toast.LENGTH_SHORT).show();
                     //对原先的值取反，比如原先是未选中则改为选中。
                     checkedList.set(position,  !checkedList.get(position) );
                     break;

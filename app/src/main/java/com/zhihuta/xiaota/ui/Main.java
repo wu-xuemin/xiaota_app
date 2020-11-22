@@ -1425,7 +1425,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                     tryGotoLujingActivity(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST, mLujingList.get(position));
                     break;
                 case R.id.button_delete_lujing:
-                    Toast.makeText(Main.this,"你点击了 删除路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(Main.this,"你点击了 删除路径 按钮"+(position+1),Toast.LENGTH_SHORT).show();
                     // 警告之后再删除
 //                    final EditText et = new EditText(Main.this);
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Main.this);
