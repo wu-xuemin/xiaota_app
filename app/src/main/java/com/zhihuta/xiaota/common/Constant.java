@@ -10,10 +10,10 @@ public class Constant {
      *  -- 已选电线界面 （在 新增路径-关联电线） -- 要显示 删除按钮
      *  -- 导出界面                           -- 只显示 型号、芯数截面、长度
      */
-    public static String FLAG_TOBE_SELECT_DX = "候选电线";
-    public static String FLAG_RELATED_DX = "已选电线";
-    public static String FLAG_QINGCE_DX = "清册中的电线"; // 这个和 候选电线 是一样的，只是显示在清册中。
-    public static String FLAG_EXPORT_DX = "按型号导出的电线";
+//    public static String FLAG_TOBE_SELECT_DX = "候选电线";
+//    public static String FLAG_RELATED_DX = "已选电线";
+//    public static String FLAG_QINGCE_DX = "清册中的电线"; // 这个和 候选电线 是一样的，只是显示在清册中。
+//    public static String FLAG_EXPORT_DX = "按型号导出的电线";
 
     public static String FLAG_LUJING_IN_LUJING = "路径模型中的路径";
     public static String FLAG_LUJING_IN_CALCULATE = "计算中心中的路径";
@@ -35,8 +35,11 @@ public class Constant {
     public static final int REQUEST_CODE_SCAN_TO_SUB_ON_PATH = REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH+1;   //路径中心，新建子路径路径扫码去获取一个 QR信息
     public static final int REQUEST_CODE_SCAN_TO_COPY_ON_PATH = REQUEST_CODE_SCAN_TO_SUB_ON_PATH+1;     //路径中心，新建分支路径扫码去获取一个 QR信息
 
+    public static final int REQUEST_CODE_DIANXIANQINCE_WIRES = 2;  //电线清册，电线清单
+    public static final int REQUEST_CODE_LUJING_RELATED_WIRES = 3;  //路径模型，已选电线清单
+    public static final int REQUEST_CODE_LUJING_CANDIDATE_WIRES = 4;  //计算中心，电线清单
     public static final int REQUEST_CODE_CALCULATE_WIRES = 5;  //计算中心，电线清单
-
+    public static final int REQUEST_CODE_CALCULATE_SUMMARIZE_WIRES = 6;  //计算中心，电线清单
 
 //    public static final String getUserListUrl8004 = URL.HTTP_HEAD + "172.20.10.3:8004"+ URL.GET_USER_LIST;
 //    public static final String loginUrl8004 = URL.HTTP_HEAD +"172.20.10.3:8004"+ URL.USER_LOGIN;

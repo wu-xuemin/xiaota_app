@@ -25,7 +25,6 @@ import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
-import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
 import java.io.Serializable;
@@ -98,6 +97,8 @@ public class RelatedDxActivity extends AppCompatActivity {
                                          public void onClick(View view) {
                                              Intent intent = new Intent(RelatedDxActivity.this, RelateNewDxActivity.class);
                                              intent.putExtra("mLujing", (Serializable) mLujing);
+                                             intent.putExtra("DianxianHasbeenRelated",mDianxianList);
+
                                              startActivityForResult(intent,RELATE_NEW_DX);
                                          }
                                      });
@@ -130,7 +131,7 @@ public class RelatedDxActivity extends AppCompatActivity {
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mDxRV.setLayoutManager(manager);
-        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList,this);
+        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList,this,Constant.REQUEST_CODE_LUJING_RELATED_WIRES);
         mDxRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mDxRV.setAdapter(mDianXianAdapter);
 
@@ -243,10 +244,8 @@ public class RelatedDxActivity extends AppCompatActivity {
                     if (mDianxianList.size() == 0) {
                         Toast.makeText(RelatedDxActivity.this, "已关联的电线数量为0！", Toast.LENGTH_SHORT).show();
                     } else {
-                        for (int k = 0; k < mDianxianList.size(); k++) {
-                            mDianxianList.get(k).setFlag(Constant.FLAG_RELATED_DX);
-                        }
-                        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, RelatedDxActivity.this);
+
+                        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, RelatedDxActivity.this,Constant.REQUEST_CODE_LUJING_RELATED_WIRES);
                         mDxRV.addItemDecoration(new DividerItemDecoration(RelatedDxActivity.this, DividerItemDecoration.VERTICAL));
                         mDxRV.setAdapter(mDianXianAdapter);
                         mDianXianAdapter.notifyDataSetChanged();

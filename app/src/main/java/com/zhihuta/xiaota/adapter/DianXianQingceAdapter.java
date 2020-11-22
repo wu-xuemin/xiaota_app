@@ -21,12 +21,15 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
 
     private static String TAG = "QingceAdapter";
 
+    private int mRequestCode = 0;
+
     private List<DianxianQingCeData> dataList;//数据源
     private Context context;//上下文
     /// 这里，传数据
-    public DianXianQingceAdapter(List<DianxianQingCeData> list, Context context) {
+    public DianXianQingceAdapter(List<DianxianQingCeData> list, Context context, int requestCode) {
         this.dataList = list;
         this.context = context;
+        mRequestCode = requestCode;
     }
 
     public void updateDataSoruce(List<DianxianQingCeData> list)
@@ -75,20 +78,21 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
         /**
          * 不同的数据，显示不同的内容，比如在备选电线列表里，不需要显示删除按钮
          */
-        if(dataList.get(position).getFlag().equals(Constant.FLAG_QINGCE_DX)) { //清册
+        if(mRequestCode == Constant.REQUEST_CODE_DIANXIANQINCE_WIRES) { //清册
             itemView.deleteBt.setVisibility(View.VISIBLE);
             itemView.dxTobeSelectCheckBox.setVisibility(View.GONE);
             itemView.modelTv.setVisibility(View.GONE);
             itemView.steelHoseRedundancyTv.setVisibility(View.GONE);
             itemView.xinshuJiemianTv.setVisibility(View.GONE);
             itemView.dxLengthTv.setVisibility(View.GONE);
-        } else if(dataList.get(position).getFlag().equals(Constant.FLAG_RELATED_DX) ) { // 已关联
+        } else if(mRequestCode == Constant.REQUEST_CODE_LUJING_RELATED_WIRES) { // 路径模型中已关联
             itemView.deleteBt.setVisibility(View.VISIBLE);
             itemView.dxTobeSelectCheckBox.setVisibility(View.GONE);
             itemView.modelTv.setVisibility(View.GONE);
             itemView.steelHoseRedundancyTv.setVisibility(View.GONE);
             itemView.xinshuJiemianTv.setVisibility(View.GONE);
-        } else if(dataList.get(position).getFlag().equals(Constant.FLAG_TOBE_SELECT_DX)) { // 可选
+        }
+        else if(mRequestCode == Constant.REQUEST_CODE_LUJING_CANDIDATE_WIRES) { // 路径模型中可选
             itemView.deleteBt.setVisibility(View.GONE);
             itemView.dxTobeSelectCheckBox.setVisibility(View.VISIBLE);
 
@@ -96,7 +100,16 @@ public class DianXianQingceAdapter extends RecyclerView.Adapter<DianXianQingceAd
             itemView.steelHoseRedundancyTv.setVisibility(View.GONE);
             itemView.xinshuJiemianTv.setVisibility(View.GONE);
             itemView.dxLengthTv.setVisibility(View.GONE);
-        } else if (dataList.get(position).getFlag().equals(Constant.FLAG_EXPORT_DX)) { //按型号导出
+        }
+        else if (mRequestCode== Constant.REQUEST_CODE_CALCULATE_WIRES)// 计算中心已关联的
+        {
+            itemView.deleteBt.setVisibility(View.GONE);
+            itemView.dxTobeSelectCheckBox.setVisibility(View.GONE);
+            itemView.modelTv.setVisibility(View.GONE);
+            itemView.steelHoseRedundancyTv.setVisibility(View.GONE);
+            itemView.xinshuJiemianTv.setVisibility(View.GONE);
+        }
+        else if (mRequestCode == Constant.REQUEST_CODE_CALCULATE_SUMMARIZE_WIRES) { //按型号导出
             itemView.dianxianBianhaoTv.setVisibility(View.GONE);
             itemView.qidianTv.setVisibility(View.GONE);
             itemView.zhongdianTv.setVisibility(View.GONE);

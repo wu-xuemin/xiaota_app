@@ -111,10 +111,8 @@ public class WiresInCalculateActivity extends AppCompatActivity {
                     if (mDianxianList.size() == 0) {
                         Toast.makeText(WiresInCalculateActivity.this, "已关联的电线数量为0！", Toast.LENGTH_SHORT).show();
                     } else {
-                        for (int k = 0; k < mDianxianList.size(); k++) {
-                            mDianxianList.get(k).setFlag(Constant.FLAG_RELATED_DX);
-                        }
-                        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, WiresInCalculateActivity.this);
+
+                        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, WiresInCalculateActivity.this,Constant.REQUEST_CODE_CALCULATE_WIRES);
                         mDxRV.addItemDecoration(new DividerItemDecoration(WiresInCalculateActivity.this, DividerItemDecoration.VERTICAL));
                         mDxRV.setAdapter(mDianXianAdapter);
                         mDianXianAdapter.notifyDataSetChanged();
@@ -131,16 +129,6 @@ public class WiresInCalculateActivity extends AppCompatActivity {
         }
     }
 
-    private void showDxList(){
-        //电线列表
-        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList,this);
-        mDxRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        mDxRV.setAdapter(mDianXianAdapter);
-
-        // 设置item及item中控件的点击事件
-        mDianXianAdapter.setOnItemClickListener(MyItemClickListenerDx);
-        mDianXianAdapter.updateDataSoruce(mDianxianList);
-    }
     /**
      * 路径Adapter里item的控件点击监听事件
      */

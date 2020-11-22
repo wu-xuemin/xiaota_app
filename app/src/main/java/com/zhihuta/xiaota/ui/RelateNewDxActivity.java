@@ -20,6 +20,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
@@ -28,6 +29,7 @@ import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.basic.Wires;
 import com.zhihuta.xiaota.bean.response.GetWiresResponse;
+import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
@@ -40,6 +42,8 @@ import java.util.LinkedHashMap;
 public class RelateNewDxActivity extends AppCompatActivity {
 
     private static String TAG = "RelateNewDxActivity";
+
+    private ArrayList<DianxianQingCeData> mDianxianHasbeenRelated;
     private ArrayList<DianxianQingCeData> mDianxianTobeSelectList;
     private Button mAddBt;
     private Button mBackBt;
@@ -61,6 +65,14 @@ public class RelateNewDxActivity extends AppCompatActivity {
         setContentView(R.layout.activity_relate_new_dx);
         Intent intent = getIntent();
         mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
+
+        mDianxianHasbeenRelated = new ArrayList<>();
+        Serializable serializable = intent.getExtras().getSerializable("DianxianHasbeenRelated");
+        if (serializable != null)
+        {
+            mDianxianHasbeenRelated = (ArrayList<DianxianQingCeData>)serializable;
+        }
+
         //返回前页按钮
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -98,7 +110,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
         /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
         mPostValue.put("project_id",Main.project_id);
         String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-        mNetwork.get(url, mPostValue, new GetDxListHandler(),(handler, msg)->{
+        mNetwork.get(url, mPostValue, new GetCandidateDxListHandler(),(handler, msg)->{
             handler.sendMessage(msg);
         });
 
@@ -114,7 +126,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
                 for(int k=0; k< checkedList.size(); k++){
                     if(checkedList.get(k)){
                         //该电线由待选 改为 已选
-                        mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_RELATED_DX);
+                        //mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_RELATED_DX);
                         mCheckedDxList.add(mDianxianTobeSelectList.get(k));
                     }
 
@@ -159,7 +171,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
                 mDxQingCeGetParameters.put("project_id",Main.project_id);
 
                 String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+                mNetwork.get(url, mDxQingCeGetParameters, new GetCandidateDxListHandler(),(handler, msg)->{
                     handler.sendMessage(msg);
                 });
                 return false;
@@ -191,7 +203,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
 //todo
     }
     @SuppressLint("HandlerLeak")
-    class GetDxListHandler extends Handler {
+    class GetCandidateDxListHandler extends Handler {
 
         private boolean bIsGetting = false;
 
@@ -227,34 +239,49 @@ public class RelateNewDxActivity extends AppCompatActivity {
 
                         for (Wires wire : responseData.wires) {
 
-                            DianxianQingCeData dianxianQingCeData = new DianxianQingCeData();
-                            dianxianQingCeData.setId(wire.getId());
-                            dianxianQingCeData.setEnd_point(wire.getEndPoint());
-                            dianxianQingCeData.setHose_redundancy(Double.toString(wire.getHoseRedundancy()));
-                            dianxianQingCeData.setLength(wire.getLength());
-                            dianxianQingCeData.setParts_code(wire.getPartsCode());
-                            dianxianQingCeData.setSerial_number(wire.getSerialNumber());
-                            dianxianQingCeData.setStart_point(wire.getStartPoint());
-                            dianxianQingCeData.setSteel_redundancy(Double.toString(wire.getSteelRedundancy()));
-                            dianxianQingCeData.setWickes_cross_section(wire.getWickesCrossSection());
+                            boolean bFound = false;
+                            for (DianxianQingCeData hasRelated : mDianxianHasbeenRelated)
+                            {
+                                if (hasRelated.getId() == wire.getId().intValue())
+                                {
+                                    bFound = true;
+                                    break;
+                                }
+                            }
 
-                            mDianxianTobeSelectList.add( dianxianQingCeData);
+                            if (!bFound)
+                            {
+                                DianxianQingCeData dianxianQingCeData = new DianxianQingCeData();
+                                dianxianQingCeData.setId(wire.getId());
+                                dianxianQingCeData.setEnd_point(wire.getEndPoint());
+                                dianxianQingCeData.setHose_redundancy(Double.toString(wire.getHoseRedundancy()));
+                                dianxianQingCeData.setLength(wire.getLength());
+                                dianxianQingCeData.setParts_code(wire.getPartsCode());
+                                dianxianQingCeData.setSerial_number(wire.getSerialNumber());
+                                dianxianQingCeData.setStart_point(wire.getStartPoint());
+                                dianxianQingCeData.setSteel_redundancy(Double.toString(wire.getSteelRedundancy()));
+                                dianxianQingCeData.setWickes_cross_section(wire.getWickesCrossSection());
+
+                                mDianxianTobeSelectList.add( dianxianQingCeData);
+
+                                mDianxianHasbeenRelated.add(dianxianQingCeData);
+                            }
                         }
 
-                        Log.d(TAG, "电线数量: size: " + mDianxianTobeSelectList.size());
+                        Log.d(TAG, "可选电线数量: size: " + mDianxianTobeSelectList.size());
 
                         if (mDianxianTobeSelectList.size() == 0) {
-                            Toast.makeText(RelateNewDxActivity.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RelateNewDxActivity.this, "可选电线数量为0！", Toast.LENGTH_SHORT).show();
                         }
 
                         for (int k = 0; k < mDianxianTobeSelectList.size(); k++) {
-                            mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_TOBE_SELECT_DX);
+                            //mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_TOBE_SELECT_DX);
                             checkedList.add(false); //初始时都是未选中。
                         }
 
                         if (mDianXianToBeSelectedAdapter == null)
                         {
-                            mDianXianToBeSelectedAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList, RelateNewDxActivity.this);
+                            mDianXianToBeSelectedAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList, RelateNewDxActivity.this, Constant.REQUEST_CODE_LUJING_CANDIDATE_WIRES);
                             mDxRV.addItemDecoration(new DividerItemDecoration(RelateNewDxActivity.this, DividerItemDecoration.VERTICAL));
                             mDxRV.setAdapter(mDianXianToBeSelectedAdapter);
                             mDianXianToBeSelectedAdapter.setOnItemClickListener(MyItemClickListener);

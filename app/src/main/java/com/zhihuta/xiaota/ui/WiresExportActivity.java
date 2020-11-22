@@ -83,11 +83,11 @@ public class WiresExportActivity extends AppCompatActivity {
         String theUrl = Constant.getExportWiresOfLujingUrl.replace("{path_id}", String.valueOf(mLujing.getId()));
 //        theUrl = theUrl.replace("{dxSN}","").replace("{dxPartsCode}","");
         Log.i(TAG,"按型号导出该路径的数据 " + theUrl);
-        mNetwork.fetchExportDataOfLujing(theUrl, mPostValue, new GetDxListOfLujingHandler());///
+        mNetwork.fetchExportDataOfLujing(theUrl, mPostValue, new GetSummarizeDxListOfLujingHandler());///
     }
 
     @SuppressLint("HandlerLeak")
-    class GetDxListOfLujingHandler extends Handler {
+    class GetSummarizeDxListOfLujingHandler extends Handler {
         @Override
         public void handleMessage(final Message msg) {
 
@@ -102,10 +102,8 @@ public class WiresExportActivity extends AppCompatActivity {
                     if (mDianxianList.size() == 0) {
                         Toast.makeText(WiresExportActivity.this, "已关联的电线数量为0！", Toast.LENGTH_SHORT).show();
                     } else {
-                        for (int k = 0; k < mDianxianList.size(); k++) {
-                            mDianxianList.get(k).setFlag(Constant.FLAG_EXPORT_DX);
-                        }
-                        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, WiresExportActivity.this);
+
+                        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, WiresExportActivity.this,Constant.REQUEST_CODE_CALCULATE_SUMMARIZE_WIRES);
                         mDxRV.addItemDecoration(new DividerItemDecoration(WiresExportActivity.this, DividerItemDecoration.VERTICAL));
                         mDxRV.setAdapter(mDianXianAdapter);
                         mDianXianAdapter.notifyDataSetChanged();

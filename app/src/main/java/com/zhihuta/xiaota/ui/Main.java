@@ -648,16 +648,11 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     @SuppressLint("HandlerLeak")
     class GetDxListHandler extends Handler {
 
-        private boolean bIsGetting = false;
+        private int mRequestCode=0;
 
-        public boolean getIsGetting()
+        public GetDxListHandler( int requestCode)
         {
-            return bIsGetting;
-        }
-
-        public void setIsGetting(boolean getting)
-        {
-            bIsGetting = getting;
+            this.mRequestCode=requestCode;
         }
 
         @Override
@@ -702,13 +697,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                             Toast.makeText(Main.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
                         }
 
-                        for (int k = 0; k < mDianxianQingCeList.size(); k++) {
-                            mDianxianQingCeList.get(k).setFlag(Constant.FLAG_QINGCE_DX);
-                        }
-
                         if (mDxQingceAdapter == null)
                         {
-                            mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this);
+                            mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this,mRequestCode);
                             mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
                             mQingceRV.setAdapter(mDxQingceAdapter);
                         }
@@ -738,7 +729,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 Log.d("电线获取 NG:", ex.getMessage());
             }
             finally {
-                setIsGetting(false);
+
             }
         }//handle message
 
@@ -864,7 +855,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 mDxQingCeGetParameters.clear();  //重置查询条件
                 mDxQingCeGetParameters.put("project_id",Main.project_id);
                 String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg)->{
                     handler.sendMessage(msg);
                 });
             }
@@ -878,7 +869,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 mDxQingCeGetParameters.put("sn", query);
                 mDxQingCeGetParameters.put("project_id", Main.project_id);
                 String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg)->{
                     handler.sendMessage(msg);
                 });
                 return false;
@@ -983,7 +974,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
         if (mDxQingceAdapter == null)
         {
-            mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this);
+            mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this,Constant.REQUEST_CODE_DIANXIANQINCE_WIRES);
             mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
             mQingceRV.setAdapter(mDxQingceAdapter);
         }
@@ -1555,7 +1546,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                                                     Toast.makeText(Main.this, "删除电线成功！", Toast.LENGTH_SHORT).show();
 
                                                     String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-                                                    mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg2)->{
+                                                    mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg2)->{
                                                         handler.sendMessage(msg2);
                                                     });
 
@@ -1609,7 +1600,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         if (tabFlag.equals("在电线清册") )
         {
             String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-            mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+            mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg)->{
                 handler.sendMessage(msg);
             });
         }
@@ -1695,7 +1686,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                     //get list
                     String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-                    mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg)->{
+                    mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg)->{
                         handler.sendMessage(msg);
                     });
                 }
