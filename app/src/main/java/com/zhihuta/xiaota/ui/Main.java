@@ -55,6 +55,7 @@ import com.zhihuta.xiaota.bean.basic.ProjectData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.basic.Wires;
 
+import com.zhihuta.xiaota.bean.response.BaseResponse;
 import com.zhihuta.xiaota.bean.response.GetDistanceResponse;
 import com.zhihuta.xiaota.bean.response.GetWiresResponse;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
@@ -1520,6 +1521,67 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                             .setView(view)
                             .setPositiveButton("关闭",null)
 //                            .setNegativeButton("OK", null)
+                            .show();
+                    break;
+                case R.id.buttonDxDelete:
+                    alertDialogBuilder = new AlertDialog.Builder(Main.this);
+                    alertDialogBuilder.setTitle("确认删除？")
+                            .setPositiveButton("取消",null)
+                            .setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    String url= RequestUrlUtility.build(URL.DEL_DIANXIAN_QINGCE_LIST.replace("{project_id}",Main.project_id));
+                                    LinkedHashMap deleteParame = new LinkedHashMap();
+
+                                    //like [1,5,6].
+                                    String strIds = "["+ mDianxianQingCeList.get(position).getId()+"]";
+                                    deleteParame.put("ids",strIds);
+
+                                    mNetwork.delete(url, deleteParame, new Handler(){
+                                        @Override
+                                        public void handleMessage(@NonNull Message msg) {
+
+                                            String errorMsg = "";
+
+                                            if (msg.what == Network.OK) {
+                                                Result result= (Result)(msg.obj);
+
+                                                BaseResponse responseData = CommonUtility.objectToJavaObject(result.getData(), BaseResponse.class);
+
+                                                if (responseData != null && responseData.errorCode == 0)
+                                                {//reget the data.
+
+                                                    Toast.makeText(Main.this, "删除电线成功！", Toast.LENGTH_SHORT).show();
+
+                                                    String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+                                                    mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(),(handler, msg2)->{
+                                                        handler.sendMessage(msg2);
+                                                    });
+
+                                                }
+                                                else
+                                                {
+                                                    errorMsg =  "删除电线失败:"+ result.getCode() + result.getMessage();
+                                                    Log.d(TAG, errorMsg );
+                                                }
+                                            }
+                                            else
+                                            {
+                                                errorMsg = (String) msg.obj;
+                                            }
+
+                                            if (!errorMsg.isEmpty())
+                                            {
+                                                Log.d("删除电线失败 NG:", errorMsg);
+                                                Toast.makeText(Main.this, "删除电线失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    } ,(hanlder, msg)->{
+                                        hanlder.sendMessage(msg);
+                                    });
+                                }
+                            })
                             .show();
                     break;
                 default:
