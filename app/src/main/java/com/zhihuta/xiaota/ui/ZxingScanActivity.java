@@ -512,64 +512,51 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             ////////////////
 
             String errorMsg = "";
+            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
 
-            if (msg.what == Network.OK) {
-                Result result= (Result)(msg.obj);
-
-                PathsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), PathsResponse.class);
-
-                if (responseData != null &&responseData.errorCode == 0)
-                {
-                    mFilterLujingList = new ArrayList<>();
-
-                    for (PathGetObject pathObj : responseData.paths) {
-
-                        LujingData lujingData = new LujingData();
-                        lujingData.setId( pathObj.id );
-                        lujingData.setName(pathObj.name);
-                        lujingData.setCreator(pathObj.creator);
-                        //lujingData.setLujingCaozuo(pathObj.);
-                        lujingData.setCreate_time(pathObj.createTime);
-
-                        mFilterLujingList.add( lujingData);
-                    }
-
-                    Log.d(TAG, "获取路径: size: " + mFilterLujingList.size());
-
-                    if (mFilterLujingList.size() == 0) {
-                        Toast.makeText(ZxingScanActivity.this, "筛选得到路径数量为0！", Toast.LENGTH_SHORT).show();
-
-                        return;
-                    }
-
-                    ShowMessage.showToast(ZxingScanActivity.this, "筛选 得到路径数量：" + mFilterLujingList.size(), ShowMessage.MessageDuring.SHORT);
-                    /**
-                     * 把筛选结果返回给主页面
-                     */
-
-                    Intent intent = new Intent();
-                    intent.putExtra("getParameters", getParameters);
-                    intent.putExtra("mFilterLujingList", mFilterLujingList);
-                    setResult(RESULT_OK, intent);
-
-                    finish();
-                }
-                else
-                {
-                    errorMsg =  "路径获取异常:"+ result.getCode() + result.getMessage();
-                    Log.d(TAG, errorMsg );
-                }
-            }
-            else
-            {
-                errorMsg = (String) msg.obj;
-            }
-
-            if (!errorMsg.isEmpty())
+            if (errorMsg != null)
             {
                 Log.d("路径获取 NG:", errorMsg);
-                Toast.makeText(ZxingScanActivity.this, "筛选路径出错！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ZxingScanActivity.this, "筛选路径出错！" + errorMsg, Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            Result result= (Result)(msg.obj);
+
+            PathsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), PathsResponse.class);
+            mFilterLujingList = new ArrayList<>();
+
+            for (PathGetObject pathObj : responseData.paths) {
+
+                LujingData lujingData = new LujingData();
+                lujingData.setId( pathObj.id );
+                lujingData.setName(pathObj.name);
+                lujingData.setCreator(pathObj.creator);
+                //lujingData.setLujingCaozuo(pathObj.);
+                lujingData.setCreate_time(pathObj.createTime);
+
+                mFilterLujingList.add( lujingData);
+            }
+
+            Log.d(TAG, "获取路径: size: " + mFilterLujingList.size());
+
+            if (mFilterLujingList.size() == 0) {
+                Toast.makeText(ZxingScanActivity.this, "筛选得到路径数量为0！", Toast.LENGTH_SHORT).show();
+
+                return;
+            }
+
+            ShowMessage.showToast(ZxingScanActivity.this, "筛选 得到路径数量：" + mFilterLujingList.size(), ShowMessage.MessageDuring.SHORT);
+            /**
+             * 把筛选结果返回给主页面
+             */
+
+            Intent intent = new Intent();
+            intent.putExtra("getParameters", getParameters);
+            intent.putExtra("mFilterLujingList", mFilterLujingList);
+            setResult(RESULT_OK, intent);
+
+            finish();
             ////////////////
         }
     }
@@ -589,48 +576,9 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
             String errorMsg = "";
 
-            if (msg.what == Network.OK) {
-                Result result= (Result)(msg.obj);
+            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
 
-                pathContainsQRResponse responseData = CommonUtility.objectToJavaObject(result.getData(), pathContainsQRResponse.class);
-
-                if (responseData != null &&responseData.errorCode == 0)
-                {
-                    ArrayList<DistanceData> tempList = new ArrayList<>();
-
-                    for (Integer value : responseData.not_in_path) {
-
-                        for (DistanceData tempValue :mScanResultDistanceList)
-                        {
-                            if (tempValue.getQr_id() == value.intValue())
-                            {
-                                tempList.add(tempValue);
-                            }
-                        }
-                    }
-
-                    for(DistanceData v: tempList)
-                    {
-                        mScanResultDistanceList.remove(v);
-                    }
-
-                    if (!responseData.not_in_path.isEmpty())
-                    {
-                        ShowMessage.showToast(ZxingScanActivity.this, "二维码id " +tempList.get(0).getQr_id() + "不在路径中：" , ShowMessage.MessageDuring.SHORT);
-                    }
-                }
-                else
-                {
-                    errorMsg =  "查找路径异常:"+ result.getCode() + result.getMessage();
-                    Log.d(TAG, errorMsg );
-                }
-            }
-            else
-            {
-                errorMsg = (String) msg.obj;
-            }
-
-            if (!errorMsg.isEmpty())
+            if (errorMsg != null)
             {
                 if (!mScanResultDistanceList.isEmpty())
                 {
@@ -643,6 +591,35 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
                 Log.d("路径获取 NG:", errorMsg);
                 Toast.makeText(ZxingScanActivity.this, "查找路径出错！", Toast.LENGTH_SHORT).show();
+
+                return;
+            }
+
+            Result result= (Result)(msg.obj);
+
+            pathContainsQRResponse responseData = CommonUtility.objectToJavaObject(result.getData(), pathContainsQRResponse.class);
+
+            ArrayList<DistanceData> tempList = new ArrayList<>();
+
+            for (Integer value : responseData.not_in_path) {
+
+                for (DistanceData tempValue :mScanResultDistanceList)
+                {
+                    if (tempValue.getQr_id() == value.intValue())
+                    {
+                        tempList.add(tempValue);
+                    }
+                }
+            }
+
+            for(DistanceData v: tempList)
+            {
+                mScanResultDistanceList.remove(v);
+            }
+
+            if (!responseData.not_in_path.isEmpty())
+            {
+                ShowMessage.showToast(ZxingScanActivity.this, "二维码id " +tempList.get(0).getQr_id() + "不在路径中：" , ShowMessage.MessageDuring.SHORT);
             }
             ////////////////
         }

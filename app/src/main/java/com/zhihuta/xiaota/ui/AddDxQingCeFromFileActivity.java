@@ -33,6 +33,7 @@ import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.util.StringUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 //import org.apache.poi.ss.usermodel.Workbook;
 //import org.apache.poi.ss.usermodel.Workbook;
@@ -104,7 +105,7 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
                     if (fileuri != null) {
 //                        InputStream inputStream = ContentResolver.get(uri) //openInputStream
 //                        // 执行文件读取操作
-                        Toast.makeText(this, "文件路径："+ fileuri.getPath().toString(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(this, "文件路径："+ fileuri.getPath().toString(), Toast.LENGTH_SHORT).show();
 //uri.getEncodedPath()
 //                        uri:  content://com.android.externalstorage.documents/document/primary%3ADownload%2Fdx.xlsx
                         //readExcel(uri.getPath());
@@ -304,33 +305,28 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
 
             try {
 
-                if (msg.what == Network.OK) {
-                    Result result= (Result)(msg.obj);
-                    BaseResponse baseResponse = CommonUtility.objectToJavaObject(result.getData(),BaseResponse.class);
-
-                    if (baseResponse == null || baseResponse.errorCode!= 0 )
-                    {
-                        errorMsg = "服务器错误："+ baseResponse.errorCode + result.getMessage();
-                    }
-                    else
-                    {
-                        Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线成功！" + errorMsg, Toast.LENGTH_LONG).show();
-
-                        AddDxQingCeFromFileActivity.this.finish();
-
-                        return;
-                    }
-                }
-                else
-                {
-                    errorMsg = (String) msg.obj;
-                }
-
-                if (!errorMsg.isEmpty())
-                {
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg!= null)
+                {//failed
                     Log.d("导入电线失败:", errorMsg);
                     Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线失败！" + errorMsg, Toast.LENGTH_LONG).show();
+
+                    return;
                 }
+
+                Result result= (Result)(msg.obj);
+                BaseResponse baseResponse = CommonUtility.objectToJavaObject(result.getData(),BaseResponse.class);
+
+                Toast.makeText(AddDxQingCeFromFileActivity.this, "导入电线成功！", Toast.LENGTH_LONG).show();
+
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        //do something
+                        AddDxQingCeFromFileActivity.this.finish();
+                    }
+                }, 2000);    //延时2s执行
             }
             catch (Exception ex)
             {

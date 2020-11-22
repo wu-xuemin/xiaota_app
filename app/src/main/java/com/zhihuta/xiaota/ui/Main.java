@@ -429,108 +429,95 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 //                mLoadingProcessDialog.dismiss();
 //            }
             String errorMsg = "";
-            if (msg.what == Network.OK) {
-                Result result= (Result)(msg.obj);
-                PathsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), PathsResponse.class);
-                if (responseData != null &&responseData.errorCode == 0) {
-                    mLujingList = new ArrayList<>();
-
-                    for (PathGetObject pathObj : responseData.paths) {
-
-                        LujingData lujingData = new LujingData();
-                        lujingData.setId(pathObj.id);
-                        lujingData.setName(pathObj.name);
-                        lujingData.setCreator(pathObj.creator);
-                        //lujingData.setLujingCaozuo(pathObj.);
-                        lujingData.setCreate_time(pathObj.createTime);
-
-                        mLujingList.add(lujingData);
-                    }
-
-                    Log.d(TAG, "获取路径: size: " + mLujingList.size());
-
-                    if (mLujingList.size() == 0) {
-                        Toast.makeText(Main.this, "路径数量为0！", Toast.LENGTH_SHORT).show();
-                    }
-
-                    String strModeIdentifier = "";
-                    if (strMode.equals("在计算中心"))////在计算中心,在路径模型,在电线清册
-                    {
-                        strModeIdentifier = Constant.FLAG_LUJING_IN_CALCULATE;
-                        if (mLujingInCalculateAdapter == null)
-                        {
-                            mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
-                            mDividerItemDecorationInCalcuate = null;
-                            mDividerItemDecorationInCalcuate = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
-                            mLujingInCalculateRV.addItemDecoration(mDividerItemDecorationInCalcuate);
-                            mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
-
-                            // 设置item及item中控件的点击事件
-                            mLujingInCalculateAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
-                        }
-
-
-                        if (mLujingInCalculateAdapter != null && !mLujingInCalculateAdapter.getStrMode().equals(tabFlag)) {//mode is switched,
-                            mLujingInCalculateAdapter.setOnItemClickListener(null);
-                            mLujingInCalculateRV.removeItemDecoration(mDividerItemDecorationInCalcuate);
-                            mDividerItemDecorationInCalcuate = null;
-                            mDividerItemDecorationInCalcuate = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
-                            mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
-
-                            mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
-                            mLujingInCalculateAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
-                            mLujingInCalculateAdapter.updateDataSource(mLujingList, strModeIdentifier);
-                        }
-
-
-                    } else if (strMode.equals("在路径模型")) {
-
-                        strModeIdentifier = Constant.FLAG_LUJING_IN_LUJING;
-
-                        if (mLujingAdapter == null)
-                        {
-                            mLujingAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
-                            mDividerItemDecoration=null;
-                            mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
-                            mLujingRV.addItemDecoration(mDividerItemDecoration);
-                            mLujingRV.setAdapter(mLujingAdapter);
-
-                            // 设置item及item中控件的点击事件
-                            mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
-                        }
-
-                        if (mLujingAdapter != null && !mLujingAdapter.getStrMode().equals(tabFlag)) {//mode is switched,
-                            mLujingAdapter.setOnItemClickListener(null);
-                            mLujingRV.removeItemDecoration(mDividerItemDecoration);
-                            mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
-                            mLujingAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
-                            mLujingRV.addItemDecoration(mDividerItemDecoration);
-                            mLujingRV.setAdapter(mLujingAdapter);
-
-                            // 设置item及item中控件的点击事件
-                            mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
-                            mLujingAdapter.updateDataSource(mLujingList, strModeIdentifier);
-                        }
-                    }
-                }
-                else
-                {
-                    errorMsg =  "路径获取异常:"+ result.getCode() + result.getMessage();
-                    Log.d(TAG, errorMsg );
-                }
-            }
-            else
-            {
-                errorMsg = (String) msg.obj;
-            }
-
-            if (!errorMsg.isEmpty())
+            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+            if (errorMsg != null)
             {
                 Log.d("路径获取 NG:", errorMsg);
                 Toast.makeText(Main.this, "路径获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
-             }
+                return;
+            }
 
- 
+
+            Result result= (Result)(msg.obj);
+            PathsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), PathsResponse.class);
+            mLujingList = new ArrayList<>();
+
+            for (PathGetObject pathObj : responseData.paths) {
+
+                LujingData lujingData = new LujingData();
+                lujingData.setId(pathObj.id);
+                lujingData.setName(pathObj.name);
+                lujingData.setCreator(pathObj.creator);
+                //lujingData.setLujingCaozuo(pathObj.);
+                lujingData.setCreate_time(pathObj.createTime);
+
+                mLujingList.add(lujingData);
+            }
+
+            Log.d(TAG, "获取路径: size: " + mLujingList.size());
+
+            if (mLujingList.size() == 0) {
+                Toast.makeText(Main.this, "路径数量为0！", Toast.LENGTH_SHORT).show();
+            }
+
+            String strModeIdentifier = "";
+            if (strMode.equals("在计算中心"))////在计算中心,在路径模型,在电线清册
+            {
+                strModeIdentifier = Constant.FLAG_LUJING_IN_CALCULATE;
+                if (mLujingInCalculateAdapter == null)
+                {
+                    mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
+                    mDividerItemDecorationInCalcuate = null;
+                    mDividerItemDecorationInCalcuate = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+                    mLujingInCalculateRV.addItemDecoration(mDividerItemDecorationInCalcuate);
+                    mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
+
+                    // 设置item及item中控件的点击事件
+                    mLujingInCalculateAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                }
+
+                if (mLujingInCalculateAdapter != null && !mLujingInCalculateAdapter.getStrMode().equals(tabFlag)) {//mode is switched,
+                    mLujingInCalculateAdapter.setOnItemClickListener(null);
+                    mLujingInCalculateRV.removeItemDecoration(mDividerItemDecorationInCalcuate);
+                    mDividerItemDecorationInCalcuate = null;
+                    mDividerItemDecorationInCalcuate = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+                    mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
+
+                    mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
+                    mLujingInCalculateAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                    mLujingInCalculateAdapter.updateDataSource(mLujingList, strModeIdentifier);
+                }
+
+
+            } else if (strMode.equals("在路径模型")) {
+
+                strModeIdentifier = Constant.FLAG_LUJING_IN_LUJING;
+
+                if (mLujingAdapter == null)
+                {
+                    mLujingAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
+                    mDividerItemDecoration=null;
+                    mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+                    mLujingRV.addItemDecoration(mDividerItemDecoration);
+                    mLujingRV.setAdapter(mLujingAdapter);
+
+                    // 设置item及item中控件的点击事件
+                    mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                }
+
+                if (mLujingAdapter != null && !mLujingAdapter.getStrMode().equals(tabFlag)) {//mode is switched,
+                    mLujingAdapter.setOnItemClickListener(null);
+                    mLujingRV.removeItemDecoration(mDividerItemDecoration);
+                    mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+                    mLujingAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
+                    mLujingRV.addItemDecoration(mDividerItemDecoration);
+                    mLujingRV.setAdapter(mLujingAdapter);
+
+                    // 设置item及item中控件的点击事件
+                    mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                    mLujingAdapter.updateDataSource(mLujingList, strModeIdentifier);
+                }
+            }
         }
     }
 
@@ -557,64 +544,50 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 //            }
 
             String errorMsg = "";
-
-            if (msg.what == Network.OK) {
-                Result result= (Result)(msg.obj);
-
-                GetDistanceResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetDistanceResponse.class);
-
-                if (responseData != null && responseData.errorCode == 0)
-                {
-                    mDistanceList = new ArrayList<>();
-                    int sumOfDistances = 0;
-                    for (PathGetDistanceQr distanceObj : responseData.qr_list) {
-                        DistanceData distanceData = new DistanceData();
-                        distanceData.setQr_id( distanceObj.qrId );
-                        distanceData.setDistance(String.valueOf(distanceObj.distance));
-                        distanceData.setName(distanceObj.name);
-                        distanceData.setQr_sequence(distanceObj.qrSequence);
-                        String strSerialNumber = distanceObj.serialNumber;
-                            //strSerialNumber = strSerialNumber.substring(0,distanceObj.serialNumber.length()-4);
-                        distanceData.setSerial_number(strSerialNumber);
-                        distanceData.setFlag(Constant.FLAG_DISTANCE_IN_CALCULATE);
-
-                        mDistanceList.add( distanceData);
-                        sumOfDistances =   (int) (sumOfDistances + distanceObj.distance);
-                    }
-
-                    if (mDistanceList.size() == 0) {
-                        Toast.makeText(Main.this, "间距数量为0！", Toast.LENGTH_SHORT).show();
-                    }
-
-                    mDistanceAdapter = new DistanceAdapter(mDistanceList, Main.this);
-                    mDistanceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
-                    mDistanceRV.setAdapter(mDistanceAdapter);
-                    mDistanceAdapter.notifyDataSetChanged();
-
-                    textViewShowSumOfDistances.setText(String.valueOf(sumOfDistances));
-                    textViewShowSumOfDistances.setTextColor(Color.rgb(255, 0, 0));
-                    // 设置item及item中控件的点击事件
-//                    mDistanceAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
-                    // 计算完一次 就清理
-                    mScanResultDistanceList.clear();
-
-                }
-                else
-                {
-                    errorMsg =  "间距获取异常:"+ result.getCode() + result.getMessage();
-                    Log.d(TAG, errorMsg );
-                }
-            }
-            else
-            {
-                errorMsg = (String) msg.obj;
-            }
-
-            if (!errorMsg.isEmpty())
+            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+            if (errorMsg != null)
             {
                 Log.d("路径获取 NG:", errorMsg);
                 Toast.makeText(Main.this, "路径获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            Result result= (Result)(msg.obj);
+
+            GetDistanceResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetDistanceResponse.class);
+
+            mDistanceList = new ArrayList<>();
+            int sumOfDistances = 0;
+            for (PathGetDistanceQr distanceObj : responseData.qr_list) {
+                DistanceData distanceData = new DistanceData();
+                distanceData.setQr_id( distanceObj.qrId );
+                distanceData.setDistance(String.valueOf(distanceObj.distance));
+                distanceData.setName(distanceObj.name);
+                distanceData.setQr_sequence(distanceObj.qrSequence);
+                String strSerialNumber = distanceObj.serialNumber;
+                //strSerialNumber = strSerialNumber.substring(0,distanceObj.serialNumber.length()-4);
+                distanceData.setSerial_number(strSerialNumber);
+                distanceData.setFlag(Constant.FLAG_DISTANCE_IN_CALCULATE);
+
+                mDistanceList.add( distanceData);
+                sumOfDistances =   (int) (sumOfDistances + distanceObj.distance);
+            }
+
+            if (mDistanceList.size() == 0) {
+                Toast.makeText(Main.this, "间距数量为0！", Toast.LENGTH_SHORT).show();
+            }
+
+            mDistanceAdapter = new DistanceAdapter(mDistanceList, Main.this);
+            mDistanceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+            mDistanceRV.setAdapter(mDistanceAdapter);
+            mDistanceAdapter.notifyDataSetChanged();
+
+            textViewShowSumOfDistances.setText(String.valueOf(sumOfDistances));
+            textViewShowSumOfDistances.setTextColor(Color.rgb(255, 0, 0));
+            // 设置item及item中控件的点击事件
+//                    mDistanceAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+            // 计算完一次 就清理
+            mScanResultDistanceList.clear();
 
             setIsGetting(false);
         }
@@ -665,64 +638,50 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             String errorMsg = "";
 
             try {
-
-                if (msg.what == Network.OK) {
-                    Result result= (Result)(msg.obj);
-
-                    GetWiresResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetWiresResponse.class);
-
-                    if (responseData != null &&responseData.errorCode == 0)
-                    {
-                        mDianxianQingCeList = new ArrayList<>();
-
-                        for (Wires wire : responseData.wires) {
-
-                            DianxianQingCeData dianxianQingCeData = new DianxianQingCeData();
-                            dianxianQingCeData.setId(wire.getId());
-                            dianxianQingCeData.setEnd_point(wire.getEndPoint());
-                            dianxianQingCeData.setHose_redundancy(Double.toString(wire.getHoseRedundancy()));
-                            dianxianQingCeData.setLength(wire.getLength());
-                            dianxianQingCeData.setParts_code(wire.getPartsCode());
-                            dianxianQingCeData.setSerial_number(wire.getSerialNumber());
-                            dianxianQingCeData.setStart_point(wire.getStartPoint());
-                            dianxianQingCeData.setSteel_redundancy(Double.toString(wire.getSteelRedundancy()));
-                            dianxianQingCeData.setWickes_cross_section(wire.getWickesCrossSection());
-
-                            mDianxianQingCeList.add( dianxianQingCeData);
-                        }
-
-                        Log.d(TAG, "电线数量: size: " + mDianxianQingCeList.size());
-
-                        if (mDianxianQingCeList.size() == 0) {
-                            Toast.makeText(Main.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
-                        }
-
-                        if (mDxQingceAdapter == null)
-                        {
-                            mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this,mRequestCode);
-                            mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
-                            mQingceRV.setAdapter(mDxQingceAdapter);
-                        }
-                        mDxQingceAdapter.setOnItemClickListener(MyItemClickListenerDx);
-                        mDxQingceAdapter.updateDataSoruce(mDianxianQingCeList);
-
-                    }
-                    else
-                    {
-                        errorMsg =  "电线获取异常:"+ result.getCode() + result.getMessage();
-                        Log.d(TAG, errorMsg );
-                    }
-                }
-                else
-                {
-                    errorMsg = (String) msg.obj;
-                }
-
-                if (!errorMsg.isEmpty())
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg != null)
                 {
                     Log.d("电线获取 NG:", errorMsg);
                     Toast.makeText(Main.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                Result result= (Result)(msg.obj);
+
+                GetWiresResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetWiresResponse.class);
+
+                mDianxianQingCeList = new ArrayList<>();
+
+                for (Wires wire : responseData.wires) {
+
+                    DianxianQingCeData dianxianQingCeData = new DianxianQingCeData();
+                    dianxianQingCeData.setId(wire.getId());
+                    dianxianQingCeData.setEnd_point(wire.getEndPoint());
+                    dianxianQingCeData.setHose_redundancy(Double.toString(wire.getHoseRedundancy()));
+                    dianxianQingCeData.setLength(wire.getLength());
+                    dianxianQingCeData.setParts_code(wire.getPartsCode());
+                    dianxianQingCeData.setSerial_number(wire.getSerialNumber());
+                    dianxianQingCeData.setStart_point(wire.getStartPoint());
+                    dianxianQingCeData.setSteel_redundancy(Double.toString(wire.getSteelRedundancy()));
+                    dianxianQingCeData.setWickes_cross_section(wire.getWickesCrossSection());
+
+                    mDianxianQingCeList.add( dianxianQingCeData);
+                }
+
+                Log.d(TAG, "电线数量: size: " + mDianxianQingCeList.size());
+
+                if (mDianxianQingCeList.size() == 0) {
+                    Toast.makeText(Main.this, "电线数量为0！", Toast.LENGTH_SHORT).show();
+                }
+
+                if (mDxQingceAdapter == null)
+                {
+                    mDxQingceAdapter = new DianXianQingceAdapter(mDianxianQingCeList, Main.this,mRequestCode);
+                    mQingceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+                    mQingceRV.setAdapter(mDxQingceAdapter);
+                }
+                mDxQingceAdapter.setOnItemClickListener(MyItemClickListenerDx);
+                mDxQingceAdapter.updateDataSoruce(mDianxianQingCeList);
             }
             catch (Exception ex)
             {
@@ -768,39 +727,26 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 //            }
 
             String errorMsg = "";
-
-            if (msg.what == Network.OK) {
-                Result result= (Result)(msg.obj);
-
-                NewPathDistanceQRsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), NewPathDistanceQRsResponse.class);
-
-                if (responseData != null && responseData.errorCode == 0)
-                {
-                    int newPathId = responseData.id;
-
-                    LujingData lujingData = new LujingData();
-
-                    lujingData.setId(newPathId);
-                    lujingData.setName(newPathName);
-
-                    FinalGotoLujingActivity(Constant.REQUEST_CODE_MODIFY_LUJING, lujingData);
-                }
-                else
-                {
-                    errorMsg =  "创建路径失败:"+ result.getCode() + result.getMessage();
-                    Log.d(TAG, errorMsg );
-                }
-            }
-            else
-            {
-                errorMsg = (String) msg.obj;
-            }
-
-            if (!errorMsg.isEmpty())
+            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+            if (errorMsg!= null)
             {
                 Log.d("创建路径失败 NG:", errorMsg);
                 Toast.makeText(Main.this, "创建路径失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            Result result= (Result)(msg.obj);
+
+            NewPathDistanceQRsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), NewPathDistanceQRsResponse.class);
+
+            int newPathId = responseData.id;
+
+            LujingData lujingData = new LujingData();
+
+            lujingData.setId(newPathId);
+            lujingData.setName(newPathName);
+
+            FinalGotoLujingActivity(Constant.REQUEST_CODE_MODIFY_LUJING, lujingData);
         }
     }
 
@@ -1535,38 +1481,26 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                                             String errorMsg = "";
 
-                                            if (msg.what == Network.OK) {
-                                                Result result= (Result)(msg.obj);
-
-                                                BaseResponse responseData = CommonUtility.objectToJavaObject(result.getData(), BaseResponse.class);
-
-                                                if (responseData != null && responseData.errorCode == 0)
-                                                {//reget the data.
-
-                                                    Toast.makeText(Main.this, "删除电线成功！", Toast.LENGTH_SHORT).show();
-
-                                                    String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-                                                    mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg2)->{
-                                                        handler.sendMessage(msg2);
-                                                    });
-
-                                                }
-                                                else
-                                                {
-                                                    errorMsg =  "删除电线失败:"+ result.getCode() + result.getMessage();
-                                                    Log.d(TAG, errorMsg );
-                                                }
-                                            }
-                                            else
-                                            {
-                                                errorMsg = (String) msg.obj;
-                                            }
-
-                                            if (!errorMsg.isEmpty())
+                                            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                                            if (errorMsg != null)
                                             {
                                                 Log.d("删除电线失败 NG:", errorMsg);
                                                 Toast.makeText(Main.this, "删除电线失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+
+                                                return;
                                             }
+
+                                            Result result= (Result)(msg.obj);
+
+                                            BaseResponse responseData = CommonUtility.objectToJavaObject(result.getData(), BaseResponse.class);
+
+
+                                            Toast.makeText(Main.this, "删除电线成功！", Toast.LENGTH_SHORT).show();
+
+                                            String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+                                            mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg2)->{
+                                                handler.sendMessage(msg2);
+                                            });
                                         }
                                     } ,(hanlder, msg)->{
                                         hanlder.sendMessage(msg);

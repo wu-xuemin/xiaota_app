@@ -17,6 +17,7 @@ import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.AddUsersResponse;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
@@ -159,32 +160,22 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
 
                                             String errorMsg = "";
 
-                                            if (msg.what == Network.OK) {
-                                                Result result= (Result)(msg.obj);
-
-                                                AddUsersResponse addUsersResponse = CommonUtility.objectToJavaObject(result.getData(), AddUsersResponse.class);
-
-                                                if (addUsersResponse != null &&addUsersResponse.errorCode == 0)
-                                                {
-                                                    //
-                                                    Toast.makeText(RegisterActivity.this, "注册成功!", Toast.LENGTH_LONG).show();
-
-                                                    finish();
-                                                }
-                                                else
-                                                {
-                                                    errorMsg =  "注册失败:"+ result.getCode() + result.getMessage();
-                                                }
-                                            }
-                                            else
-                                            {
-                                                errorMsg = "注册失败:" + (String) msg.obj;
-                                            }
-
-                                            if (!errorMsg.isEmpty())
+                                            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                                            if (errorMsg != null)
                                             {
                                                 Toast.makeText(RegisterActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+
+                                                return;
                                             }
+
+                                            Result result= (Result)(msg.obj);
+
+                                            AddUsersResponse addUsersResponse = CommonUtility.objectToJavaObject(result.getData(), AddUsersResponse.class);
+                                            //
+                                            Toast.makeText(RegisterActivity.this, "注册成功!", Toast.LENGTH_LONG).show();
+
+                                            finish();
+
                                         }
                                     },(handler, msg)->{
                                         handler.sendMessage(msg);

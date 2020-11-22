@@ -28,6 +28,7 @@ import com.zhihuta.xiaota.bean.response.BaseResponse;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.bean.response.UserResponse;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
@@ -259,30 +260,17 @@ public class PersonalInfoActivity extends AppCompatActivity{
 
             String errorMsg = "";
 
-            if (msg.what == Network.OK) {
-                Result result= (Result)(msg.obj);
-
-                UserResponse userResponse = CommonUtility.objectToJavaObject(result.getData(),UserResponse.class);
-
-                if (userResponse != null &&userResponse.errorCode == 0)
-                {
-                     //
-                    updateDataToUI(userResponse);
-                }
-                else
-                {
-                    errorMsg =  "获取个人信息失败:"+ result.getCode() + result.getMessage();
-                }
-            }
-            else
+            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+            if (errorMsg!= null)
             {
-                errorMsg = (String) msg.obj;
+                Toast.makeText(PersonalInfoActivity.this, "获取个人信息失败" + errorMsg, Toast.LENGTH_SHORT).show();
+                return;
             }
 
-            if (!errorMsg.isEmpty())
-            {
-                Toast.makeText(PersonalInfoActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
-            }
+            Result result= (Result)(msg.obj);
+
+            UserResponse userResponse = CommonUtility.objectToJavaObject(result.getData(),UserResponse.class);
+            updateDataToUI(userResponse);
         }
     }
 
@@ -294,40 +282,29 @@ public class PersonalInfoActivity extends AppCompatActivity{
 
             String errorMsg = "";
 
-            if (msg.what == Network.OK) {
-                Result result= (Result)(msg.obj);
-
-                BaseResponse baseResponse = CommonUtility.objectToJavaObject(result.getData(),BaseResponse.class);
-
-                if (baseResponse != null &&baseResponse.errorCode == 0)
-                {
-                    //
-                    Toast.makeText(PersonalInfoActivity.this, "更新个人信息成功!", Toast.LENGTH_SHORT).show();
-
-                    mEtUserName.setEnabled(false);
-                    mEtEmail.setEnabled(false);
-                    mEdTitle.setEnabled(false);
-                    mEtCompany.setEnabled(false);
-                    mEtTel.setEnabled(false);
-                    mEtAdress.setEnabled(false);
-                    mEtDepartment.setEnabled(false);
-
-                    mBtConfirm.setEnabled(false);
-                }
-                else
-                {
-                    errorMsg =  "更新个人信息失败:"+ result.getCode() + result.getMessage();
-                }
-            }
-            else
+            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+            if (errorMsg != null)
             {
-                errorMsg = "更新个人信息失败:" + (String) msg.obj;
+                Toast.makeText(PersonalInfoActivity.this, "更新个人信息失败 " + errorMsg, Toast.LENGTH_SHORT).show();
+
+                return;
             }
 
-            if (!errorMsg.isEmpty())
-            {
-                Toast.makeText(PersonalInfoActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
-            }
+            Result result= (Result)(msg.obj);
+
+            BaseResponse baseResponse = CommonUtility.objectToJavaObject(result.getData(),BaseResponse.class);
+
+            Toast.makeText(PersonalInfoActivity.this, "更新个人信息成功!", Toast.LENGTH_SHORT).show();
+
+            mEtUserName.setEnabled(false);
+            mEtEmail.setEnabled(false);
+            mEdTitle.setEnabled(false);
+            mEtCompany.setEnabled(false);
+            mEtTel.setEnabled(false);
+            mEtAdress.setEnabled(false);
+            mEtDepartment.setEnabled(false);
+
+            mBtConfirm.setEnabled(false);
         }
     }
 }

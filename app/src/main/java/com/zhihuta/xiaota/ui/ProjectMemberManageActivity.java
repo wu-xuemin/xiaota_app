@@ -175,60 +175,50 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
             String errorMsg = "";
 
             try {
-                if (msg.what == Network.OK) {
-                    Result result= (Result)(msg.obj);
 
-                    ProjectMembersResponse responseData = CommonUtility.objectToJavaObject(( result.getData()), ProjectMembersResponse.class);// CommonUtility.objectToJavaObject(result.getData()).get("accounts"), ProjectMembersResponse.class);
-
-                    if (responseData != null &&responseData.errorCode == 0) {
-                        mMemberList = new ArrayList<>();
-
-                        for (MemberData memberData : responseData.accounts) {
-
-                            MemberData memberData1 = new MemberData();
-                            memberData1.setId(memberData.getId());
-                            memberData1.setAccount((memberData.getAccount()));
-                            memberData1.setAddress(memberData.getAddress());
-                            memberData1.setCompany(memberData.getCompany());
-                            memberData1.setDeleted(memberData.getDeleted());
-                            memberData1.setDepartment((memberData.getDepartment()));
-                            memberData1.setEmail(memberData.getEmail());
-                            memberData1.setName(memberData.getName());
-                            memberData1.setPhone(memberData.getPhone());
-
-                            mMemberList.add(memberData1);
-                        }
-
-                        Log.d(TAG, "成员数量: size: " + mMemberList.size());
-
-                        if (mMemberList.size() == 0) {
-                            Toast.makeText(ProjectMemberManageActivity.this, "项目成员数量为0！", Toast.LENGTH_SHORT).show();
-                        }
-                        mMemberAdapter = null;
-                        mMemberAdapter = new MemberAdapter(mMemberList, ProjectMemberManageActivity.this, null);
-                        mMemberRV.addItemDecoration(new DividerItemDecoration(ProjectMemberManageActivity.this, DividerItemDecoration.VERTICAL));
-                        mMemberRV.setAdapter(mMemberAdapter);
-                        mMemberAdapter.setOnItemClickListener(MyItemClickListener);
-
-                        mMemberAdapter.notifyDataSetChanged();
-//                        mProjectAdapter.updateDataSoruce(mProjectList);
-                    }
-                    else
-                    {
-                        errorMsg =  "项目成员获取异常:"+ result.getCode() + result.getMessage();
-                        Log.d(TAG, errorMsg );
-                    }
-                }
-                else
-                {
-                    errorMsg = (String) msg.obj;
-                }
-
-                if (!errorMsg.isEmpty())
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg != null)
                 {
                     Log.d("项目成员获取 NG:", errorMsg);
                     Toast.makeText(ProjectMemberManageActivity.this, "项目成员获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+
+                    return;
                 }
+
+                Result result= (Result)(msg.obj);
+
+                ProjectMembersResponse responseData = CommonUtility.objectToJavaObject(( result.getData()), ProjectMembersResponse.class);// CommonUtility.objectToJavaObject(result.getData()).get("accounts"), ProjectMembersResponse.class);
+
+                mMemberList = new ArrayList<>();
+
+                for (MemberData memberData : responseData.accounts) {
+
+                    MemberData memberData1 = new MemberData();
+                    memberData1.setId(memberData.getId());
+                    memberData1.setAccount((memberData.getAccount()));
+                    memberData1.setAddress(memberData.getAddress());
+                    memberData1.setCompany(memberData.getCompany());
+                    memberData1.setDeleted(memberData.getDeleted());
+                    memberData1.setDepartment((memberData.getDepartment()));
+                    memberData1.setEmail(memberData.getEmail());
+                    memberData1.setName(memberData.getName());
+                    memberData1.setPhone(memberData.getPhone());
+
+                    mMemberList.add(memberData1);
+                }
+
+                Log.d(TAG, "成员数量: size: " + mMemberList.size());
+
+                if (mMemberList.size() == 0) {
+                    Toast.makeText(ProjectMemberManageActivity.this, "项目成员数量为0！", Toast.LENGTH_SHORT).show();
+                }
+                mMemberAdapter = null;
+                mMemberAdapter = new MemberAdapter(mMemberList, ProjectMemberManageActivity.this, null);
+                mMemberRV.addItemDecoration(new DividerItemDecoration(ProjectMemberManageActivity.this, DividerItemDecoration.VERTICAL));
+                mMemberRV.setAdapter(mMemberAdapter);
+                mMemberAdapter.setOnItemClickListener(MyItemClickListener);
+
+                mMemberAdapter.notifyDataSetChanged();
             }
             catch (Exception ex)
             {
@@ -261,26 +251,23 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
             String errorMsg = "";
 
             try {
-                if (msg.what == Network.OK) {
-                    Result result= (Result)(msg.obj);
-                    if(result.getMessage().equals("SUCCESS")){
-                        Toast.makeText(ProjectMemberManageActivity.this, "添加成员成功", Toast.LENGTH_SHORT).show();
-                        //成员添加成功，再刷新一次
-                        String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
-                        mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msgGetMember)->{
-                            handler.sendMessage(msgGetMember);
-                        });
-                    } else {
-                        Toast.makeText(ProjectMemberManageActivity.this, "添加成员异常", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    errorMsg = (String) msg.obj;
-                }
 
-                if (!errorMsg.isEmpty()) {
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg != null)
+                {
                     Log.d("添加成员 NG:", errorMsg);
                     Toast.makeText(ProjectMemberManageActivity.this, "添加成员失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                Result result= (Result)(msg.obj);
+                Toast.makeText(ProjectMemberManageActivity.this, "添加成员成功", Toast.LENGTH_SHORT).show();
+                //成员添加成功，再刷新一次
+                String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
+                mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msgGetMember)->{
+                    handler.sendMessage(msgGetMember);
+                });
+
             } catch (Exception ex) {
                 Log.d("添加成员 NG:", ex.getMessage());
             }
@@ -310,27 +297,24 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
         public void handleMessage(final Message msg) {
             String errorMsg = "";
 
-            try {
-                if (msg.what == Network.OK) {
-                    Result result= (Result)(msg.obj);
-                    if(result.getMessage().equals("SUCCESS")){
-                        Toast.makeText(ProjectMemberManageActivity.this, "删除成员成功", Toast.LENGTH_SHORT).show();
-                        //成员删除成功，再刷新一次
-                        String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
-                        mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msgGetMember)->{
-                            handler.sendMessage(msgGetMember);
-                        });
-                    } else {
-                        Toast.makeText(ProjectMemberManageActivity.this, "删除成员异常", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    errorMsg = (String) msg.obj;
-                }
 
-                if (!errorMsg.isEmpty()) {
+            try {
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg != null)
+                {
                     Log.d("删除成员 NG:", errorMsg);
                     Toast.makeText(ProjectMemberManageActivity.this, "删除成员失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+
+                    return;
                 }
+
+                Toast.makeText(ProjectMemberManageActivity.this, "删除成员成功", Toast.LENGTH_SHORT).show();
+                //成员删除成功，再刷新一次
+                String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
+                mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msgGetMember)->{
+                    handler.sendMessage(msgGetMember);
+                });
+
             } catch (Exception ex) {
                 Log.d("删除成员 NG:", ex.getMessage());
             }

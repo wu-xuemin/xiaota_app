@@ -228,82 +228,72 @@ public class RelateNewDxActivity extends AppCompatActivity {
 
             try {
 
-                if (msg.what == Network.OK) {
-                    Result result= (Result)(msg.obj);
-
-                    GetWiresResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetWiresResponse.class);
-
-                    if (responseData != null &&responseData.errorCode == 0)
-                    {
-                        mDianxianTobeSelectList = new ArrayList<>();
-
-                        for (Wires wire : responseData.wires) {
-
-                            boolean bFound = false;
-                            for (DianxianQingCeData hasRelated : mDianxianHasbeenRelated)
-                            {
-                                if (hasRelated.getId() == wire.getId().intValue())
-                                {
-                                    bFound = true;
-                                    break;
-                                }
-                            }
-
-                            if (!bFound)
-                            {
-                                DianxianQingCeData dianxianQingCeData = new DianxianQingCeData();
-                                dianxianQingCeData.setId(wire.getId());
-                                dianxianQingCeData.setEnd_point(wire.getEndPoint());
-                                dianxianQingCeData.setHose_redundancy(Double.toString(wire.getHoseRedundancy()));
-                                dianxianQingCeData.setLength(wire.getLength());
-                                dianxianQingCeData.setParts_code(wire.getPartsCode());
-                                dianxianQingCeData.setSerial_number(wire.getSerialNumber());
-                                dianxianQingCeData.setStart_point(wire.getStartPoint());
-                                dianxianQingCeData.setSteel_redundancy(Double.toString(wire.getSteelRedundancy()));
-                                dianxianQingCeData.setWickes_cross_section(wire.getWickesCrossSection());
-
-                                mDianxianTobeSelectList.add( dianxianQingCeData);
-
-                                mDianxianHasbeenRelated.add(dianxianQingCeData);
-                            }
-                        }
-
-                        Log.d(TAG, "可选电线数量: size: " + mDianxianTobeSelectList.size());
-
-                        if (mDianxianTobeSelectList.size() == 0) {
-                            Toast.makeText(RelateNewDxActivity.this, "可选电线数量为0！", Toast.LENGTH_SHORT).show();
-                        }
-
-                        for (int k = 0; k < mDianxianTobeSelectList.size(); k++) {
-                            //mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_TOBE_SELECT_DX);
-                            checkedList.add(false); //初始时都是未选中。
-                        }
-
-                        if (mDianXianToBeSelectedAdapter == null)
-                        {
-                            mDianXianToBeSelectedAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList, RelateNewDxActivity.this, Constant.REQUEST_CODE_LUJING_CANDIDATE_WIRES);
-                            mDxRV.addItemDecoration(new DividerItemDecoration(RelateNewDxActivity.this, DividerItemDecoration.VERTICAL));
-                            mDxRV.setAdapter(mDianXianToBeSelectedAdapter);
-                            mDianXianToBeSelectedAdapter.setOnItemClickListener(MyItemClickListener);
-                        }
-                        mDianXianToBeSelectedAdapter.updateDataSoruce(mDianxianTobeSelectList);
-                    }
-                    else
-                    {
-                        errorMsg =  "电线获取异常:"+ result.getCode() + result.getMessage();
-                        Log.d(TAG, errorMsg );
-                    }
-                }
-                else
-                {
-                    errorMsg = (String) msg.obj;
-                }
-
-                if (!errorMsg.isEmpty())
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg != null)
                 {
                     Log.d("电线获取 NG:", errorMsg);
                     Toast.makeText(RelateNewDxActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+
+                    return;
                 }
+
+                Result result= (Result)(msg.obj);
+
+                GetWiresResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetWiresResponse.class);
+
+                mDianxianTobeSelectList = new ArrayList<>();
+
+                for (Wires wire : responseData.wires) {
+
+                    boolean bFound = false;
+                    for (DianxianQingCeData hasRelated : mDianxianHasbeenRelated)
+                    {
+                        if (hasRelated.getId() == wire.getId().intValue())
+                        {
+                            bFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!bFound)
+                    {
+                        DianxianQingCeData dianxianQingCeData = new DianxianQingCeData();
+                        dianxianQingCeData.setId(wire.getId());
+                        dianxianQingCeData.setEnd_point(wire.getEndPoint());
+                        dianxianQingCeData.setHose_redundancy(Double.toString(wire.getHoseRedundancy()));
+                        dianxianQingCeData.setLength(wire.getLength());
+                        dianxianQingCeData.setParts_code(wire.getPartsCode());
+                        dianxianQingCeData.setSerial_number(wire.getSerialNumber());
+                        dianxianQingCeData.setStart_point(wire.getStartPoint());
+                        dianxianQingCeData.setSteel_redundancy(Double.toString(wire.getSteelRedundancy()));
+                        dianxianQingCeData.setWickes_cross_section(wire.getWickesCrossSection());
+
+                        mDianxianTobeSelectList.add( dianxianQingCeData);
+
+                        mDianxianHasbeenRelated.add(dianxianQingCeData);
+                    }
+                }
+
+                Log.d(TAG, "可选电线数量: size: " + mDianxianTobeSelectList.size());
+
+                if (mDianxianTobeSelectList.size() == 0) {
+                    Toast.makeText(RelateNewDxActivity.this, "可选电线数量为0！", Toast.LENGTH_SHORT).show();
+                }
+
+                for (int k = 0; k < mDianxianTobeSelectList.size(); k++) {
+                    //mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_TOBE_SELECT_DX);
+                    checkedList.add(false); //初始时都是未选中。
+                }
+
+                if (mDianXianToBeSelectedAdapter == null)
+                {
+                    mDianXianToBeSelectedAdapter = new DianXianQingceAdapter(mDianxianTobeSelectList, RelateNewDxActivity.this, Constant.REQUEST_CODE_LUJING_CANDIDATE_WIRES);
+                    mDxRV.addItemDecoration(new DividerItemDecoration(RelateNewDxActivity.this, DividerItemDecoration.VERTICAL));
+                    mDxRV.setAdapter(mDianXianToBeSelectedAdapter);
+                    mDianXianToBeSelectedAdapter.setOnItemClickListener(MyItemClickListener);
+                }
+                mDianXianToBeSelectedAdapter.updateDataSoruce(mDianxianTobeSelectList);
+
             }
             catch (Exception ex)
             {

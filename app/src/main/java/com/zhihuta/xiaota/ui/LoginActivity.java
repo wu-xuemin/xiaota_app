@@ -34,6 +34,7 @@ import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.BaseResponse;
 import com.zhihuta.xiaota.bean.response.UserResponse;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.net.Network;
@@ -139,30 +140,17 @@ public class LoginActivity extends AppCompatActivity {
                                 public void handleMessage(final Message msg) {
 
                                     String errorMsg = "";
-
-                                    if (msg.what == Network.OK) {
-                                        Result result= (Result)(msg.obj);
-
-                                        UserResponse responseData = CommonUtility.objectToJavaObject(result.getData(),UserResponse.class);
-
-                                        if (responseData != null &&responseData.errorCode == 0)
-                                        {
-                                            ConfirmSendEmail(responseData.account_info.getEmail(),account);
-                                         }
-                                        else
-                                        {
-                                            errorMsg =  "查找用户失败:"+ result.getCode() + result.getMessage();
-                                        }
-                                    }
-                                    else
+                                    errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                                    if (errorMsg != null)
                                     {
-                                        errorMsg =  "查找用户失败：" + (String) msg.obj;
+                                        Toast.makeText(LoginActivity.this, "查找用户失败：" + errorMsg, Toast.LENGTH_SHORT).show();
+                                        return;
                                     }
 
-                                    if (!errorMsg.isEmpty())
-                                    {
-                                        Toast.makeText(LoginActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
-                                    }
+                                    Result result= (Result)(msg.obj);
+
+                                    UserResponse responseData = CommonUtility.objectToJavaObject(result.getData(),UserResponse.class);
+                                    ConfirmSendEmail(responseData.account_info.getEmail(),account);
                                 }
                             },
                             (handler,msg)->{
@@ -333,30 +321,17 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             String errorMsg = "";
-
-            if (msg.what == Network.OK) {
-                Result result= (Result)(msg.obj);
-
-                LoginResponseData responseData = CommonUtility.objectToJavaObject(result.getData(),LoginResponseData.class);
-
-                if (responseData != null &&responseData.errorCode == 0)
-                {
-                    onLoginSuccess( responseData);
-                }
-                else
-                {
-                    errorMsg =  "登录失败:"+ result.getCode() + result.getMessage();
-                }
-            }
-            else
+            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+            if (errorMsg != null)
             {
-                errorMsg = (String) msg.obj;
+                onLoginFailed(errorMsg);
+                return;
             }
 
-            if (!errorMsg.isEmpty())
-            { 
-			     onLoginFailed(errorMsg);
-            }
+            Result result= (Result)(msg.obj);
+
+            LoginResponseData responseData = CommonUtility.objectToJavaObject(result.getData(),LoginResponseData.class);
+            onLoginSuccess( responseData);
         }
     }
 

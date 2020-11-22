@@ -92,55 +92,41 @@ public class DxImportHistoryActivity extends AppCompatActivity {
         @Override
         public void handleMessage(final Message msg) {
             String errorMsg = "";
-            if (msg.what == Network.OK) {
-                Result result= (Result)(msg.obj);
 
-                DxImportHistoryResponse responseData = CommonUtility.objectToJavaObject(result.getData(),DxImportHistoryResponse.class);
-
-                if (responseData != null &&responseData.errorCode == 0)
-                {
-
-                    dxImportHistoryList = new ArrayList<>();
-
-                    for (DxImportHistoryData dxImportHistory : responseData.records) {
-
-                        DxImportHistoryData dxImportHistoryData = new DxImportHistoryData();
-                        dxImportHistoryData.setFileName( dxImportHistory.getFileName());
-                        dxImportHistoryData.setId(dxImportHistory.getId());
-                        dxImportHistoryData.setOperator(dxImportHistory.getAccount());
-                        long dateValue = Long.valueOf(dxImportHistory.getOperate_time());
-                        dxImportHistoryData.setOperate_time( sf3.format(dateValue));
-                        dxImportHistoryList.add( dxImportHistoryData);
-                    }
-
-                    Log.d(TAG, "获取导入历史: size: " + dxImportHistoryList.size());
-                    if (dxImportHistoryList.size() == 0) {
-                        Toast.makeText(DxImportHistoryActivity.this, "导入历史为空！", Toast.LENGTH_SHORT).show();
-                    }
-
-                    dxImportHistoryAdapter = new DxImportHistoryAdapter(dxImportHistoryList, DxImportHistoryActivity.this);
-                    mDxHistoryRV.addItemDecoration(new DividerItemDecoration(DxImportHistoryActivity.this, DividerItemDecoration.VERTICAL));
-                    mDxHistoryRV.setAdapter(dxImportHistoryAdapter);
-                    dxImportHistoryAdapter.notifyDataSetChanged();
-
-                }
-                else
-                {
-                    errorMsg =  "获取路径间距点获取异常:"+ result.getCode() + result.getMessage();
-                    Log.d(TAG, errorMsg );
-                }
-            }
-            else
+            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+            if(errorMsg != null)
             {
-                errorMsg = (String) msg.obj;
-            }
-
-            if (!errorMsg.isEmpty())
-            {
-                Log.d(TAG, errorMsg);
                 Toast.makeText(DxImportHistoryActivity.this, "获取导入历史失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+
+                return;
             }
 
+            Result result= (Result)(msg.obj);
+
+            DxImportHistoryResponse responseData = CommonUtility.objectToJavaObject(result.getData(),DxImportHistoryResponse.class);
+
+            dxImportHistoryList = new ArrayList<>();
+
+            for (DxImportHistoryData dxImportHistory : responseData.records) {
+
+                DxImportHistoryData dxImportHistoryData = new DxImportHistoryData();
+                dxImportHistoryData.setFileName( dxImportHistory.getFileName());
+                dxImportHistoryData.setId(dxImportHistory.getId());
+                dxImportHistoryData.setOperator(dxImportHistory.getAccount());
+                long dateValue = Long.valueOf(dxImportHistory.getOperate_time());
+                dxImportHistoryData.setOperate_time( sf3.format(dateValue));
+                dxImportHistoryList.add( dxImportHistoryData);
+            }
+
+            Log.d(TAG, "获取导入历史: size: " + dxImportHistoryList.size());
+            if (dxImportHistoryList.size() == 0) {
+                Toast.makeText(DxImportHistoryActivity.this, "导入历史为空！", Toast.LENGTH_SHORT).show();
+            }
+
+            dxImportHistoryAdapter = new DxImportHistoryAdapter(dxImportHistoryList, DxImportHistoryActivity.this);
+            mDxHistoryRV.addItemDecoration(new DividerItemDecoration(DxImportHistoryActivity.this, DividerItemDecoration.VERTICAL));
+            mDxHistoryRV.setAdapter(dxImportHistoryAdapter);
+            dxImportHistoryAdapter.notifyDataSetChanged();
         }
     }
 

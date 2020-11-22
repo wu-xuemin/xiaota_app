@@ -37,6 +37,7 @@ import com.zhihuta.xiaota.bean.response.DistanceQRsResponse;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.bean.response.PathGetDistanceQr;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
@@ -287,58 +288,44 @@ public class LujingActivity extends AppCompatActivity {
 
             String errorMsg = "";
 
-            if (msg.what == Network.OK) {
-                Result result= (Result)(msg.obj);
-
-                DistanceQRsResponse responseData = CommonUtility.objectToJavaObject(result.getData(),DistanceQRsResponse.class);
-
-                if (responseData != null &&responseData.errorCode == 0)
-                {
-
-                    mDistanceList = new ArrayList<>();
-
-                    for (PathGetDistanceQr distance_qr : responseData.distance_qrs) {
-
-                        DistanceData distanceData = new DistanceData();
-                        distanceData.setDistance( Double.toString(distance_qr.distance));
-                        distanceData.setName(distance_qr.name);
-                        distanceData.setQr_id(distance_qr.qrId);
-                        distanceData.setQr_sequence(distance_qr.qrSequence);
-                        distanceData.setSerial_number(distance_qr.serialNumber);
-                        distanceData.setFlag(this.strMode);
-
-                        mDistanceList.add( distanceData);
-                    }
-
-                    Log.d(TAG, "获取路径间距: size: " + mDistanceList.size());
-                    if (mDistanceList.size() == 0) {
-                        Toast.makeText(LujingActivity.this, "该路径的间距数量为0！", Toast.LENGTH_SHORT).show();
-                    }
-
-                    mDistanceAdapter = new DistanceAdapter(mDistanceList, LujingActivity.this);
-                    mDistanceRV.addItemDecoration(new DividerItemDecoration(LujingActivity.this, DividerItemDecoration.VERTICAL));
-                    mDistanceRV.setAdapter(mDistanceAdapter);
-                    mDistanceAdapter.notifyDataSetChanged();
-                    // 设置item及item中控件的点击事件
-                    mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
-
-                }
-                else
-                {
-                    errorMsg =  "获取路径间距点获取异常:"+ result.getCode() + result.getMessage();
-                    Log.d(TAG, errorMsg );
-                }
-            }
-            else
-            {
-                errorMsg = (String) msg.obj;
-            }
-
-            if (!errorMsg.isEmpty())
+            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+            if (errorMsg != null)
             {
                 Log.d(TAG, errorMsg);
                 Toast.makeText(LujingActivity.this, "获取该路径的间距列表失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            Result result= (Result)(msg.obj);
+
+            DistanceQRsResponse responseData = CommonUtility.objectToJavaObject(result.getData(),DistanceQRsResponse.class);
+
+            mDistanceList = new ArrayList<>();
+
+            for (PathGetDistanceQr distance_qr : responseData.distance_qrs) {
+
+                DistanceData distanceData = new DistanceData();
+                distanceData.setDistance( Double.toString(distance_qr.distance));
+                distanceData.setName(distance_qr.name);
+                distanceData.setQr_id(distance_qr.qrId);
+                distanceData.setQr_sequence(distance_qr.qrSequence);
+                distanceData.setSerial_number(distance_qr.serialNumber);
+                distanceData.setFlag(this.strMode);
+
+                mDistanceList.add( distanceData);
+            }
+
+            Log.d(TAG, "获取路径间距: size: " + mDistanceList.size());
+            if (mDistanceList.size() == 0) {
+                Toast.makeText(LujingActivity.this, "该路径的间距数量为0！", Toast.LENGTH_SHORT).show();
+            }
+
+            mDistanceAdapter = new DistanceAdapter(mDistanceList, LujingActivity.this);
+            mDistanceRV.addItemDecoration(new DividerItemDecoration(LujingActivity.this, DividerItemDecoration.VERTICAL));
+            mDistanceRV.setAdapter(mDistanceAdapter);
+            mDistanceAdapter.notifyDataSetChanged();
+            // 设置item及item中控件的点击事件
+            mDistanceAdapter.setOnItemClickListener(MyItemClickListener);
 
         }
     }

@@ -169,26 +169,23 @@ public class ProjectsCenterActivity extends AppCompatActivity {
             String errorMsg = "";
 
             try {
-                if (msg.what == Network.OK) {
-                    Result result= (Result)(msg.obj);
-                    if(result.getMessage().equals("SUCCESS")){
-                        Toast.makeText(ProjectsCenterActivity.this, "添加项目成功", Toast.LENGTH_SHORT).show();
-                        //项目添加成功，再刷新一次
-                        String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
-                        mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
-                            handler.sendMessage(msgGetProject);
-                        });
-                    } else {
-                        Toast.makeText(ProjectsCenterActivity.this, "添加项目异常", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    errorMsg = (String) msg.obj;
-                }
 
-                if (!errorMsg.isEmpty()) {
-                    Log.d("添加项目 NG:", errorMsg);
-                    Toast.makeText(ProjectsCenterActivity.this, "添加项目失败！" + errorMsg, Toast.LENGTH_SHORT).show();
-                }
+                 errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+
+                 if (errorMsg!= null)
+                 {
+                     Log.d("添加项目 NG:", errorMsg);
+                     Toast.makeText(ProjectsCenterActivity.this, "添加项目失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                     return;
+                 }
+
+                Toast.makeText(ProjectsCenterActivity.this, "添加项目成功", Toast.LENGTH_SHORT).show();
+                //项目添加成功，再刷新一次
+                String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
+                mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
+                    handler.sendMessage(msgGetProject);
+                });
+
             } catch (Exception ex) {
                 Log.d("添加项目 NG:", ex.getMessage());
             }
@@ -219,27 +216,25 @@ public class ProjectsCenterActivity extends AppCompatActivity {
             String errorMsg = "";
 
             try {
-                if (msg.what == Network.OK) {
-                    Result result= (Result)(msg.obj);
-                    if(result.getMessage().equals("SUCCESS")){
-                        Toast.makeText(ProjectsCenterActivity.this, "删除项目成功", Toast.LENGTH_SHORT).show();
-                        //删除添加成功，再刷新一次
 
-                        String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
-                        mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
-                            handler.sendMessage(msgGetProject);
-                        });
-                    } else {
-                        Toast.makeText(ProjectsCenterActivity.this, "删除项目异常", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    errorMsg = (String) msg.obj;
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg != null)
+                {
+                    Toast.makeText(ProjectsCenterActivity.this, "删除项目异常" + errorMsg, Toast.LENGTH_SHORT).show();
+
+                    return;
                 }
 
-                if (!errorMsg.isEmpty()) {
-                    Log.d("删除项目 NG:", errorMsg);
-                    Toast.makeText(ProjectsCenterActivity.this, "删除项目失败！" + errorMsg, Toast.LENGTH_SHORT).show();
-                }
+                Result result= (Result)(msg.obj);
+
+                Toast.makeText(ProjectsCenterActivity.this, "删除项目成功", Toast.LENGTH_SHORT).show();
+                //删除添加成功，再刷新一次
+
+                String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
+                mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
+                    handler.sendMessage(msgGetProject);
+                });
+
             } catch (Exception ex) {
                 Log.d("删除项目 NG:", ex.getMessage());
             }
@@ -270,60 +265,48 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 
             try {
 
-                if (msg.what == Network.OK) {
-                    Result result= (Result)(msg.obj);
-
-                    GetProjectsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetProjectsResponse.class);
-
-                    if (responseData != null &&responseData.errorCode == 0) {
-                        mProjectList = new ArrayList<>();
-
-                        for (ProjectData projectData : responseData.project_list) {
-
-                            ProjectData projectData1 = new ProjectData();
-                            projectData1.setId(projectData.getId());
-                            projectData1.setCompanyId(projectData.getCompanyId());
-                            projectData1.setCreateTime((projectData.getCreateTime()));
-                            projectData1.setCreatorId(projectData.getCreatorId());
-                            projectData1.setDepartmentId(projectData.getDepartmentId());
-                            projectData1.setModiferId(projectData.getModiferId());
-                            projectData1.setModifyTime(projectData.getModifyTime());
-                            projectData1.setProjectName((projectData.getProjectName()));
-                            projectData1.setStatus(projectData.getStatus());
-
-                            mProjectList.add(projectData1);
-                        }
-
-                        Log.d(TAG, "项目数量: size: " + mProjectList.size());
-
-                        if (mProjectList.size() == 0) {
-                            Toast.makeText(ProjectsCenterActivity.this, "项目数量为0！", Toast.LENGTH_SHORT).show();
-                        }
-                        mProjectAdapter = null;
-                        mProjectAdapter = new ProjectAdapter(mProjectList, ProjectsCenterActivity.this, null);
-                        mProjectRV.addItemDecoration(new DividerItemDecoration(ProjectsCenterActivity.this, DividerItemDecoration.VERTICAL));
-                        mProjectRV.setAdapter(mProjectAdapter);
-                        mProjectAdapter.setOnItemClickListener(MyItemClickListener);
-
-                        mProjectAdapter.notifyDataSetChanged();
-//                        mProjectAdapter.updateDataSoruce(mProjectList);
-                    }
-                    else
-                    {
-                        errorMsg =  "项目获取异常:"+ result.getCode() + result.getMessage();
-                        Log.d(TAG, errorMsg );
-                    }
-                }
-                else
-                {
-                    errorMsg = (String) msg.obj;
-                }
-
-                if (!errorMsg.isEmpty())
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg!= null)
                 {
                     Log.d("项目获取 NG:", errorMsg);
                     Toast.makeText(ProjectsCenterActivity.this, "项目获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                Result result= (Result)(msg.obj);
+
+                GetProjectsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetProjectsResponse.class);
+
+                mProjectList = new ArrayList<>();
+
+                for (ProjectData projectData : responseData.project_list) {
+
+                    ProjectData projectData1 = new ProjectData();
+                    projectData1.setId(projectData.getId());
+                    projectData1.setCompanyId(projectData.getCompanyId());
+                    projectData1.setCreateTime((projectData.getCreateTime()));
+                    projectData1.setCreatorId(projectData.getCreatorId());
+                    projectData1.setDepartmentId(projectData.getDepartmentId());
+                    projectData1.setModiferId(projectData.getModiferId());
+                    projectData1.setModifyTime(projectData.getModifyTime());
+                    projectData1.setProjectName((projectData.getProjectName()));
+                    projectData1.setStatus(projectData.getStatus());
+
+                    mProjectList.add(projectData1);
+                }
+
+                Log.d(TAG, "项目数量: size: " + mProjectList.size());
+
+                if (mProjectList.size() == 0) {
+                    Toast.makeText(ProjectsCenterActivity.this, "项目数量为0！", Toast.LENGTH_SHORT).show();
+                }
+                mProjectAdapter = null;
+                mProjectAdapter = new ProjectAdapter(mProjectList, ProjectsCenterActivity.this, null);
+                mProjectRV.addItemDecoration(new DividerItemDecoration(ProjectsCenterActivity.this, DividerItemDecoration.VERTICAL));
+                mProjectRV.setAdapter(mProjectAdapter);
+                mProjectAdapter.setOnItemClickListener(MyItemClickListener);
+
+                mProjectAdapter.notifyDataSetChanged();
             }
             catch (Exception ex)
             {

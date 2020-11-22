@@ -251,30 +251,25 @@ public class AddDxQingCeByHandActivity extends AppCompatActivity {
 
             try {
 
-                if (msg.what == Network.OK) {
-                    Result result= (Result)(msg.obj);
-
-                    if (result.getCode() != 200)
-                    {
-                        errorMsg = result.getMessage();
-                    }
-                    else
-                    {
-                        AddDxQingCeByHandActivity.this.finish();
-
-                        return;
-                    }
-                 }
-                else
-                {
-                    errorMsg = (String) msg.obj;
-                }
-
-                if (!errorMsg.isEmpty())
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg != null)
                 {
                     Log.d("添加电线失败:", errorMsg);
                     Toast.makeText(AddDxQingCeByHandActivity.this, "添加电线失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+
+                    return;
                 }
+
+                Toast.makeText(AddDxQingCeByHandActivity.this, "添加电线成功！", Toast.LENGTH_SHORT).show();
+
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        //do something
+                        AddDxQingCeByHandActivity.this.finish();
+                    }
+                }, 2000);    //延时2s执行
             }
             catch (Exception ex)
             {
