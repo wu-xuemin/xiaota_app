@@ -28,7 +28,7 @@ public class CommonUtility {
     public static boolean isEmail(String string) {
         if (string == null)
             return false;
-        String regEx1 = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+        String regEx1 = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
         Pattern p;
         Matcher m;
         p = Pattern.compile(regEx1);

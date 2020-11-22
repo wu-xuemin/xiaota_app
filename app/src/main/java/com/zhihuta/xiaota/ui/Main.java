@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
@@ -317,12 +318,28 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         mQRCodeView = (ZXingView) findViewById(R.id.zxingview_in_calculate);
         mQRCodeView.setDelegate(this);
         mDisplayScanResultTv = (TextView) findViewById(R.id.textView_display_scan_result_in_calculate);
+
         mContinueScanBt = (Button) findViewById(R.id.button_continue_scan_in_calculate);
         mContinueScanBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
  
                 startScan();
+            }
+        });
+
+        mResetScanResultInCaculateBt = (Button) findViewById(R.id.button_scan_again);
+        mResetScanResultInCaculateBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                textViewShowSumOfDistances.setText("0");
+                mDisplayScanResultTv.setText("");
+                mDistanceList.clear();
+                mScanResultDistanceList.clear();
+                mDistanceAdapter.notifyDataSetChanged();
+
+                startScan();
+                mSetDistanceLengthInCaculateBt.setEnabled(false);
             }
         });
 
@@ -334,12 +351,37 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
         mSetDistanceLengthInCaculateBt.setEnabled(true);
 
+        //扫描得到结果震动一下表示
+        Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        if (vibrator != null) {
+            vibrator.vibrate(200);
+        }
+
+        //获取结果后三秒后，重新开始扫描
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mQRCodeView.startSpot();
+            }
+        }, 3000);
+
+
         // 解析数据，并填入
-        currentDistanceData = JSONObject.parseObject(result, DistanceData.class);
-        if(currentDistanceData == null){
+        try {
+            currentDistanceData = JSONObject.parseObject(result, DistanceData.class);
+            if(currentDistanceData == null){
+                Log.i(TAG, "二维码格式不正确");
+                Toast.makeText(Main.this, "二维码格式不正确：" + result, Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
             Log.i(TAG, "二维码解析异常");
+            Toast.makeText(Main.this, "二维码解析异常：" + result, Toast.LENGTH_SHORT).show();
             return;
         }
+
         /**
          * 把二维码 累积起来，用于退出时筛选路径
          */
@@ -349,6 +391,28 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 return;
             }
         }
+
+
+        String rst = result.replace("distance","长度");
+        rst = rst.replace("preset_name","展现名称");
+        rst = rst.replace("qr_id","Id号");
+        rst = rst.replace("qr_name","名称");
+        rst = rst.replace("serial_number","序列号");
+        rst = rst.replace("type","类型");
+
+        if(currentDistanceData.getType().equals("0")){
+            rst = rst.replace("类型\":0","类型\": 固定码");
+        } else if(currentDistanceData.getType().equals("1")){
+            rst = rst.replace("类型\":1","类型: 通用码");
+        } else {
+            //不动
+            Toast.makeText(Main.this, "扫到不支持的码", Toast.LENGTH_SHORT).show();
+
+            return;
+        }
+        mDisplayScanResultTv.setText(rst);
+
+
         mScanResultDistanceList.add(currentDistanceData);
         if(mScanResultDistanceList.size() >1){
             //扫到第二个码时,程序自动将两个码之间所有的码自动添加进列表, 方便查看
@@ -366,22 +430,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                     });
 
         }
-
-        String rst = result.replace("distance","长度");
-        rst = rst.replace("preset_name","展现名称");
-        rst = rst.replace("qr_id","Id号");
-        rst = rst.replace("qr_name","名称");
-        rst = rst.replace("serial_number","序列号");
-        rst = rst.replace("type","类型");
-
-        if(currentDistanceData.getType().equals("0")){
-            rst = rst.replace("类型\":0","类型\": 固定码");
-        } else if(currentDistanceData.getType().equals("1")){
-            rst = rst.replace("类型\":1","类型: 通用码");
-        } else {
-            //不动
-        }
-        mDisplayScanResultTv.setText(rst);
     }
 
     @Override
@@ -1226,20 +1274,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 });
             }
         });
-        mResetScanResultInCaculateBt = (Button) findViewById(R.id.button_scan_again);
-        mResetScanResultInCaculateBt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                textViewShowSumOfDistances.setText("0");
-                mDisplayScanResultTv.setText("");
-                mDistanceList.clear();
-                mScanResultDistanceList.clear();
-                mDistanceAdapter.notifyDataSetChanged();
 
-                startScan();
-                mSetDistanceLengthInCaculateBt.setEnabled(false);
-            }
-        });
         mSetDistanceLengthInCaculateBt  = (Button) findViewById(R.id.button5);
         //初始为不可点击，扫码有结果时才enable
         mSetDistanceLengthInCaculateBt.setEnabled(false);
