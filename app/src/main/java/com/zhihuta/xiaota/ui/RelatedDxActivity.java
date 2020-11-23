@@ -152,7 +152,7 @@ public class RelatedDxActivity extends AppCompatActivity {
             //viewName可区分item及item内部控件
             switch (v.getId()){
                 case R.id.buttonDxDelete:
-                    Toast.makeText(RelatedDxActivity.this," 已选电线的 删除:" + (position+1),Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(RelatedDxActivity.this," 已选电线的 删除:" + (position+1),Toast.LENGTH_SHORT).show();
 
                     android.app.AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RelatedDxActivity.this);
                     alertDialogBuilder.setTitle("确认删除电线" + mDianxianList.get(position).getSerial_number() + "吗？")
@@ -161,12 +161,50 @@ public class RelatedDxActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+
+                                    String theUrl = RequestUrlUtility.build(URL.DEL_DX_OF_LUJING.replace("{id}",String.valueOf(mLujing.getId()))
+                                    .replace("{wires_id}",String.valueOf( mDianxianList.get(position).getId())));
+
+                                    mNetwork.delete(theUrl,null, new Handler(){
+                                        @Override
+                                        public void handleMessage(final Message msg) {
+                                            String errorMsg = "";
+
+                                            try {
+
+                                                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+
+                                                if (errorMsg!= null)
+                                                {
+                                                    Log.d("移除电线失败:", errorMsg);
+                                                    Toast.makeText(RelatedDxActivity.this, "移除电线失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                                                    return;
+                                                }
+
+                                                Toast.makeText(RelatedDxActivity.this, "移除电线成功", Toast.LENGTH_SHORT).show();
+
+                                                //删除成功，再刷新一次
+                                                getDxList();
+
+                                            } catch (Exception ex) {
+                                                Log.d("移除电线失败:", ex.getMessage());
+                                                Toast.makeText(RelatedDxActivity.this, "移除电线失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                                            }
+                                            finally {
+                                             }
+                                        }
+
+                                    }, (handler, msg)->{
+
+                                        handler.sendMessage(msg);
+                                    });
                                 }
                             })
                             .show();
-                    //TODO
-                    mDianxianList.remove(position);
-                    mDianXianAdapter.notifyDataSetChanged(); //刷新列表
+                     //mDianxianList.remove(position);
+                    //mDianXianAdapter.notifyDataSetChanged(); //刷新列表
+                    //直接删除可能会导致后面的下标对应的poistion，id出错，最好是重新刷新。
+
                     break;
 
                 default:
