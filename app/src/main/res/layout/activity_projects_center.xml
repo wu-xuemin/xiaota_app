@@ -7,11 +7,11 @@
     tools:context=".ui.ProjectsCenterActivity">
 
     <LinearLayout
-        android:id="@+id/toplayProject"
+        android:id="@+id/topProjectButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@id/dividerDxProject"
+        app:layout_constraintBottom_toTopOf="@id/dividerProjectHeadDecoration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -31,22 +31,24 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/dividerDxProject"
+        android:id="@+id/dividerProjectHeadDecoration"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@id/project_dingbu_biaoji"
-        app:layout_constraintTop_toBottomOf="@id/toplayProject" />
+        app:layout_constraintTop_toBottomOf="@id/topProjectButtons"
+        app:layout_constraintBottom_toTopOf="@id/project_list_head"
+         />
 
     <LinearLayout
-        android:id="@+id/project_dingbu_biaoji"
+        android:id="@+id/project_list_head"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@id/dividerDxProject22"
+        app:layout_constraintTop_toBottomOf="@id/dividerProjectHeadDecoration"
+        app:layout_constraintBottom_toTopOf="@id/dividerProjectListDecoration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dividerDxProject">
+        >
 
         <TextView
             android:id="@+id/textView_proName"
@@ -84,22 +86,23 @@
 
     <!--横线-->
     <View
-        android:id="@+id/dividerDxProject22"
+        android:id="@+id/dividerProjectListDecoration"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_weight="4"
         android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@id/cl_list_project"
+        app:layout_constraintTop_toBottomOf="@id/project_list_head"
         app:layout_constraintDimensionRatio="w,1:1"
-        app:layout_constraintTop_toBottomOf="@id/project_dingbu_biaoji"
+        app:layout_constraintBottom_toTopOf="@id/cl_list_project"
         tools:layout_editor_absoluteX="60dp" />
+    <!-- 设置了layout_height后 layout_constraintDimensionRatio 是不起作用的-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_list_project"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        app:layout_constraintTop_toBottomOf="@id/dividerDxProject22">
+        app:layout_constraintTop_toBottomOf="@id/dividerProjectListDecoration">
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollViewProject"
@@ -119,12 +122,19 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:weightSum="1">
+                    <!--android.support.v4.widget.SwipeRefreshLayout
+                        android:id="@+id/swipe_refresh_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        -->
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv_project"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1" />
+
+                    <!--/android.support.v4.widget.SwipeRefreshLayout -->
                 </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
