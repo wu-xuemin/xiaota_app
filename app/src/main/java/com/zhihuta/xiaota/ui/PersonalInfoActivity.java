@@ -210,9 +210,11 @@ public class PersonalInfoActivity extends AppCompatActivity{
             Toast.makeText(PersonalInfoActivity.this, "公司名不能为空", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if( mEtTel.getText().toString().trim().equals("") )
+
+        String phone = mEtTel.getText().toString().trim();
+        if(  !CommonUtility.isPhone(phone))
         {
-            Toast.makeText(PersonalInfoActivity.this, "手机号不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(PersonalInfoActivity.this, "手机号格式不正确", Toast.LENGTH_SHORT).show();
             return false;
         }
         if( mEtAdress.getText().toString().trim().equals("") )
