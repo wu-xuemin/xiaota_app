@@ -35,20 +35,18 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintTop_toBottomOf="@id/topProjectButtons"
         app:layout_constraintBottom_toTopOf="@id/project_list_head"
-         />
+        app:layout_constraintTop_toBottomOf="@id/topProjectButtons" />
 
     <LinearLayout
         android:id="@+id/project_list_head"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/dividerProjectHeadDecoration"
         app:layout_constraintBottom_toTopOf="@id/dividerProjectListDecoration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        >
+        app:layout_constraintTop_toBottomOf="@id/dividerProjectHeadDecoration">
 
         <TextView
             android:id="@+id/textView_proName"
@@ -91,9 +89,9 @@
         android:layout_height="1dp"
         android:layout_weight="4"
         android:background="?android:attr/listDivider"
-        app:layout_constraintTop_toBottomOf="@id/project_list_head"
-        app:layout_constraintDimensionRatio="w,1:1"
         app:layout_constraintBottom_toTopOf="@id/cl_list_project"
+        app:layout_constraintDimensionRatio="w,1:1"
+        app:layout_constraintTop_toBottomOf="@id/project_list_head"
         tools:layout_editor_absoluteX="60dp" />
     <!-- 设置了layout_height后 layout_constraintDimensionRatio 是不起作用的-->
 
@@ -101,43 +99,49 @@
         android:id="@+id/cl_list_project"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dividerProjectListDecoration">
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/nestedScrollViewProject"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/project_swipeRefresh"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:fillViewport="false"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="0dp">
 
-            <LinearLayout
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nestedScrollViewProject"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:fillViewport="false"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
+                <!--LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"-->
+
+                <!--LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:weightSum="1">
-                    <!--android.support.v4.widget.SwipeRefreshLayout
-                        android:id="@+id/swipe_refresh_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        -->
+                    android:weightSum="1"-->
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_project"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
 
-                    <!--/android.support.v4.widget.SwipeRefreshLayout -->
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_project"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+
+                <!--/LinearLayout -->
+                <!--/LinearLayout-->
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

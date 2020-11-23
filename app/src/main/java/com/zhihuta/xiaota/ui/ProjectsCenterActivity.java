@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -13,10 +14,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -35,6 +38,7 @@ import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -52,6 +56,7 @@ public class ProjectsCenterActivity extends AppCompatActivity {
     LoginResponseData loginResponseData;
     int  mRequestCodeFroPrev = 0;
 
+    SwipeRefreshLayout mSwipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,6 +151,56 @@ public class ProjectsCenterActivity extends AppCompatActivity {
         // 设置item及item中控件的点击事件
         mProjectAdapter.setOnItemClickListener(MyItemClickListener);
 
+        mSwipeRefreshLayout = findViewById(R.id.project_swipeRefresh);
+//        mSwipeRefreshLayout.setProgressViewOffset(false,100);
+//        mSwipeRefreshLayout.setProgressViewEndTarget();
+        //mSwipeRefreshLayout.setDistanceToTriggerSync(500);//default 64
+
+        setDistanceToTriggerSync(0.6f, 400);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+
+                String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
+                mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
+                    handler.sendMessage(msgGetProject);
+                });
+            }
+        });
+    }
+
+    //distance_factor 0.6, 500
+    void setDistanceToTriggerSync(float distance_factor, int trigger_distance)
+    {
+        try {
+
+            ViewTreeObserver vto = mSwipeRefreshLayout.getViewTreeObserver();
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                public void onGlobalLayout() {
+                    final DisplayMetrics metrics = getResources().getDisplayMetrics();
+                    Float mDistanceToTriggerSync = Math.min(((View) mSwipeRefreshLayout.getParent()).getHeight() * 0.5f, trigger_distance * metrics.density);
+                    try {
+//                        Field field = SwipeRefreshLayout.class.getDeclaredField("mTotalDragDistance");
+//                        field.setAccessible(true);
+//                        field.setFloat(mSwipeRefreshLayout, mDistanceToTriggerSync);
+
+                        mSwipeRefreshLayout.setDistanceToTriggerSync(mDistanceToTriggerSync.intValue());
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    ViewTreeObserver obs = mSwipeRefreshLayout.getViewTreeObserver();
+                    obs.removeOnGlobalLayoutListener(this);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 
     @SuppressLint("HandlerLeak")
@@ -246,19 +301,6 @@ public class ProjectsCenterActivity extends AppCompatActivity {
     @SuppressLint("HandlerLeak")
     class GetProjectListOfCompanyHandler extends Handler {
 
-        private boolean bIsGetting = false;
-
-        public boolean getIsGetting()
-        {
-            return bIsGetting;
-        }
-
-        public void setIsGetting(boolean getting)
-        {
-            bIsGetting = getting;
-        }
-
-
         @Override
         public void handleMessage(final Message msg) {
             String errorMsg = "";
@@ -302,7 +344,11 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                 }
                 mProjectAdapter = null;
                 mProjectAdapter = new ProjectAdapter(mProjectList, ProjectsCenterActivity.this, null);
-                mProjectRV.addItemDecoration(new DividerItemDecoration(ProjectsCenterActivity.this, DividerItemDecoration.VERTICAL));
+                if ( mProjectRV.getItemDecorationAt(0) == null)
+                {
+                    mProjectRV.addItemDecoration(new DividerItemDecoration(ProjectsCenterActivity.this, DividerItemDecoration.VERTICAL));
+                }
+
                 mProjectRV.setAdapter(mProjectAdapter);
                 mProjectAdapter.setOnItemClickListener(MyItemClickListener);
 
@@ -313,7 +359,8 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                 Log.d("项目获取 NG:", ex.getMessage());
             }
             finally {
-                setIsGetting(false);
+
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         }
     }
