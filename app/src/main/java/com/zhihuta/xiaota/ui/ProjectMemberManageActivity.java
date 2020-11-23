@@ -214,7 +214,10 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                 }
                 mMemberAdapter = null;
                 mMemberAdapter = new MemberAdapter(mMemberList, ProjectMemberManageActivity.this, null);
-                mMemberRV.addItemDecoration(new DividerItemDecoration(ProjectMemberManageActivity.this, DividerItemDecoration.VERTICAL));
+                if (mMemberRV.getItemDecorationCount() == 0)
+                {
+                    mMemberRV.addItemDecoration(new DividerItemDecoration(ProjectMemberManageActivity.this, DividerItemDecoration.VERTICAL));
+                }
                 mMemberRV.setAdapter(mMemberAdapter);
                 mMemberAdapter.setOnItemClickListener(MyItemClickListener);
 
@@ -330,7 +333,10 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mMemberRV.setLayoutManager(manager);
         mMemberAdapter = new MemberAdapter(mMemberList,this, null);
-        mMemberRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        if (mMemberRV.getItemDecorationCount() == 0)
+        {
+            mMemberRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        }
         mMemberRV.setAdapter(mMemberAdapter);
 
         // 设置item及item中控件的点击事件

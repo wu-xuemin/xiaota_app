@@ -113,7 +113,10 @@ public class WiresInCalculateActivity extends AppCompatActivity {
                     } else {
 
                         mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, WiresInCalculateActivity.this,Constant.REQUEST_CODE_CALCULATE_WIRES);
-                        mDxRV.addItemDecoration(new DividerItemDecoration(WiresInCalculateActivity.this, DividerItemDecoration.VERTICAL));
+                        if (mDxRV.getItemDecorationCount() == 0)
+                        {
+                            mDxRV.addItemDecoration(new DividerItemDecoration(WiresInCalculateActivity.this, DividerItemDecoration.VERTICAL));
+                        }
                         mDxRV.setAdapter(mDianXianAdapter);
                         mDianXianAdapter.notifyDataSetChanged();
 

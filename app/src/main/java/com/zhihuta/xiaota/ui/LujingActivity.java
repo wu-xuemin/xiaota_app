@@ -321,7 +321,10 @@ public class LujingActivity extends AppCompatActivity {
             }
 
             mDistanceAdapter = new DistanceAdapter(mDistanceList, LujingActivity.this);
-            mDistanceRV.addItemDecoration(new DividerItemDecoration(LujingActivity.this, DividerItemDecoration.VERTICAL));
+            if (mDistanceRV.getItemDecorationCount() == 0)
+            {
+                mDistanceRV.addItemDecoration(new DividerItemDecoration(LujingActivity.this, DividerItemDecoration.VERTICAL));
+            }
             mDistanceRV.setAdapter(mDistanceAdapter);
             mDistanceAdapter.notifyDataSetChanged();
             // 设置item及item中控件的点击事件

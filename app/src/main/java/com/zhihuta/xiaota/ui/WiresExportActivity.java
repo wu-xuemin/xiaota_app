@@ -104,7 +104,10 @@ public class WiresExportActivity extends AppCompatActivity {
                     } else {
 
                         mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, WiresExportActivity.this,Constant.REQUEST_CODE_CALCULATE_SUMMARIZE_WIRES);
-                        mDxRV.addItemDecoration(new DividerItemDecoration(WiresExportActivity.this, DividerItemDecoration.VERTICAL));
+                        if (mDxRV.getItemDecorationCount() == 0)
+                        {
+                            mDxRV.addItemDecoration(new DividerItemDecoration(WiresExportActivity.this, DividerItemDecoration.VERTICAL));
+                        }
                         mDxRV.setAdapter(mDianXianAdapter);
                         mDianXianAdapter.notifyDataSetChanged();
                     }

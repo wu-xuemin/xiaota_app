@@ -463,7 +463,10 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         manager5.setOrientation(LinearLayoutManager.VERTICAL);
         mDistanceRV.setLayoutManager(manager5);
         mDistanceAdapter = new DistanceAdapter(mDistanceList, this);
-        mDistanceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        if (mDistanceRV.getItemDecorationCount() == 0)
+        {
+            mDistanceRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        }
         mDistanceRV.setAdapter(mDistanceAdapter);
 
         // 设置item及item中控件的点击事件
@@ -644,7 +647,10 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             }
 
             mDistanceAdapter = new DistanceAdapter(mDistanceList, Main.this);
-            mDistanceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+            if (mDistanceRV.getItemDecorationCount() == 0)
+            {
+                mDistanceRV.addItemDecoration(new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL));
+            }
             mDistanceRV.setAdapter(mDistanceAdapter);
             mDistanceAdapter.notifyDataSetChanged();
 

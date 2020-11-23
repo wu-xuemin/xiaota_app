@@ -124,7 +124,9 @@ public class DxImportHistoryActivity extends AppCompatActivity {
             }
 
             dxImportHistoryAdapter = new DxImportHistoryAdapter(dxImportHistoryList, DxImportHistoryActivity.this);
-            mDxHistoryRV.addItemDecoration(new DividerItemDecoration(DxImportHistoryActivity.this, DividerItemDecoration.VERTICAL));
+            if (mDxHistoryRV.getItemDecorationCount() == 0){
+                mDxHistoryRV.addItemDecoration(new DividerItemDecoration(DxImportHistoryActivity.this, DividerItemDecoration.VERTICAL));
+            }
             mDxHistoryRV.setAdapter(dxImportHistoryAdapter);
             dxImportHistoryAdapter.notifyDataSetChanged();
         }
@@ -137,7 +139,9 @@ public class DxImportHistoryActivity extends AppCompatActivity {
         manager5.setOrientation(LinearLayoutManager.VERTICAL);
         mDxHistoryRV.setLayoutManager(manager5);
         dxImportHistoryAdapter = new DxImportHistoryAdapter(dxImportHistoryList, this);
-        mDxHistoryRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        if (mDxHistoryRV.getItemDecorationCount() == 0){
+            mDxHistoryRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        }
         mDxHistoryRV.setAdapter(dxImportHistoryAdapter);
 
     }

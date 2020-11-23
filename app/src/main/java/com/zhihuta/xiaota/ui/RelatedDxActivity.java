@@ -134,7 +134,10 @@ public class RelatedDxActivity extends AppCompatActivity {
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mDxRV.setLayoutManager(manager);
         mDianXianAdapter = new DianXianQingceAdapter(mDianxianList,this,Constant.REQUEST_CODE_LUJING_RELATED_WIRES);
-        mDxRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        if (mDxRV.getItemDecorationCount() == 0)
+        {
+            mDxRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        }
         mDxRV.setAdapter(mDianXianAdapter);
 
         // 设置item及item中控件的点击事件
@@ -286,7 +289,10 @@ public class RelatedDxActivity extends AppCompatActivity {
                     } else {
 
                         mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, RelatedDxActivity.this,Constant.REQUEST_CODE_LUJING_RELATED_WIRES);
-                        mDxRV.addItemDecoration(new DividerItemDecoration(RelatedDxActivity.this, DividerItemDecoration.VERTICAL));
+                        if (mDxRV.getItemDecorationCount() == 0)
+                        {
+                            mDxRV.addItemDecoration(new DividerItemDecoration(RelatedDxActivity.this, DividerItemDecoration.VERTICAL));
+                        }
                         mDxRV.setAdapter(mDianXianAdapter);
                         mDianXianAdapter.notifyDataSetChanged();
                         mDianXianAdapter.setOnItemClickListener(MyItemClickListener);

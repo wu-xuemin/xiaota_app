@@ -145,7 +145,10 @@ public class ProjectsCenterActivity extends AppCompatActivity {
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mProjectRV.setLayoutManager(manager);
         mProjectAdapter = new ProjectAdapter(mProjectList,this, null);
-        mProjectRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        if (mProjectRV.getItemDecorationCount() == 0)
+        {
+            mProjectRV.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        }
         mProjectRV.setAdapter(mProjectAdapter);
 
         // 设置item及item中控件的点击事件
@@ -344,7 +347,7 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                 }
                 mProjectAdapter = null;
                 mProjectAdapter = new ProjectAdapter(mProjectList, ProjectsCenterActivity.this, null);
-                if ( mProjectRV.getItemDecorationAt(0) == null)
+                if ( mProjectRV.getItemDecorationCount() == 0)
                 {
                     mProjectRV.addItemDecoration(new DividerItemDecoration(ProjectsCenterActivity.this, DividerItemDecoration.VERTICAL));
                 }
