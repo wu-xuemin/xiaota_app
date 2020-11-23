@@ -135,7 +135,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
                 /**
                  * 在本页添加到服务端，不要传回到路径页面去。
                  */
-                LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+                LinkedHashMap<String, String> postValue = new LinkedHashMap<>();
                 String IDs = null;
                 for(int j=0; j<mCheckedDxList.size(); j++) { //  "wires_id":[ 814,815]
                     if(j == 0) {
@@ -144,11 +144,13 @@ public class RelateNewDxActivity extends AppCompatActivity {
                         IDs = IDs + "," + String.valueOf(mCheckedDxList.get(j).getId());
                     }
                 }
-                mPostValue.put("wires_id", IDs);
-                String theUrl = Constant.putDxOfLujingUrl.replace("{lujingId}", String.valueOf(mLujing.getId()));
-                mNetwork.putPathWires(theUrl, mPostValue, new PutDxHandler());
+                postValue.put("wires_id", IDs);
+                String theUrl = RequestUrlUtility.build(URL.PUT_DX_OF_LUJING.replace("{lujingId}",String.valueOf(mLujing.getId())));
 
-                ///todo 刷新列表 ？ 否则用户不清楚哪些已经加过了，或者回去电线界面时删除多余的。
+                 mNetwork.put(theUrl,postValue,  new PutDxHandler(), (handler, msg)->{
+
+                     handler.sendMessage(msg);
+                });
 
             }
         });
@@ -195,12 +197,45 @@ public class RelateNewDxActivity extends AppCompatActivity {
                 mSearchView.setIconified(false);
             }
         });
-
     }
 
     @SuppressLint("HandlerLeak")
     class PutDxHandler extends Handler {
-//todo
+
+        @Override
+        public void handleMessage(final Message msg) {
+
+            //////////////////////
+            String errorMsg = "";
+
+            try {
+
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg != null)
+                {
+                    Log.d("关联电线失败:", errorMsg);
+                    Toast.makeText(RelateNewDxActivity.this, "关联电线失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+
+                    return;
+                }
+
+                Toast.makeText(RelateNewDxActivity.this, "关联电线成功！" + errorMsg, Toast.LENGTH_SHORT).show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                }, 1000);
+
+            }
+            catch (Exception ex)
+            {
+                Log.d("关联电线失败:", ex.getMessage());
+            }
+            finally {
+
+            }
+        }
     }
     @SuppressLint("HandlerLeak")
     class GetCandidateDxListHandler extends Handler {
