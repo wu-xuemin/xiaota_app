@@ -1,5 +1,13 @@
 package com.zhihuta.xiaota.bean.basic;
 
+import android.content.ContextWrapper;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.ViewTreeObserver;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.alibaba.fastjson.JSONObject;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 
@@ -51,5 +59,39 @@ public class CommonUtility {
             return true;
         else
             return false;
+    }
+
+    //distance_factor 0.6, 500
+    public static void setDistanceToTriggerSync(SwipeRefreshLayout mSwipeRefreshLayout, ContextWrapper contextWrapper, float distance_factor, int trigger_distance)
+    {
+
+        try {
+
+            ViewTreeObserver vto = mSwipeRefreshLayout.getViewTreeObserver();
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                public void onGlobalLayout() {
+                    final DisplayMetrics metrics = contextWrapper.getResources().getDisplayMetrics();
+                    Float mDistanceToTriggerSync = Math.min(((View) mSwipeRefreshLayout.getParent()).getHeight() * 0.5f, trigger_distance * metrics.density);
+                    try {
+//                        Field field = SwipeRefreshLayout.class.getDeclaredField("mTotalDragDistance");
+//                        field.setAccessible(true);
+//                        field.setFloat(mSwipeRefreshLayout, mDistanceToTriggerSync);
+
+                        mSwipeRefreshLayout.setDistanceToTriggerSync(mDistanceToTriggerSync.intValue());
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    ViewTreeObserver obs = mSwipeRefreshLayout.getViewTreeObserver();
+                    obs.removeOnGlobalLayoutListener(this);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 }

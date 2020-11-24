@@ -159,7 +159,7 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 //        mSwipeRefreshLayout.setProgressViewEndTarget();
         //mSwipeRefreshLayout.setDistanceToTriggerSync(500);//default 64
 
-        setDistanceToTriggerSync(0.6f, 400);
+        CommonUtility.setDistanceToTriggerSync(mSwipeRefreshLayout,this,0.6f, 400);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -171,39 +171,6 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    //distance_factor 0.6, 500
-    void setDistanceToTriggerSync(float distance_factor, int trigger_distance)
-    {
-        try {
-
-            ViewTreeObserver vto = mSwipeRefreshLayout.getViewTreeObserver();
-            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
-                public void onGlobalLayout() {
-                    final DisplayMetrics metrics = getResources().getDisplayMetrics();
-                    Float mDistanceToTriggerSync = Math.min(((View) mSwipeRefreshLayout.getParent()).getHeight() * 0.5f, trigger_distance * metrics.density);
-                    try {
-//                        Field field = SwipeRefreshLayout.class.getDeclaredField("mTotalDragDistance");
-//                        field.setAccessible(true);
-//                        field.setFloat(mSwipeRefreshLayout, mDistanceToTriggerSync);
-
-                        mSwipeRefreshLayout.setDistanceToTriggerSync(mDistanceToTriggerSync.intValue());
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    ViewTreeObserver obs = mSwipeRefreshLayout.getViewTreeObserver();
-                    obs.removeOnGlobalLayoutListener(this);
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-
-        }
     }
 
     @SuppressLint("HandlerLeak")

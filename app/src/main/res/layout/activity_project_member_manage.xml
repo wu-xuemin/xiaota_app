@@ -100,6 +100,12 @@
         android:layout_weight="1"
         app:layout_constraintTop_toBottomOf="@id/dividerProjectMember22">
 
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/project_member_swipeRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            tools:ignore="MissingConstraints">
+
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollViewProjectMember"
             android:layout_width="match_parent"
@@ -127,6 +133,9 @@
                 </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

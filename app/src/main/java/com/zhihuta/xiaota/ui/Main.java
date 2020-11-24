@@ -5,11 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -160,19 +160,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
     LinkedHashMap<String, String> mDxQingCeGetParameters = new LinkedHashMap<>();
 
-
-//    private LujingAdapter mLujingShaixuanAdapter;
-//    private ArrayList<LujingData> mLujingShaixuanList = new ArrayList<>();
-
     private Network mNetwork;
-    private GetUserHandler getUserHandler;
-//    private GetDxListHandler getDxListHandler;
-//    private GetLujingListHandler getLujingListHandler;
     private GetDistanceListHandler  getDistanceListHandler;
-
-
-    private ArrayList<DistanceData> mDistanceListForCalculate = new ArrayList<>(); //从扫码筛选获取的间距列表, 在计算中心
-    private DistanceAdapter mDistanceCalculateAdapter;
 
     /**
      * 以下，主界面-计算中心-计算两点距离
@@ -196,6 +185,11 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     LoginResponseData loginResponseData;
 
     boolean mConfirmedExit = false;
+
+    SwipeRefreshLayout mCurrentSwipeRefreshLayout;
+    SwipeRefreshLayout mWiresRefreshLayout;
+    SwipeRefreshLayout mLujingRefreshLayout;
+    SwipeRefreshLayout mCaculateRefreshLayout;
 
     //进入的是哪个项目
     //private ProjectData mProject;
@@ -224,14 +218,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         //
 
         mNetwork = Network.Instance(getApplication());
-        getUserHandler = new Main.GetUserHandler();
-//        getDxListHandler = new GetDxListHandler();
-        //getLujingListHandler = new GetLujingListHandler();
         getDistanceListHandler = new GetDistanceListHandler();
         initViews();//初始化控件
         initEvents();//初始化事件
-
-//        mNetwork.fetchDxListData(Constant.getDxListUrl8083, mPostValue, getDxListHandler);///ok
 
 		//限定能获取到的范围，
 		// /*try_scope:  0= only itself, 1 = department, 2=company,3=all compay*/
@@ -243,11 +232,43 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         initViewsLujing();
         initViewsCompute();
         initComputeScan();
-        showDistanceList();
+        initCalculateDistanceList();
+
+        initRefreshLayout();
+
         //after init ,select the default tab
         tabFlag = "";
         selectTab(R.id.id_tab_lujing_moxing);//默认选中第2个Tab
+    }
 
+    void initRefreshLayout()
+    {
+        mWiresRefreshLayout = findViewById(R.id.wires_swipeRefresh);
+        CommonUtility.setDistanceToTriggerSync(mWiresRefreshLayout,this,0.6f, 400);
+        mWiresRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshPage(true);
+            }
+        });
+
+        mLujingRefreshLayout = findViewById(R.id.lujing_swipeRefresh);
+        CommonUtility.setDistanceToTriggerSync(mLujingRefreshLayout,this,0.6f, 400);
+        mLujingRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshPage(true);
+            }
+        });
+
+        mCaculateRefreshLayout = findViewById(R.id.caculate_swipeRefresh);
+        CommonUtility.setDistanceToTriggerSync(mCaculateRefreshLayout,this,0.6f, 400);
+        mCaculateRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshPage(true);
+            }
+        });
     }
 
     @Override
@@ -313,15 +334,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         mQRCodeView = (ZXingView) findViewById(R.id.zxingview_in_calculate);
         mQRCodeView.setDelegate(this);
         mDisplayScanResultTv = (TextView) findViewById(R.id.textView_display_scan_result_in_calculate);
-
-//        mContinueScanBt = (Button) findViewById(R.id.button_continue_scan_in_calculate);
-//        mContinueScanBt.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                startScan();
-//            }
-//        });
 
         mResetScanResultInCaculateBt = (Button) findViewById(R.id.button_scan_again);
         mResetScanResultInCaculateBt.setOnClickListener(new View.OnClickListener() {
@@ -451,7 +463,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     }
 
     //计算中心-计算两点距离-扫描的结果
-    private void showDistanceList(){
+    private void initCalculateDistanceList(){
         //间距列表
         mDistanceRV = (RecyclerView) findViewById(R.id.rv_distance_in_calculate);
         LinearLayoutManager manager5 = new LinearLayoutManager(this);
@@ -489,99 +501,107 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         }
         @Override
         public void handleMessage(final Message msg) {
-//            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
-//                mLoadingProcessDialog.dismiss();
-//            }
-            String errorMsg = "";
-            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
-            if (errorMsg != null)
-            {
-                Log.d("路径获取 NG:", errorMsg);
-                Toast.makeText(Main.this, "路径获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
-                return;
-            }
 
+            try {
 
-            Result result= (Result)(msg.obj);
-            PathsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), PathsResponse.class);
-            mLujingList = new ArrayList<>();
-
-            for (PathGetObject pathObj : responseData.paths) {
-
-                LujingData lujingData = new LujingData();
-                lujingData.setId(pathObj.id);
-                lujingData.setName(pathObj.name);
-                lujingData.setCreator(pathObj.creator);
-                //lujingData.setLujingCaozuo(pathObj.);
-                lujingData.setCreate_time(pathObj.createTime);
-
-                mLujingList.add(lujingData);
-            }
-
-            Log.d(TAG, "获取路径: size: " + mLujingList.size());
-
-            if (mLujingList.size() == 0) {
-                Toast.makeText(Main.this, "路径数量为0！", Toast.LENGTH_SHORT).show();
-            }
-
-            String strModeIdentifier = "";
-            if (strMode.equals("在计算中心"))////在计算中心,在路径模型,在电线清册
-            {
-                strModeIdentifier = Constant.FLAG_LUJING_IN_CALCULATE;
-                if (mLujingInCalculateAdapter == null)
+                String errorMsg = "";
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg != null)
                 {
-                    mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
-                    mDividerItemDecorationInCalcuate = null;
-                    mDividerItemDecorationInCalcuate = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
-                    mLujingInCalculateRV.addItemDecoration(mDividerItemDecorationInCalcuate);
-                    mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
-
-                    // 设置item及item中控件的点击事件
-                    mLujingInCalculateAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                    Log.d("路径获取 NG:", errorMsg);
+                    Toast.makeText(Main.this, "路径获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
-                if (mLujingInCalculateAdapter != null && !mLujingInCalculateAdapter.getStrMode().equals(tabFlag)) {//mode is switched,
-                    mLujingInCalculateAdapter.setOnItemClickListener(null);
-                    mLujingInCalculateRV.removeItemDecoration(mDividerItemDecorationInCalcuate);
-                    mDividerItemDecorationInCalcuate = null;
-                    mDividerItemDecorationInCalcuate = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
-                    mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
+                Result result= (Result)(msg.obj);
+                PathsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), PathsResponse.class);
+                mLujingList = new ArrayList<>();
 
-                    mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
-                    mLujingInCalculateAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
-                    mLujingInCalculateAdapter.updateDataSource(mLujingList, strModeIdentifier);
+                for (PathGetObject pathObj : responseData.paths) {
+
+                    LujingData lujingData = new LujingData();
+                    lujingData.setId(pathObj.id);
+                    lujingData.setName(pathObj.name);
+                    lujingData.setCreator(pathObj.creator);
+                    //lujingData.setLujingCaozuo(pathObj.);
+                    lujingData.setCreate_time(pathObj.createTime);
+
+                    mLujingList.add(lujingData);
                 }
 
+                Log.d(TAG, "获取路径: size: " + mLujingList.size());
 
-            } else if (strMode.equals("在路径模型")) {
+                if (mLujingList.size() == 0) {
+                    Toast.makeText(Main.this, "路径数量为0！", Toast.LENGTH_SHORT).show();
+                }
 
-                strModeIdentifier = Constant.FLAG_LUJING_IN_LUJING;
-
-                if (mLujingAdapter == null)
+                String strModeIdentifier = "";
+                if (strMode.equals("在计算中心"))////在计算中心,在路径模型,在电线清册
                 {
-                    mLujingAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
-                    mDividerItemDecoration=null;
-                    mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
-                    mLujingRV.addItemDecoration(mDividerItemDecoration);
-                    mLujingRV.setAdapter(mLujingAdapter);
+                    strModeIdentifier = Constant.FLAG_LUJING_IN_CALCULATE;
+                    if (mLujingInCalculateAdapter == null)
+                    {
+                        mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
+                        mDividerItemDecorationInCalcuate = null;
+                        mDividerItemDecorationInCalcuate = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+                        mLujingInCalculateRV.addItemDecoration(mDividerItemDecorationInCalcuate);
+                        mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
 
-                    // 设置item及item中控件的点击事件
-                    mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
-                }
+                        // 设置item及item中控件的点击事件
+                        mLujingInCalculateAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                    }
 
-                if (mLujingAdapter != null && !mLujingAdapter.getStrMode().equals(tabFlag)) {//mode is switched,
-                    mLujingAdapter.setOnItemClickListener(null);
-                    mLujingRV.removeItemDecoration(mDividerItemDecoration);
-                    mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
-                    mLujingAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
-                    mLujingRV.addItemDecoration(mDividerItemDecoration);
-                    mLujingRV.setAdapter(mLujingAdapter);
+                    if (mLujingInCalculateAdapter != null && !mLujingInCalculateAdapter.getStrMode().equals(tabFlag)) {//mode is switched,
+                        mLujingInCalculateAdapter.setOnItemClickListener(null);
+                        mLujingInCalculateRV.removeItemDecoration(mDividerItemDecorationInCalcuate);
+                        mDividerItemDecorationInCalcuate = null;
+                        mDividerItemDecorationInCalcuate = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+                        mLujingInCalculateAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
 
-                    // 设置item及item中控件的点击事件
-                    mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
-                    mLujingAdapter.updateDataSource(mLujingList, strModeIdentifier);
+                        mLujingInCalculateRV.setAdapter(mLujingInCalculateAdapter);
+                        mLujingInCalculateAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                        mLujingInCalculateAdapter.updateDataSource(mLujingList, strModeIdentifier);
+                    }
+
+
+                } else if (strMode.equals("在路径模型")) {
+
+                    strModeIdentifier = Constant.FLAG_LUJING_IN_LUJING;
+
+                    if (mLujingAdapter == null)
+                    {
+                        mLujingAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
+                        mDividerItemDecoration=null;
+                        mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+                        mLujingRV.addItemDecoration(mDividerItemDecoration);
+                        mLujingRV.setAdapter(mLujingAdapter);
+
+                        // 设置item及item中控件的点击事件
+                        mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                    }
+
+                    if (mLujingAdapter != null && !mLujingAdapter.getStrMode().equals(tabFlag)) {//mode is switched,
+                        mLujingAdapter.setOnItemClickListener(null);
+                        mLujingRV.removeItemDecoration(mDividerItemDecoration);
+                        mDividerItemDecoration = new DividerItemDecoration(Main.this, DividerItemDecoration.VERTICAL);
+                        mLujingAdapter = new LujingAdapter(mLujingList, Main.this, strModeIdentifier);
+                        mLujingRV.addItemDecoration(mDividerItemDecoration);
+                        mLujingRV.setAdapter(mLujingAdapter);
+
+                        // 设置item及item中控件的点击事件
+                        mLujingAdapter.setOnItemClickListener(MyItemClickListener); /// adapter的 item的监听
+                        mLujingAdapter.updateDataSource(mLujingList, strModeIdentifier);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+
+            }
+            finally {
+                mCurrentSwipeRefreshLayout.setRefreshing(false);
+            }
+
         }
     }
 
@@ -755,26 +775,10 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 Log.d("电线获取 NG:", ex.getMessage());
             }
             finally {
-
+                mCurrentSwipeRefreshLayout.setRefreshing(false);
             }
         }//handle message
 
-    }
-
-    @SuppressLint("HandlerLeak")
-    class GetUserHandler extends Handler {
-        @Override
-        public void handleMessage(final Message msg) {
-
-
-            if (msg.what == Network.OK) {
-                Log.d("GetUserHandler", "OKKK");
-
-            } else {
-                String errorMsg = (String) msg.obj;
-                Log.d("GetUserHandler NG:", errorMsg);
-            }
-        }
     }
 
     @SuppressLint("HandlerLeak")
@@ -949,16 +953,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             }
         });
 
-//        //获取传递过来的信息
-//        Intent intent = getIntent();
-//        Bundle bundle = intent.getExtras();
-//        mDianxianQingCeList = (ArrayList<DianxianQingCeData>) bundle.getSerializable("mDianxianQingCeList");
-//
-//        if (mDianxianQingCeList != null) {
-//            Toast.makeText(this, "得到 电线清单 size:" + mDianxianQingCeList.size(), Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(this, "电线清单 为空！！！", Toast.LENGTH_SHORT).show();
-//        }
         //电线列表
         mQingceRV = (RecyclerView) findViewById(R.id.rv_dianxian);
         LinearLayoutManager manager = new LinearLayoutManager(this);
@@ -1195,19 +1189,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             }
         }
     }
-
-    /**
-     * 真正带着数据切换到路径界面
-     */
-//    private void FinalGotoLujingActivity(){
-//        Intent intent = new Intent(Main.this, LujingActivity.class);
-//        Bundle bundle = new Bundle();
-//
-//        bundle.putSerializable("requestCode", (Serializable) mRequestCode);
-//        bundle.putSerializable("mLujingToPass", mLujingToPass);
-//        intent.putExtras(bundle);
-//        startActivityForResult(intent, mRequestCode);
-//    }
 
     private void FinalGotoLujingActivity(int requestCode, LujingData lujingData){
         Intent intent = new Intent(Main.this, LujingActivity.class);
@@ -1585,6 +1566,23 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     {//use the filter to request data
         super.onRestart();
         Log.i(TAG, "onRestart");
+        refreshPage(true);
+    }
+
+    void  refreshPage( boolean bRefresh)
+    {
+        if (!bRefresh)
+        {
+            return;
+        }
+
+        if (mCurrentSwipeRefreshLayout == null)
+        {
+            return;
+        }
+
+        mCurrentSwipeRefreshLayout.setRefreshing(true);
+
         if (tabFlag.equals("在电线清册") )
         {
             String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
@@ -1605,9 +1603,13 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag),(handler, msg2)->{
                 handler.sendMessage(msg2);
             });
-
+        }
+        else
+        {
+            mCurrentSwipeRefreshLayout.setRefreshing(false);
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -1642,12 +1644,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
     //进行选中Tab的处理
     private void selectTab(int i) {
-        //获取FragmentManager对象
-        FragmentManager manager = getSupportFragmentManager();
-        //获取FragmentTransaction对象
-//        FragmentTransaction transaction = manager.beginTransaction();
-        //先隐藏所有的Fragment
-//        hideFragments(transaction);
+
+        boolean bRefresh = false;
 
         String oldTabTag = tabFlag;
         switch (i) {
@@ -1657,27 +1655,15 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 mQingceImg.setImageResource(R.mipmap.tab_dx_qingce_pressed);
                 if(!oldTabTag.equals(tabFlag) )
                 {
-                    //如果微信对应的Fragment没有实例化，则进行实例化，并显示出来
-//                    if (mFragDxQingce == null) {
-//                        mFragDxQingce = new WeixinFragment();
-////                    transaction.add(R.id.layout_dianxian_qingce_id, mFragWeinxin);
-//                        transaction.add(R.id.layout_dianxian_qingce_id, mFragDxQingce);
-//                    } else {
-//                        //如果微信对应的Fragment已经实例化，则直接显示出来
-//                        transaction.show(mFragDxQingce);
-//                    }
                     mLayoutQingCe.setVisibility(View.VISIBLE);
-//                mLayoutOrder.setVisibility(View.GONE);
                     mLayoutLujing.setVisibility(View.GONE);
                     mLayoutCompute.setVisibility(View.GONE);
                     stopScan();
 
-                    //get list
-                    String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-                    mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg)->{
-                        handler.sendMessage(msg);
-                    });
+                    bRefresh = true;
                 }
+
+                mCurrentSwipeRefreshLayout = mWiresRefreshLayout;
 
                 break;
             case R.id.id_tab_lujing_moxing:
@@ -1689,17 +1675,13 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                     mLayoutQingCe.setVisibility(View.GONE);
                     mLayoutLujing.setVisibility(View.VISIBLE);
                     mLayoutCompute.setVisibility(View.GONE);
-//                    if (mFragLujingMoxing == null) {
-//                        mFragLujingMoxing = new AddressFragment();
-//                        transaction.add(R.id.layout_dianxian_qingce_id, mFragLujingMoxing);
-//                    } else {
-//                        transaction.show(mFragLujingMoxing);
-//                    }
+
                     stopScan();
-                    mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler, msg2)->{
-                        handler.sendMessage(msg2);
-                    });
+
+                    bRefresh = true;
                 }
+
+                mCurrentSwipeRefreshLayout = mLujingRefreshLayout;
 
                 break;
             case R.id.id_tab_caculatecenter:
@@ -1712,16 +1694,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                     mLayoutCompute.setVisibility(View.VISIBLE);
                     // 在计算tab 默认看到的是计算路径电线长度，隐藏两点间距的
                     mLayoutComputeDistance.setVisibility(View.GONE);
-                    mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
-                        handler.sendMessage(msg);
-                    });
 
+                    bRefresh = true;
                 }
-
+                mCurrentSwipeRefreshLayout = mCaculateRefreshLayout;
                 break;
         }
-        //不要忘记提交事务
-//        transaction.commit();
+
+        refreshPage(bRefresh);
     }
 
     private void  startScan(){

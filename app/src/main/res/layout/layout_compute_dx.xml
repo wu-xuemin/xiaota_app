@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_compute_dianxian"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -82,31 +83,27 @@
             android:layout_width="wrap_content"
             android:layout_height="1dp"
             android:background="#008577" />
-        <androidx.core.widget.NestedScrollView
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/caculate_swipeRefresh"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fillViewport="false">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:ignore="MissingConstraints">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
+                <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:weightSum="1">
+                    android:fillViewport="true">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv_lujing_compute"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1" />
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
 
+                </androidx.core.widget.NestedScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>>
     </LinearLayout>
 
 </LinearLayout>

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -48,6 +49,8 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
     private RecyclerView mMemberRV;
 
     private Network mNetwork;
+
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,24 +154,22 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
             }
         });
 
+        requestProjectMemberList();
 
-        String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
-        mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msg)->{
-            handler.sendMessage(msg);
+        mSwipeRefreshLayout = findViewById(R.id.project_member_swipeRefresh);
+        CommonUtility.setDistanceToTriggerSync(mSwipeRefreshLayout,this,0.6f, 400);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+
+                requestProjectMemberList();
+            }
         });
     }
 
     @SuppressLint("HandlerLeak")
     class GetProjectMemberListHandler extends Handler {
-
-        private boolean bIsGetting = false;
-        public boolean getIsGetting()
-        {
-            return bIsGetting;
-        }
-        public void setIsGetting(boolean getting) {
-            bIsGetting = getting;
-        }
 
         @Override
         public void handleMessage(final Message msg) {
@@ -228,7 +229,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                 Log.d("项目成员获取 NG:", ex.getMessage());
             }
             finally {
-                setIsGetting(false);
+                 mSwipeRefreshLayout.setRefreshing(false);
             }
         }
     }
@@ -266,10 +267,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                 Result result= (Result)(msg.obj);
                 Toast.makeText(ProjectMemberManageActivity.this, "添加成员成功", Toast.LENGTH_SHORT).show();
                 //成员添加成功，再刷新一次
-                String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
-                mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msgGetMember)->{
-                    handler.sendMessage(msgGetMember);
-                });
+                requestProjectMemberList();
 
             } catch (Exception ex) {
                 Log.d("添加成员 NG:", ex.getMessage());
@@ -280,26 +278,19 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
         }
     }
 
+    void requestProjectMemberList()
+    {
+        String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
+        mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msgGetMember)->{
+            handler.sendMessage(msgGetMember);
+        });
+    }
     @SuppressLint("HandlerLeak")
     class DeleteProjectMemberListHandler extends Handler {
-
-        private boolean bIsGetting = false;
-
-        public boolean getIsGetting()
-        {
-            return bIsGetting;
-        }
-
-        public void setIsGetting(boolean getting)
-        {
-            bIsGetting = getting;
-        }
-
 
         @Override
         public void handleMessage(final Message msg) {
             String errorMsg = "";
-
 
             try {
                 errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
@@ -313,20 +304,19 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
 
                 Toast.makeText(ProjectMemberManageActivity.this, "删除成员成功", Toast.LENGTH_SHORT).show();
                 //成员删除成功，再刷新一次
-                String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
-                mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msgGetMember)->{
-                    handler.sendMessage(msgGetMember);
-                });
+                requestProjectMemberList();
 
             } catch (Exception ex) {
                 Log.d("删除成员 NG:", ex.getMessage());
             }
             finally {
-                setIsGetting(false);
+
             }
         }
     }
     private void showMemberList(){
+
+
         //成员列表
         mMemberRV = (RecyclerView) findViewById(R.id.rv_project_member);
         LinearLayoutManager manager = new LinearLayoutManager(this);
