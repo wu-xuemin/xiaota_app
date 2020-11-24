@@ -154,7 +154,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
             }
         });
 
-        requestProjectMemberList();
+        refreshLayout();
 
         mSwipeRefreshLayout = findViewById(R.id.project_member_swipeRefresh);
         CommonUtility.setDistanceToTriggerSync(mSwipeRefreshLayout,this,0.6f, 400);
@@ -163,7 +163,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
             public void onRefresh() {
                 mSwipeRefreshLayout.setRefreshing(true);
 
-                requestProjectMemberList();
+                refreshLayout();
             }
         });
     }
@@ -267,7 +267,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                 Result result= (Result)(msg.obj);
                 Toast.makeText(ProjectMemberManageActivity.this, "添加成员成功", Toast.LENGTH_SHORT).show();
                 //成员添加成功，再刷新一次
-                requestProjectMemberList();
+                refreshLayout();
 
             } catch (Exception ex) {
                 Log.d("添加成员 NG:", ex.getMessage());
@@ -278,7 +278,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
         }
     }
 
-    void requestProjectMemberList()
+    void refreshLayout()
     {
         String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
         mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msgGetMember)->{
@@ -304,7 +304,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
 
                 Toast.makeText(ProjectMemberManageActivity.this, "删除成员成功", Toast.LENGTH_SHORT).show();
                 //成员删除成功，再刷新一次
-                requestProjectMemberList();
+                refreshLayout();
 
             } catch (Exception ex) {
                 Log.d("删除成员 NG:", ex.getMessage());
@@ -356,6 +356,8 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
                     mNetwork.delete(url, deleteProjectMemberParameters, new DeleteProjectMemberListHandler(),(handler, msgGetMember)->{
                         handler.sendMessage(msgGetMember);
                     });
+
+
                     break;
                 default:
                     break;
