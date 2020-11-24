@@ -10,17 +10,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.GsonBuilder;
-import com.google.zxing.common.StringUtils;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.HttpResponseHandler;
 import com.zhihuta.xiaota.bean.basic.Result;
-import com.zhihuta.xiaota.bean.response.DistanceResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.DxResponseDataWrap;
-import com.zhihuta.xiaota.bean.response.LujingResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.MsgFailResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.UserResponseDataWrap;
 import com.zhihuta.xiaota.ui.XiaotaApp;
@@ -28,9 +23,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zhihuta.xiaota.util.ShowMessage;
 
-import org.apache.poi.util.StringUtil;
-
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -163,6 +160,115 @@ public class Network {
                     {
                         msg.obj =  "http get :net work request cannot reach!";
                     }
+
+                } catch (Exception e) {
+
+                    msg.what = NG;
+                    msg.obj = "Network error!";
+                    Log.d(TAG, "http get : " + e + e.getMessage() + e.getCause());
+                } finally {
+
+                    if (response != null) {
+                        response.close();
+                    }
+
+                    //handler.sendMessage(msg);
+                    httpResponseHandlerHandler.processResponse(handler, msg);
+                }
+            }
+        });
+
+        return true;
+    }
+
+    void saveFile(Response response, String fileSaveName) {
+        InputStream is = null;
+        byte[] buf = new byte[2048];
+        int len = 0;
+        FileOutputStream fos = null;
+        final File file;
+        String fileName = "/" + fileSaveName + ".xlsx";
+        String directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
+        file = new File(directory + fileName);
+//        File file = new File(Environment.getExternalStorageDirectory(),"test.apk");
+        try {
+            long total = response.body().contentLength();
+            Log.e(TAG, "total------>" + total);
+            long current = 0;
+            is = response.body().byteStream();
+            fos = new FileOutputStream(file);
+            while ((len = is.read(buf)) != -1) {
+                current += len;
+                fos.write(buf, 0, len);
+                Log.e(TAG, "current------>" + current);
+            }
+            fos.flush();
+            if (fos != null) {
+                fos.close();
+            }
+            if (is != null) {
+                is.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public boolean getFile(String url, final HashMap<String, String> values,
+                           final Handler handler,
+                           final HttpResponseHandler httpResponseHandlerHandler,
+                           String fileSaveName)
+    {
+        final Message msg = handler.obtainMessage();
+        if (!isNetworkConnected()) {
+            Log.d(TAG, "fhttp get: 没网络");
+            ShowMessage.showToast(mCtx, mCtx.getString(R.string.network_not_connect), ShowMessage.MessageDuring.SHORT);
+            msg.what = NG;
+            msg.obj = mCtx.getString(R.string.network_not_connect);
+            handler.sendMessage(msg);
+
+            return false;
+        }
+
+        if (url == null || url.trim().isEmpty())
+        {
+            msg.what = NG;
+            msg.obj =  "http get: empty url";
+
+            Log.d(TAG, "http get: empty url");
+
+            handler.sendMessage(msg);
+            return false;
+        }
+
+        //continue process.
+
+        if (values!= null && !values.isEmpty()) {
+            url += "?1";
+
+            for (Object o : values.entrySet()) {
+                HashMap.Entry entry = (HashMap.Entry) o;
+
+                url += "&"+ (String) entry.getKey() + "=" + (String) entry.getValue();
+            }
+        }
+
+        final String requestUrl = url;
+        Log.d(TAG, "http get: " + requestUrl);
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                Response response = null;
+                try {
+                    Request request = new Request.Builder().url(requestUrl).get().build();
+                    OkHttpClient client = ((XiaotaApp) mCtx).getOKHttpClient();
+
+                    //同步网络请求
+                    response = client.newCall(request).execute();
+                    saveFile(response, fileSaveName);
 
                 } catch (Exception e) {
 

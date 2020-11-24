@@ -673,7 +673,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 //删除后真实刷新列表
                 //remove the one and use the filter to get the lujing list again.
 
-                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler( tabFlag ),(handler,msg2)->{
+                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler( tabFlag ),(handler, msg2)->{
                     handler.sendMessage(msg2);
                 });
 
@@ -1595,14 +1595,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         else if (tabFlag.equals("在路径模型") )
         {
             //筛选界面负责将参数传进来！
-            mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
+            mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler, msg2)->{
                 handler.sendMessage(msg2);
             });
 
         }
         else if (tabFlag.equals ("在计算中心"))
         {
-            mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
+            mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag),(handler, msg2)->{
                 handler.sendMessage(msg2);
             });
 
@@ -1696,7 +1696,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 //                        transaction.show(mFragLujingMoxing);
 //                    }
                     stopScan();
-                    mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
+                    mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler, msg2)->{
                         handler.sendMessage(msg2);
                     });
                 }

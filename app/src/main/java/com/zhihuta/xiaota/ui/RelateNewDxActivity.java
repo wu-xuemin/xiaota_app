@@ -20,7 +20,6 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
@@ -29,7 +28,6 @@ import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.basic.Wires;
 import com.zhihuta.xiaota.bean.response.GetWiresResponse;
-import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
@@ -219,7 +217,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
                     return;
                 }
 
-                Toast.makeText(RelateNewDxActivity.this, "关联电线成功！" + errorMsg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(RelateNewDxActivity.this, "关联电线成功！", Toast.LENGTH_SHORT).show();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {

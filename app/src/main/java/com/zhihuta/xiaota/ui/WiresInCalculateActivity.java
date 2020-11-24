@@ -16,17 +16,15 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
-import com.zhihuta.xiaota.adapter.LujingAdapter;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.net.Network;
 
 import java.util.ArrayList;
@@ -41,6 +39,7 @@ public class WiresInCalculateActivity extends AppCompatActivity {
     private DianXianQingceAdapter mDianXianAdapter;
     private ArrayList<DianxianQingCeData> mDianxianList;
     private RecyclerView mDxRV;
+    private Button mExportToExcelBt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +81,24 @@ public class WiresInCalculateActivity extends AppCompatActivity {
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mDxRV.setLayoutManager(manager);
         getWiresOftheLujing();
-          }
+
+        mExportToExcelBt = (Button)findViewById(R.id.button2);
+        mExportToExcelBt.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+
+                String url = Constant.getPathWiresExportToExcelUrl.replace("{path_id}",String.valueOf(mLujing.getId()));
+
+                //返回的直接是文件，没有Msg等
+                mNetwork.getFile(url, null, new ExportToExcelHandler(),(handler, msg)->{
+                    handler.sendMessage(msg);
+                },
+                        mLujing.getName()+"电线清册");
+
+            }
+        });
+    }
+
     private void getWiresOftheLujing(){
         /**
          * 获取该路径的电线列表
@@ -130,6 +146,54 @@ public class WiresInCalculateActivity extends AppCompatActivity {
                 Toast.makeText(WiresInCalculateActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @SuppressLint("HandlerLeak")
+    class ExportToExcelHandler extends Handler {
+
+        private boolean bIsGetting = false;
+
+        public boolean getIsGetting()
+        {
+            return bIsGetting;
+        }
+
+        public void setIsGetting(boolean getting)
+        {
+            bIsGetting = getting;
+        }
+
+        @Override
+        public void handleMessage(final Message msg) {
+//            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
+//                mLoadingProcessDialog.dismiss();
+//            }
+
+            //////////////////////
+            String errorMsg = "";
+
+            try {
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg != null)
+                {
+                    Log.d("导出失败:", errorMsg);
+                    Toast.makeText(WiresInCalculateActivity.this, "导出失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+
+                    return;
+                }
+
+                Toast.makeText(WiresInCalculateActivity.this, "导出成功, 请到下载目录查看！", Toast.LENGTH_SHORT).show();
+
+            }
+            catch (Exception ex)
+            {
+                Log.d("导出失败:", ex.getMessage());
+            }
+            finally {
+                setIsGetting(false);
+            }
+        }//handle message
+
     }
 
     /**
