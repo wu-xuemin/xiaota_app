@@ -147,36 +147,42 @@
             app:layout_constraintBottom_toTopOf="@id/linearLayoutTobeSelect22"
             app:layout_constraintTop_toBottomOf="@id/dividerDxTobeSelect22">
 
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/nestedScrollViewDxTobeSelect22"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:fillViewport="false"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <LinearLayout
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/relat_new_wires_swipeRefresh"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="0dp"
+                    tools:ignore="MissingConstraints">
 
-                    <LinearLayout
+                    <androidx.core.widget.NestedScrollView
+                        android:id="@+id/nestedScrollViewDxTobeSelect22"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:weightSum="1">
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:fillViewport="false"
+                        app:layout_constraintTop_toTopOf="parent">
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rv_dx_tobeSelect"
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1" />
-                    </LinearLayout>
-                </LinearLayout>
-            </androidx.core.widget.NestedScrollView>
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
 
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:weightSum="1">
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/rv_dx_tobeSelect"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_weight="1" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </androidx.core.widget.NestedScrollView>
+
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
-
         <LinearLayout
             android:id="@+id/linearLayoutTobeSelect22"
             android:layout_width="0dp"

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -57,6 +58,9 @@ public class RelateNewDxActivity extends AppCompatActivity {
     LinkedHashMap<String, String> mDxQingCeGetParameters = new LinkedHashMap<>();
 
     private SearchView mSearchView;
+
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,8 +85,32 @@ public class RelateNewDxActivity extends AppCompatActivity {
         mNetwork = Network.Instance(getApplication());
 
         initViews();
-//        showTobeSelectedDxList();
+
+        mSwipeRefreshLayout = findViewById(R.id.relat_new_wires_swipeRefresh);
+        CommonUtility.setDistanceToTriggerSync(mSwipeRefreshLayout,this,0.6f, 400);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                refreshLayout();
+            }
+        });
+
+        mDxQingCeGetParameters.put("project_id",Main.project_id);
+
+        refreshLayout();
     }
+
+    void  refreshLayout()
+    {
+        mSwipeRefreshLayout.setRefreshing(true);
+
+        String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+        mNetwork.get(url, mDxQingCeGetParameters, new GetCandidateDxListHandler(),(handler, msg)->{
+            handler.sendMessage(msg);
+        });
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -101,17 +129,6 @@ public class RelateNewDxActivity extends AppCompatActivity {
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mDxRV.setLayoutManager(manager);
 
-        LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
-
-        mPostValue.put("meid", XiaotaApp.getApp().getIMEI());
-
-        /// mPostValue 在后续会用到，比如不同用户，获取各自公司的电线
-        mPostValue.put("project_id",Main.project_id);
-        String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-        mNetwork.get(url, mPostValue, new GetCandidateDxListHandler(),(handler, msg)->{
-            handler.sendMessage(msg);
-        });
-
         mDianxianTobeSelectList = new ArrayList<>();
         mAddBt = (Button) findViewById(R.id.button_OK_to_add_dxTobeSelect22 ); // 添加 按钮
         mBackBt = (Button) findViewById(R.id.button4 ); //返回按钮
@@ -121,8 +138,8 @@ public class RelateNewDxActivity extends AppCompatActivity {
                 /**
                  * 添加所有选中的电线，如何刷新列表
                  */
-                for(int k=0; k< checkedList.size(); k++){
-                    if(checkedList.get(k)){
+                for (int k = 0; k < checkedList.size(); k++) {
+                    if (checkedList.get(k)) {
                         //该电线由待选 改为 已选
                         //mDianxianTobeSelectList.get(k).setFlag(Constant.FLAG_RELATED_DX);
                         mCheckedDxList.add(mDianxianTobeSelectList.get(k));
@@ -135,21 +152,28 @@ public class RelateNewDxActivity extends AppCompatActivity {
                  */
                 LinkedHashMap<String, String> postValue = new LinkedHashMap<>();
                 String IDs = null;
-                for(int j=0; j<mCheckedDxList.size(); j++) { //  "wires_id":[ 814,815]
-                    if(j == 0) {
+                for (int j = 0; j < mCheckedDxList.size(); j++) { //  "wires_id":[ 814,815]
+                    if (j == 0) {
                         IDs = String.valueOf(mCheckedDxList.get(j).getId());
                     } else {
                         IDs = IDs + "," + String.valueOf(mCheckedDxList.get(j).getId());
                     }
                 }
-                postValue.put("wires_id", IDs);
-                String theUrl = RequestUrlUtility.build(URL.PUT_DX_OF_LUJING.replace("{lujingId}",String.valueOf(mLujing.getId())));
 
-                 mNetwork.put(theUrl,postValue,  new PutDxHandler(), (handler, msg)->{
+                if (IDs != null && IDs.length() != 0)
+                {
+                    postValue.put("wires_id", IDs);
+                    String theUrl = RequestUrlUtility.build(URL.PUT_DX_OF_LUJING.replace("{lujingId}",String.valueOf(mLujing.getId())));
 
-                     handler.sendMessage(msg);
-                });
+                    mNetwork.put(theUrl,postValue,  new PutDxHandler(), (handler, msg)->{
 
+                        handler.sendMessage(msg);
+                    });
+                }
+                else
+                {
+                    Toast.makeText(RelateNewDxActivity.this, "未选择任何电线", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         mBackBt.setOnClickListener(new View.OnClickListener() {
@@ -170,10 +194,8 @@ public class RelateNewDxActivity extends AppCompatActivity {
                 mDxQingCeGetParameters.put("sn", query);
                 mDxQingCeGetParameters.put("project_id",Main.project_id);
 
-                String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-                mNetwork.get(url, mDxQingCeGetParameters, new GetCandidateDxListHandler(),(handler, msg)->{
-                    handler.sendMessage(msg);
-                });
+                refreshLayout();
+
                 return false;
             }
 
@@ -223,7 +245,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
                     public void run() {
                         finish();
                     }
-                }, 1000);
+                }, 500);
 
             }
             catch (Exception ex)
@@ -237,19 +259,6 @@ public class RelateNewDxActivity extends AppCompatActivity {
     }
     @SuppressLint("HandlerLeak")
     class GetCandidateDxListHandler extends Handler {
-
-        private boolean bIsGetting = false;
-
-        public boolean getIsGetting()
-        {
-            return bIsGetting;
-        }
-
-        public void setIsGetting(boolean getting)
-        {
-            bIsGetting = getting;
-        }
-
 
         @Override
         public void handleMessage(final Message msg) {
@@ -302,8 +311,6 @@ public class RelateNewDxActivity extends AppCompatActivity {
                         dianxianQingCeData.setWickes_cross_section(wire.getWickesCrossSection());
 
                         mDianxianTobeSelectList.add( dianxianQingCeData);
-
-                        mDianxianHasbeenRelated.add(dianxianQingCeData);
                     }
                 }
 
@@ -333,7 +340,7 @@ public class RelateNewDxActivity extends AppCompatActivity {
                 Log.d("电线获取 NG:", ex.getMessage());
             }
             finally {
-                setIsGetting(false);
+                mSwipeRefreshLayout.setRefreshing(false);
             }
 
             ////////////////////////
