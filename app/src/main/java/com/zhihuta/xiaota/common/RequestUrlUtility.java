@@ -1,13 +1,9 @@
 package com.zhihuta.xiaota.common;
 
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.Result;
-import com.zhihuta.xiaota.bean.response.BaseResponse;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.ui.XiaotaApp;
 

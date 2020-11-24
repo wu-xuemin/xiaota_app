@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -24,9 +23,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,7 +49,6 @@ import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
-import com.zhihuta.xiaota.bean.basic.ProjectData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.basic.Wires;
 
@@ -65,7 +61,6 @@ import com.zhihuta.xiaota.bean.response.PathGetDistanceQr;
 import com.zhihuta.xiaota.bean.response.PathGetObject;
 import com.zhihuta.xiaota.bean.response.PathsResponse;
 import com.zhihuta.xiaota.common.Constant;
-import com.zhihuta.xiaota.common.MyActivityManager;
 import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
@@ -678,7 +673,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 //删除后真实刷新列表
                 //remove the one and use the filter to get the lujing list again.
 
-                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler( tabFlag ),(handler,msg2)->{
+                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler( tabFlag ),(handler, msg2)->{
                     handler.sendMessage(msg2);
                 });
 
@@ -1600,14 +1595,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         else if (tabFlag.equals("在路径模型") )
         {
             //筛选界面负责将参数传进来！
-            mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
+            mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler, msg2)->{
                 handler.sendMessage(msg2);
             });
 
         }
         else if (tabFlag.equals ("在计算中心"))
         {
-            mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
+            mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag),(handler, msg2)->{
                 handler.sendMessage(msg2);
             });
 
@@ -1701,7 +1696,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 //                        transaction.show(mFragLujingMoxing);
 //                    }
                     stopScan();
-                    mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler,msg2)->{
+                    mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),(handler, msg2)->{
                         handler.sendMessage(msg2);
                     });
                 }

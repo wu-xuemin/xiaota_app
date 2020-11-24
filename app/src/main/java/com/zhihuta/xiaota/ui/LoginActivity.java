@@ -24,7 +24,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.ToastUtils;
 
 //import com.google.gson.JsonObject;
@@ -39,11 +38,8 @@ import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
-import com.alibaba.fastjson.JSONObject;
+
 import java.io.Serializable;
-import java.sql.SQLTransactionRollbackException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
