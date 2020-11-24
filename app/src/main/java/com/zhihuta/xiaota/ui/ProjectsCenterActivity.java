@@ -78,6 +78,17 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 
         initViews();
         showProjectList();
+        refreshLayout();
+    }
+
+    void refreshLayout()
+    {
+        mSwipeRefreshLayout.setRefreshing(true);
+
+        String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
+        mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
+            handler.sendMessage(msgGetProject);
+        });
     }
 
     @Override
@@ -132,11 +143,6 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                         .show();
             }
         });
-        String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
-        mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msg)->{
-            handler.sendMessage(msg);
-        });
-
     }
     private void showProjectList(){
         //电线列表
@@ -163,31 +169,13 @@ public class ProjectsCenterActivity extends AppCompatActivity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeRefreshLayout.setRefreshing(true);
-
-                String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
-                mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
-                    handler.sendMessage(msgGetProject);
-                });
+                refreshLayout();
             }
         });
     }
 
     @SuppressLint("HandlerLeak")
     class AddNewProjectHandler extends Handler {
-
-        private boolean bIsGetting = false;
-
-        public boolean getIsGetting()
-        {
-            return bIsGetting;
-        }
-
-        public void setIsGetting(boolean getting)
-        {
-            bIsGetting = getting;
-        }
-
 
         @Override
         public void handleMessage(final Message msg) {
@@ -206,35 +194,19 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 
                 Toast.makeText(ProjectsCenterActivity.this, "添加项目成功", Toast.LENGTH_SHORT).show();
                 //项目添加成功，再刷新一次
-                String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
-                mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
-                    handler.sendMessage(msgGetProject);
-                });
+                refreshLayout();
 
             } catch (Exception ex) {
                 Log.d("添加项目 NG:", ex.getMessage());
             }
             finally {
-                setIsGetting(false);
+
             }
         }
     }
 
     @SuppressLint("HandlerLeak")
     class DeleteProjectHandler extends Handler {
-
-        private boolean bIsGetting = false;
-
-        public boolean getIsGetting()
-        {
-            return bIsGetting;
-        }
-
-        public void setIsGetting(boolean getting)
-        {
-            bIsGetting = getting;
-        }
-
 
         @Override
         public void handleMessage(final Message msg) {
@@ -255,16 +227,13 @@ public class ProjectsCenterActivity extends AppCompatActivity {
                 Toast.makeText(ProjectsCenterActivity.this, "删除项目成功", Toast.LENGTH_SHORT).show();
                 //删除添加成功，再刷新一次
 
-                String url = RequestUrlUtility.build(URL.GET_PROJECT_LIST_OF_COMPANY);
-                mNetwork.get(url, null, new GetProjectListOfCompanyHandler(),(handler, msgGetProject)->{
-                    handler.sendMessage(msgGetProject);
-                });
+                refreshLayout();
 
             } catch (Exception ex) {
                 Log.d("删除项目 NG:", ex.getMessage());
             }
             finally {
-                setIsGetting(false);
+
             }
         }
     }
