@@ -154,18 +154,17 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
             }
         });
 
-        refreshLayout();
-
         mSwipeRefreshLayout = findViewById(R.id.project_member_swipeRefresh);
         CommonUtility.setDistanceToTriggerSync(mSwipeRefreshLayout,this,0.6f, 400);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeRefreshLayout.setRefreshing(true);
 
                 refreshLayout();
             }
         });
+
+        refreshLayout();
     }
 
     @SuppressLint("HandlerLeak")
@@ -280,6 +279,8 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
 
     void refreshLayout()
     {
+        mSwipeRefreshLayout.setRefreshing(true);
+
         String  url = Constant.getProjectMemberListUrl.replace("{id}", String.valueOf(mProject.getId()));
         mNetwork.get(url, null, new GetProjectMemberListHandler(),(handler, msgGetMember)->{
             handler.sendMessage(msgGetMember);

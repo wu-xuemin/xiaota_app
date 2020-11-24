@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
+import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.common.Constant;
@@ -49,6 +51,8 @@ public class RelatedDxActivity extends AppCompatActivity {
     //从路径界面传给电线界面的路径信息，在电线界面查看已绑定的电线，也在该路径里添加电线
     private LujingData mLujing;
 
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,12 +66,25 @@ public class RelatedDxActivity extends AppCompatActivity {
         mNetwork = Network.Instance(getApplication());
         initViews();
         showDxList();
+
+        mSwipeRefreshLayout = findViewById(R.id.related_wires_swipeRefresh);
+        CommonUtility.setDistanceToTriggerSync(mSwipeRefreshLayout,this,0.6f, 400);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                refreshLayout();
+            }
+        });
+
+        //refreshLayout();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
 
-        getDxList();///
+        refreshLayout();///
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -89,7 +106,7 @@ public class RelatedDxActivity extends AppCompatActivity {
         textViewTitle.setText(mLujing.getName());
 
         mDianxianList = new ArrayList<>();
-        getDxList();
+
         mAddNewDxBt = (Button) findViewById(R.id.button_to_add_new_Dx);
         mAddNewDxBt.setOnClickListener(new View.OnClickListener() {
                                          @Override
@@ -111,7 +128,10 @@ public class RelatedDxActivity extends AppCompatActivity {
         });
     }
 
-    private void getDxList(){
+    private void refreshLayout(){
+
+        mSwipeRefreshLayout.setRefreshing(true);
+
         /**
          * 获取该路径的电线列表
          */
@@ -187,7 +207,7 @@ public class RelatedDxActivity extends AppCompatActivity {
                                                 Toast.makeText(RelatedDxActivity.this, "移除电线成功", Toast.LENGTH_SHORT).show();
 
                                                 //删除成功，再刷新一次
-                                                getDxList();
+                                                refreshLayout();
 
                                             } catch (Exception ex) {
                                                 Log.d("移除电线失败:", ex.getMessage());
@@ -276,32 +296,42 @@ public class RelatedDxActivity extends AppCompatActivity {
 //                mLoadingProcessDialog.dismiss();
 //            }
 
-            if (msg.what == Network.OK) {
-                Log.d("GetDxListOfLujingHand", "OKKK");
-                mDianxianList = (ArrayList<DianxianQingCeData>)msg.obj;
+            try {
 
-                if (mDianxianList == null) {
-                    Log.d(TAG, "handleMessage: " + "路径的电线数量为0或异常"  );
-                    mDianxianList = new ArrayList<>();
-                } else {
-                    if (mDianxianList.size() == 0) {
-                        Toast.makeText(RelatedDxActivity.this, "已关联的电线数量为0！", Toast.LENGTH_SHORT).show();
+                if (msg.what == Network.OK) {
+                    Log.d("GetDxListOfLujingHand", "OKKK");
+                    mDianxianList = (ArrayList<DianxianQingCeData>)msg.obj;
+
+                    if (mDianxianList == null) {
+                        Log.d(TAG, "handleMessage: " + "路径的电线数量为0或异常"  );
+                        mDianxianList = new ArrayList<>();
                     } else {
+                        if (mDianxianList.size() == 0) {
+                            Toast.makeText(RelatedDxActivity.this, "已关联的电线数量为0！", Toast.LENGTH_SHORT).show();
+                        } else {
 
-                        mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, RelatedDxActivity.this,Constant.REQUEST_CODE_LUJING_RELATED_WIRES);
-                        if (mDxRV.getItemDecorationCount() == 0)
-                        {
-                            mDxRV.addItemDecoration(new DividerItemDecoration(RelatedDxActivity.this, DividerItemDecoration.VERTICAL));
+                            mDianXianAdapter = new DianXianQingceAdapter(mDianxianList, RelatedDxActivity.this,Constant.REQUEST_CODE_LUJING_RELATED_WIRES);
+                            if (mDxRV.getItemDecorationCount() == 0)
+                            {
+                                mDxRV.addItemDecoration(new DividerItemDecoration(RelatedDxActivity.this, DividerItemDecoration.VERTICAL));
+                            }
+                            mDxRV.setAdapter(mDianXianAdapter);
+                            mDianXianAdapter.notifyDataSetChanged();
+                            mDianXianAdapter.setOnItemClickListener(MyItemClickListener);
                         }
-                        mDxRV.setAdapter(mDianXianAdapter);
-                        mDianXianAdapter.notifyDataSetChanged();
-                        mDianXianAdapter.setOnItemClickListener(MyItemClickListener);
                     }
+                } else {
+                    String errorMsg = (String)msg.obj;
+                    Log.d("GetDxListOfLujingHd NG:", errorMsg);
+                    Toast.makeText(RelatedDxActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                String errorMsg = (String)msg.obj;
-                Log.d("GetDxListOfLujingHd NG:", errorMsg);
-                Toast.makeText(RelatedDxActivity.this, "电线获取失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+            }
+            catch (Exception ex)
+            {
+
+            }
+            finally {
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         }
     }
