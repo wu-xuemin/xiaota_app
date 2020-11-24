@@ -106,7 +106,8 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/project_swipeRefresh"
             android:layout_width="match_parent"
-            android:layout_height="0dp">
+            android:layout_height="0dp"
+            tools:ignore="MissingConstraints">
 
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/nestedScrollViewProject"

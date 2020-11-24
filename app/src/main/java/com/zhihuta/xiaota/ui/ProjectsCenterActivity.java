@@ -28,7 +28,7 @@ import com.alibaba.fastjson.JSON;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.ProjectAdapter;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
-import com.zhihuta.xiaota.bean.basic.ProjectData;
+import com.zhihuta.xiaota.bean.basic.ProjectEx;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.GetProjectsResponse;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
@@ -38,16 +38,16 @@ import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class ProjectsCenterActivity extends AppCompatActivity {
 
     private static String TAG = "ProjectsCenterActivity";
     private Button mCreateNewProjectBt;
 
-    private ArrayList<ProjectData> mProjectList;
+    private List<ProjectEx> mProjectList;
     private ProjectAdapter mProjectAdapter;
     private RecyclerView mProjectRV;
 
@@ -322,24 +322,11 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 
                 GetProjectsResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetProjectsResponse.class);
 
-                mProjectList = new ArrayList<>();
-
-                for (ProjectData projectData : responseData.project_list) {
-
-                    ProjectData projectData1 = new ProjectData();
-                    projectData1.setId(projectData.getId());
-                    projectData1.setCompanyId(projectData.getCompanyId());
-                    projectData1.setCreateTime((projectData.getCreateTime()));
-                    projectData1.setCreatorId(projectData.getCreatorId());
-                    projectData1.setDepartmentId(projectData.getDepartmentId());
-                    projectData1.setModiferId(projectData.getModiferId());
-                    projectData1.setModifyTime(projectData.getModifyTime());
-                    projectData1.setProjectName((projectData.getProjectName()));
-                    projectData1.setStatus(projectData.getStatus());
-
-                    mProjectList.add(projectData1);
+                mProjectList = responseData.project_list;
+                if (mProjectList == null)
+                {
+                    mProjectList = new ArrayList<>();
                 }
-
                 Log.d(TAG, "项目数量: size: " + mProjectList.size());
 
                 if (mProjectList.size() == 0) {

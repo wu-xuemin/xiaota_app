@@ -1,11 +1,10 @@
 package com.zhihuta.xiaota.bean.response;
 
-import com.zhihuta.xiaota.bean.basic.ProjectData;
-import com.zhihuta.xiaota.bean.basic.Wires;
+import com.zhihuta.xiaota.bean.basic.ProjectEx;
 
 import java.util.List;
 
 public class GetProjectsResponse extends PageOffsetResponse
 {
-    public List<ProjectData> project_list;
+    public List<ProjectEx> project_list;
 }

@@ -24,7 +24,7 @@ import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.MemberAdapter;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.MemberData;
-import com.zhihuta.xiaota.bean.basic.ProjectData;
+import com.zhihuta.xiaota.bean.basic.ProjectEx;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.ProjectMembersResponse;
 import com.zhihuta.xiaota.common.Constant;
@@ -42,7 +42,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
     private Button mInviteAllCompanyMemberBt;
     private Button mRemoveAllCompanyMemberBt;
 
-    private ProjectData mProject = null;
+    private ProjectEx mProject = null;
     private ArrayList<MemberData> mMemberList;
     private MemberAdapter mMemberAdapter;
     private RecyclerView mMemberRV;
@@ -61,7 +61,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
         }
         mNetwork =  Network.Instance(getApplication());
         Intent intent = getIntent();
-        mProject = (ProjectData) intent.getExtras().getSerializable("mProject");
+        mProject = (ProjectEx) intent.getExtras().getSerializable("mProject");
         if(mProject == null){
             Toast.makeText(ProjectMemberManageActivity.this, "异常：没有获取到项目"  , Toast.LENGTH_SHORT).show();
         }

@@ -11,8 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhihuta.xiaota.R;
-import com.zhihuta.xiaota.bean.basic.ProjectData;
-import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.bean.basic.ProjectEx;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -20,18 +19,18 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ItemView
     private SimpleDateFormat sf3 = new SimpleDateFormat("yy/MM/dd");
     private static String TAG = "ProjectAdapter";
 
-    private List<ProjectData> dataList;//数据源
+    private List<ProjectEx> dataList;//数据源
     private Context context;//上下文
 
     private String  strMode;
     /// 这里，传数据
-    public ProjectAdapter(List<ProjectData> list, Context context, String strMode) {
+    public ProjectAdapter(List<ProjectEx> list, Context context, String strMode) {
         this.dataList = list;
         this.context = context;
         this.strMode = strMode;
     }
 
-    public void updateDataSource(List<ProjectData> list, String strMode)
+    public void updateDataSource(List<ProjectEx> list, String strMode)
     {
         this.strMode = strMode;
         this.dataList = list;
@@ -55,10 +54,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ItemView
     @Override
     public void onBindViewHolder(@NonNull ItemViewProjectViewHolder holder, int position) {
 
-        ProjectData data = dataList.get(position);
+        ProjectEx data = dataList.get(position);
         holder.projectNameTv.setText(data.getProjectName());
         holder.projectCreatedDateTv.setText(sf3.format(data.getCreateTime()));// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
-        holder.projectCreaterTv.setText(data.getCreatorId().toString());
+        holder.projectCreaterTv.setText(data.creatAccount);
 
         holder.openProject.setTag(position);
         holder.memberManageBt.setTag(position);
