@@ -72,7 +72,7 @@ public class CommonUtility {
 
                 public void onGlobalLayout() {
                     final DisplayMetrics metrics = contextWrapper.getResources().getDisplayMetrics();
-                    Float mDistanceToTriggerSync = Math.min(((View) mSwipeRefreshLayout.getParent()).getHeight() * 0.5f, trigger_distance * metrics.density);
+                    Float mDistanceToTriggerSync = Math.min(((View) mSwipeRefreshLayout.getParent()).getHeight() * distance_factor, trigger_distance * metrics.density);
                     try {
 //                        Field field = SwipeRefreshLayout.class.getDeclaredField("mTotalDragDistance");
 //                        field.setAccessible(true);

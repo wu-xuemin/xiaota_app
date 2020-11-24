@@ -1142,7 +1142,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     }
 
     private void gotoWiresExportActivity(int requestCode, LujingData lujingData) {
-        Intent intent = new Intent(Main.this, WiresExportActivity.class);
+        Intent intent = new Intent(Main.this, LujingWiresSummarizeExportActivity.class);
         Bundle bundle = new Bundle();
 
         bundle.putSerializable("requestCode", (Serializable) requestCode);

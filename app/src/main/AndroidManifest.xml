@@ -38,7 +38,7 @@
         <activity
             android:name=".ui.DxImportHistoryActivity"
             android:label="电线导入记录" />
-        <activity android:name=".ui.WiresExportActivity" />
+        <activity android:name=".ui.LujingWiresSummarizeExportActivity" />
         <activity android:name=".ui.WiresInCalculateActivity" />
         <activity
             android:name=".ui.RelateNewDxActivity"

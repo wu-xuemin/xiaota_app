@@ -42,7 +42,7 @@ public class URL {
     public static final String DEL_DX_OF_LUJING = "/paths/{id}/wires/{wires_id}";   // E.g:  /paths/1/wires/1
 
     public static final String GET_CAL_WIRES_OF_LUJING ="/caculate/{path_id}/wires";        //计算中心 获取路径的电线
-    public static final String GET_EXPORT_WIRES_OF_LUJING ="/caculate/{path_id}/wires/parts_code";    //计算中心 按型号获取电线
+    public static final String GET_SUMMARIZE_WIRES_OF_LUJING ="/caculate/{path_id}/wires/parts_code";    //计算中心 按型号获取电线
     public static final String GET_DISTANCE_LIST_BY_TWO_DISTANCE = "/caculate/distance?qr_id=qrId1,qrId2&project_id={project_id}"; //扫2个码获取期间间距
 
 
