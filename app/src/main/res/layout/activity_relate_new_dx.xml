@@ -17,7 +17,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@id/dividerDxTobeSelect"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -26,38 +25,51 @@
                 android:id="@+id/textView_lujingName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="left"
+                android:gravity="center"
                 android:text="路径名称："
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textSize="@dimen/textSize_18"
+                android:textStyle="bold"
+                android:layout_marginLeft="@dimen/textSize_24"/>
 
             <TextView
-                android:id="@+id/textView_lujingNameShow"
+                android:id="@+id/textView_relate_new_lujingNameShow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:gravity="center"
-                android:text="xxxLJ"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <SearchView
-                android:id="@+id/sv_in_relate_new_dx"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:text=""
+                android:textSize="@dimen/textSize_16"
+                android:textStyle="bold"
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <!--横线-->
+
+        <View
+            android:id="@+id/dividerDxToSearch"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintTop_toBottomOf="@id/lujing_name_dx_tobe_select" />
+
+        <LinearLayout
+            android:id="@+id/dx_toSearch"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/textSize_22"
+            app:layout_constraintTop_toBottomOf="@id/dividerDxToSearch"
+            >
+            <SearchView
+                android:id="@+id/sv_in_relate_new_dx"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
 
         <View
             android:id="@+id/dividerDxTobeSelect"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="?android:attr/listDivider"
-            app:layout_constraintBottom_toTopOf="@id/dx_tobe_select_dingbu_biaoji"
-            app:layout_constraintTop_toBottomOf="@id/lujing_name_dx_tobe_select" />
+            app:layout_constraintTop_toBottomOf="@id/dx_toSearch" />
 
         <LinearLayout
             android:id="@+id/dx_tobe_select_dingbu_biaoji"

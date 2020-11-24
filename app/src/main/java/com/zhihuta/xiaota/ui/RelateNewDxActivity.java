@@ -68,6 +68,9 @@ public class RelateNewDxActivity extends AppCompatActivity {
         Intent intent = getIntent();
         mLujing = (LujingData) intent.getExtras().getSerializable("mLujing");
 
+        TextView textViewTitle = findViewById(R.id.textView_relate_new_lujingNameShow);
+        textViewTitle.setText(mLujing.getName());
+
         mDianxianHasbeenRelated = new ArrayList<>();
         Serializable serializable = intent.getExtras().getSerializable("DianxianHasbeenRelated");
         if (serializable != null)

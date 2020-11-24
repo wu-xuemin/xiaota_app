@@ -28,21 +28,23 @@
                 android:id="@+id/textView_newLujingName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:gravity="center"
-                android:text="路径名称："
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:text="路径名称: "
+                android:textSize="@dimen/textSize_18"
+                android:textStyle="bold"
+                android:layout_marginLeft="@dimen/textSize_24"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2">
+                android:layout_weight="1">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputEditText_lujingName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="@dimen/textSize_16"/>
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
