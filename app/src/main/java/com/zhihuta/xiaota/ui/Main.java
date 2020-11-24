@@ -189,7 +189,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     SwipeRefreshLayout mCurrentSwipeRefreshLayout;
     SwipeRefreshLayout mWiresRefreshLayout;
     SwipeRefreshLayout mLujingRefreshLayout;
-    SwipeRefreshLayout mCaculateRefreshLayout;
+    SwipeRefreshLayout mCaculateLujingRefreshLayout;
 
     //进入的是哪个项目
     //private ProjectData mProject;
@@ -261,9 +261,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             }
         });
 
-        mCaculateRefreshLayout = findViewById(R.id.caculate_swipeRefresh);
-        CommonUtility.setDistanceToTriggerSync(mCaculateRefreshLayout,this,0.6f, 400);
-        mCaculateRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mCaculateLujingRefreshLayout = findViewById(R.id.caculate_lujing_swipeRefresh);
+        CommonUtility.setDistanceToTriggerSync(mCaculateLujingRefreshLayout,this,0.6f, 400);
+        mCaculateLujingRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refreshPage(true);
@@ -1697,7 +1697,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                     bRefresh = true;
                 }
-                mCurrentSwipeRefreshLayout = mCaculateRefreshLayout;
+                mCurrentSwipeRefreshLayout = mCaculateLujingRefreshLayout;
                 break;
         }
 

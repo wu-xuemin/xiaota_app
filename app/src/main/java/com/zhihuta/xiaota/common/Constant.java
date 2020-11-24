@@ -37,9 +37,9 @@ public class Constant {
 
     public static final int REQUEST_CODE_DIANXIANQINCE_WIRES = 2;  //电线清册，电线清单
     public static final int REQUEST_CODE_LUJING_RELATED_WIRES = 3;  //路径模型，已选电线清单
-    public static final int REQUEST_CODE_LUJING_CANDIDATE_WIRES = 4;  //计算中心，电线清单
+    public static final int REQUEST_CODE_LUJING_CANDIDATE_WIRES = 4;  //路径模型，待选电线清单
     public static final int REQUEST_CODE_CALCULATE_WIRES = 5;  //计算中心，电线清单
-    public static final int REQUEST_CODE_CALCULATE_SUMMARIZE_WIRES = 6;  //计算中心，电线清单
+    public static final int REQUEST_CODE_CALCULATE_SUMMARIZE_WIRES = 6;  //计算中心，汇总电线清单
 
 //    public static final String getUserListUrl8004 = URL.HTTP_HEAD + "172.20.10.3:8004"+ URL.GET_USER_LIST;
 //    public static final String loginUrl8004 = URL.HTTP_HEAD +"172.20.10.3:8004"+ URL.USER_LOGIN;
