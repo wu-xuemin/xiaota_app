@@ -244,21 +244,57 @@ public class LujingActivity extends AppCompatActivity {
                     Toast.makeText(LujingActivity.this,"你点击了 Down 按钮"+(position+1),Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.button_distance_delete:
-                    Toast.makeText(LujingActivity.this, "你点击了 删除间距按钮" + (position + 1), Toast.LENGTH_SHORT).show();
 
                     android.app.AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LujingActivity.this);
-                    alertDialogBuilder.setTitle("确认删除路径" + mDistanceList.get(position).getName() + "吗？")
+                    alertDialogBuilder.setTitle("确认删除路径间距" + mDistanceList.get(position).getName() + "吗？")
                             .setNegativeButton("取消", null)
                             .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
+
+                                    String theUrl = RequestUrlUtility.build(URL.DEL_LUJING_DISTANCE_QR
+                                            .replace("{lujingID}",String.valueOf(mLujing.getId()))
+                                            .replace("{qr_id}",String.valueOf(mDistanceList.get(position).getQr_id()))
+                                    );
+
+                                    mNetwork.delete(theUrl,null,new Handler()
+                                            {
+                                                @Override
+                                                public void handleMessage(final Message msg)
+                                                {
+                                                    try {
+
+                                                        String errorMsg = "";
+
+                                                        errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                                                        if (errorMsg != null)
+                                                        {
+                                                            Log.d(TAG, errorMsg);
+                                                            Toast.makeText(LujingActivity.this, "删除该路径的间距列表失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                                                            return;
+                                                        }
+
+                                                        Result result= (Result)(msg.obj);
+                                                        Toast.makeText(LujingActivity.this, "删除该路径的间距列表成功！", Toast.LENGTH_SHORT).show();
+
+                                                        //删除成功后刷新一下
+                                                        refreshLayout();
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+
+                                                    }
+                                                    finally {
+
+                                                    }
+                                                }
+                                            },
+                                            (handler, msg)->{
+                                                handler.sendMessage(msg);
+                                            });
                                 }
                             })
                             .show();
-                    mDistanceList.remove(position);
-                    mDistanceAdapter.notifyDataSetChanged();
-                    //TODO
                     break;
                 default:
                     Toast.makeText(LujingActivity.this, "你点击了item按钮" + (position + 1), Toast.LENGTH_SHORT).show();

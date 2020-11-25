@@ -34,6 +34,7 @@ public class URL {
 
     public static final String PUT_LUJING_DISTANCE_QR = "/paths/lujingID/distance_qrs";   // E.g: paths/1/distance_qrs "qr_id":1, 数据库里 间距二维码的id
     public static final String GET_LUJING_DISTANCE_QR_EXIST = "/paths/{lujingID}/exsit";   // E.g:  /paths/1/exsit?qr_ids={1,2} "qr_id":1, 数据库里 间距二维码的id
+    public static final String DEL_LUJING_DISTANCE_QR = "/paths/{lujingID}/distance_qrs/{qr_id}";   // E.g: paths/1/distance_qrs/1
 
 
     public static final String GET_DX_OF_LUJING = "/paths/{lujingId}/wires?serial_number={dxSN}&parts_code={dxPartsCode}"; //serial_number:电线编号 parts_code:型号
