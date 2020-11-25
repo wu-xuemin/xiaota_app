@@ -8,15 +8,28 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="mybutton">
+    <style name="lineArrayButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">0sp</item>
-        <item name="android:layout_margin">2sp</item>
+        <item name="android:layout_margin">4sp</item>
         <item name="android:gravity">center</item>
         <item name="android:minWidth">0sp</item>
-        <item name="android:minHeight">@dimen/textSize_24</item>
-        <item name="android:textSize">@dimen/textSize_18</item>
+        <item name="android:minHeight">0sp</item>
+        <item name="android:textSize">@dimen/textSize_24</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="lineSingleButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">0sp</item>
+        <item name="android:layout_margin">8sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minWidth">0sp</item>
+        <item name="android:minHeight">0sp</item>
+        <item name="android:textSize">@dimen/size_level8</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 
 </resources>

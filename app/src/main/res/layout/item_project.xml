@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:clickable="true"
     android:focusable="true"
     android:layout_height="wrap_content">
@@ -46,18 +47,18 @@
 
         <Button
             android:id="@+id/button_open_project"
-            android:text="打开"
-            style="@style/mybutton"/>
+            android:text="{cmd_folder_open}"
+            style="@style/lineArrayButton"/>
 
         <Button
             android:id="@+id/button_delete_project"
-            style="@style/mybutton"
-            android:text="删除" />
+            style="@style/lineArrayButton"
+            android:text="{cmd_delete}" />
 
         <Button
             android:id="@+id/button_member_manager"
-            style="@style/mybutton"
-            android:text="成员" />
+            style="@style/lineArrayButton"
+            android:text="{cmd_account_group}" />
     </LinearLayout>>
 
 

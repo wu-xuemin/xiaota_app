@@ -23,9 +23,8 @@
 
             <Button
                 android:id="@+id/createNewProjectBt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="新建项目" />
+                android:text="{cmd_plus_box}"
+                style="@style/lineSingleButton"/>
         </LinearLayout>
 
     </LinearLayout>
