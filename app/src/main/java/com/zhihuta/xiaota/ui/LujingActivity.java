@@ -42,6 +42,7 @@ import com.zhihuta.xiaota.util.ShowMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import static java.nio.file.Paths.get;
@@ -236,12 +237,121 @@ public class LujingActivity extends AppCompatActivity {
             //viewName可区分item及item内部控件
             switch (v.getId()) {
                 case R.id.button_distance_up:
-                    Toast.makeText(LujingActivity.this,"你点击了 Up 按钮"+(position+1),Toast.LENGTH_SHORT).show();
-//                    gotoAddNewLujing(Constant.REQUEST_CODE_MODIFY_LUJING, mLujingList.get(position));
+
+                    String theUrl = RequestUrlUtility.build(URL.PUT_LUJING_DISTANCE_QR_SEQUENCE
+                            .replace("{lujingID}",String.valueOf(mLujing.getId())) );
+
+                    HashMap<String,String> postValue = new HashMap<>();
+                    /*
+                    * {
+                        "qr_id":1,间距节点数据库记录id,
+                        "qr_sequence_new":3
+                    }*/
+                    Integer curSequence = mDistanceList.get(position).getQr_sequence();
+                    if (position == 0 )
+                    {//the first one, just ignore the down action
+                        return;
+                    }
+
+                    Integer newSeqence = curSequence.intValue() - 1;
+
+                    postValue.put("qr_id",String.valueOf(mDistanceList.get(position).getQr_id()));
+                    postValue.put("qr_sequence_new",newSeqence.toString());
+
+                    mNetwork.put(theUrl,postValue,new Handler()
+                            {
+                                @Override
+                                public void handleMessage(final Message msg)
+                                {
+                                    try {
+
+                                        String errorMsg = "";
+
+                                        errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                                        if (errorMsg != null)
+                                        {
+                                            Log.d(TAG, errorMsg);
+                                            Toast.makeText(LujingActivity.this, "调整间距顺序失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+
+//                                        Result result= (Result)(msg.obj);
+                                        Toast.makeText(LujingActivity.this, "调整间距顺序成功！", Toast.LENGTH_SHORT).show();
+
+                                        //删除成功后刷新一下
+                                        refreshLayout();
+                                    }
+                                    catch (Exception ex)
+                                    {
+
+                                    }
+                                    finally {
+
+                                    }
+                                }
+                            },
+                            (handler, msg)->{
+                                handler.sendMessage(msg);
+                            });
+
                     break;
                 case R.id.button_distance_down:
-//                    gotoAddNewLujing(Constant.REQUEST_CODE_ADD_NEW_LUJING_BASE_ON_EXIST,null);
-                    Toast.makeText(LujingActivity.this,"你点击了 Down 按钮"+(position+1),Toast.LENGTH_SHORT).show();
+
+                    theUrl = RequestUrlUtility.build(URL.PUT_LUJING_DISTANCE_QR_SEQUENCE
+                            .replace("{lujingID}",String.valueOf(mLujing.getId())) );
+
+                    postValue = new HashMap<>();
+                    /*
+                    * {
+                        "qr_id":1,间距节点数据库记录id,
+                        "qr_sequence_new":3
+                    }*/
+                    curSequence = mDistanceList.get(position).getQr_sequence();
+                    if (position == (mDistanceList.size()-1) )
+                    {//the last one.just ignore the down action
+                        return;
+                    }
+
+                    newSeqence = curSequence.intValue() + 1;
+
+                    postValue.put("qr_id",String.valueOf(mDistanceList.get(position).getQr_id()));
+                    postValue.put("qr_sequence_new",newSeqence.toString());
+
+                    mNetwork.put(theUrl,postValue,new Handler()
+                            {
+                                @Override
+                                public void handleMessage(final Message msg)
+                                {
+                                    try {
+
+                                        String errorMsg = "";
+
+                                        errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                                        if (errorMsg != null)
+                                        {
+                                            Log.d(TAG, errorMsg);
+                                            Toast.makeText(LujingActivity.this, "调整间距顺序失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+
+//                                        Result result= (Result)(msg.obj);
+                                        Toast.makeText(LujingActivity.this, "调整间距顺序成功！", Toast.LENGTH_SHORT).show();
+
+                                        //删除成功后刷新一下
+                                        refreshLayout();
+                                    }
+                                    catch (Exception ex)
+                                    {
+
+                                    }
+                                    finally {
+
+                                    }
+                                }
+                            },
+                            (handler, msg)->{
+                                handler.sendMessage(msg);
+                            });
                     break;
                 case R.id.button_distance_delete:
 
