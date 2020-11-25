@@ -8,7 +8,6 @@ import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,7 +35,7 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
 
     private Button mBtRegisteractivityRegister;
 //    private RelativeLayout mRlRegisteractivityTop;
-    private ImageView mIvRegisteractivityBack;
+    private Button mBtRegisteractivityBack;
 //    private LinearLayout mLlRegisteractivityBody;
 
     private EditText mEtUserName;
@@ -72,7 +71,7 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
     private void initView(){
         mBtRegisteractivityRegister = findViewById(R.id.bt_registeractivity_register);
 //        mRlRegisteractivityTop = findViewById(R.id.rl_registeractivity_top);
-        mIvRegisteractivityBack = findViewById(R.id.iv_registeractivity_back);
+        mBtRegisteractivityBack = findViewById(R.id.iv_registeractivity_back);
 //        mLlRegisteractivityBody = findViewById(R.id.ll_registeractivity_body);
 
 
@@ -92,7 +91,7 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
          * 注册页面能点击的就三个地方
          * top处返回箭头、刷新验证码图片、注册按钮
          */
-        mIvRegisteractivityBack.setOnClickListener(new View.OnClickListener() {
+        mBtRegisteractivityBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
