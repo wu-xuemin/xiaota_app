@@ -399,9 +399,11 @@ public class FileUtility {
         ContentValues values = new ContentValues();
         //values.put(MediaStore.Images.Media.DESCRIPTION, "This is a file");
         values.put(MediaStore.Files.FileColumns.DISPLAY_NAME, displayName);
-        values.put(MediaStore.Files.FileColumns.MIME_TYPE, "text/plain");//MediaStore对应类型名
+        values.put(MediaStore.Files.FileColumns.MIME_TYPE, "*/*");//MediaStore对应类型名
+//        values.put(MimeType.XLSX, "text/plain");//MediaStore对应类型名
+
         values.put(MediaStore.Files.FileColumns.TITLE, displayName);
-        values.put(MediaStore.Images.Media.RELATIVE_PATH, "Download/Test");//公共目录下目录名
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, "Download");//公共目录下目录名
 
         Uri external = MediaStore.Downloads.EXTERNAL_CONTENT_URI;//内部存储的Download路径
         ContentResolver resolver = context.getContentResolver();
