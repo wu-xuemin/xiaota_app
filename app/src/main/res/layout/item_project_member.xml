@@ -17,15 +17,18 @@
         android:singleLine="true"
         android:text="成员账号" />
 
-    <Button
-        android:id="@+id/projectMemberAccountDisableBt"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"
-        android:ellipsize="marquee"
         android:gravity="center"
-        android:singleLine="true"
-        android:text="删除" />
-
+        android:padding="0sp"
+        android:layout_marginLeft="2sp"
+        android:layout_marginRight="@dimen/size_level1">
+            <Button
+                android:id="@+id/projectMemberAccountDisableBt"
+                style="@style/lineSingleButton"
+                android:text="{cmd_delete}" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -24,21 +24,18 @@
 
             <Button
                 android:id="@+id/createNewMemberBt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="邀请新成员" />
+                style="@style/lineSingleButton"
+                android:text="{cmd_account_plus}"  />
 
             <Button
                 android:id="@+id/inviteAllCompanyMemberBt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="邀请全公司人员" />
+                style="@style/lineSingleButton"
+                android:text="{cmd_account_multiple_plus}" />
 
             <Button
                 android:id="@+id/removeAllCompanyMemberBt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="清除全部人员" />
+                style="@style/lineSingleButton"
+                android:text="{cmd_account_multiple_remove}" />
 
         </LinearLayout>
 

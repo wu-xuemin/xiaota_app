@@ -2,6 +2,7 @@ package com.zhihuta.xiaota.ui;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.LayoutInflaterCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.MemberAdapter;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
@@ -54,6 +56,9 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project_member_manage);
         //返回前页按钮
@@ -147,10 +152,21 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String url = RequestUrlUtility.build(URL.DELETE_PROJECT_MEMBERS_COMPANY.replace("{id}",String.valueOf(mProject.getId())));
-                mNetwork.delete( url, null, new DeleteProjectMemberListHandler(),(handler, msg)->{
-                    handler.sendMessage(msg);
-                });
+                android.app.AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProjectMemberManageActivity.this);
+                alertDialogBuilder.setTitle("确定要移除所有项目成员?")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                String url = RequestUrlUtility.build(URL.DELETE_PROJECT_MEMBERS_COMPANY.replace("{id}",String.valueOf(mProject.getId())));
+                                mNetwork.delete( url, null, new DeleteProjectMemberListHandler(),(handler, msg)->{
+                                    handler.sendMessage(msg);
+                                });
+
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -350,15 +366,23 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
 
                     break;
                 case R.id.projectMemberAccountDisableBt:
-//                    Toast.makeText(ProjectMemberManageActivity.this, "你点击了 禁用" + (position + 1), Toast.LENGTH_SHORT).show();
-                    LinkedHashMap<String, String> deleteProjectMemberParameters = new LinkedHashMap<>();
-                    deleteProjectMemberParameters.put("member_accounts",mMemberList.get(position).getAccount());
-                    String  url = Constant.deleteProjectMemberUrl.replace("{id}", String.valueOf(mProject.getId()));
-                    mNetwork.delete(url, deleteProjectMemberParameters, new DeleteProjectMemberListHandler(),(handler, msgGetMember)->{
-                        handler.sendMessage(msgGetMember);
-                    });
 
+                    android.app.AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProjectMemberManageActivity.this);
+                    alertDialogBuilder.setTitle("确定要移除 "+ mMemberList.get(position).getAccount()+ "?")
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
+                                    LinkedHashMap<String, String> deleteProjectMemberParameters = new LinkedHashMap<>();
+                                    deleteProjectMemberParameters.put("member_accounts",mMemberList.get(position).getAccount());
+                                    String  url = Constant.deleteProjectMemberUrl.replace("{id}", String.valueOf(mProject.getId()));
+                                    mNetwork.delete(url, deleteProjectMemberParameters, new DeleteProjectMemberListHandler(),(handler, msgGetMember)->{
+                                        handler.sendMessage(msgGetMember);
+                                    });
+                                }
+                            })
+                            .show();
                     break;
                 default:
                     break;
