@@ -2,6 +2,7 @@ package com.zhihuta.xiaota.common;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -11,7 +12,10 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import androidx.annotation.RequiresApi;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -386,6 +390,54 @@ public class FileUtility {
         return targetFile;
     }
 
-    ///
+    /// Android Q 以上。
+    //复制沙盒私有文件到Download公共目录下
+    //orgFilePath是要复制的文件私有目录路径
+    //displayName复制后文件要显示的文件名称带后缀（如xx.txt）
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    public static void copyPrivateToDownload(Context context, String orgFilePath, String displayName){
+        ContentValues values = new ContentValues();
+        //values.put(MediaStore.Images.Media.DESCRIPTION, "This is a file");
+        values.put(MediaStore.Files.FileColumns.DISPLAY_NAME, displayName);
+        values.put(MediaStore.Files.FileColumns.MIME_TYPE, "text/plain");//MediaStore对应类型名
+        values.put(MediaStore.Files.FileColumns.TITLE, displayName);
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, "Download/Test");//公共目录下目录名
+
+        Uri external = MediaStore.Downloads.EXTERNAL_CONTENT_URI;//内部存储的Download路径
+        ContentResolver resolver = context.getContentResolver();
+
+        Uri insertUri = resolver.insert(external, values);//使用ContentResolver创建需要操作的文件
+        //Log.i("Test--","insertUri: " + insertUri);
+
+        InputStream ist=null;
+        OutputStream ost = null;
+        try {
+            ist=new FileInputStream(new File(orgFilePath));
+            if (insertUri != null) {
+                ost = resolver.openOutputStream(insertUri);
+            }
+            if (ost != null) {
+                byte[] buffer = new byte[4096];
+                int byteCount = 0;
+                while ((byteCount = ist.read(buffer)) != -1) {  // 循环从输入流读取 buffer字节
+                    ost.write(buffer, 0, byteCount);        // 将读取的输入流写入到输出流
+                }
+                // write what you want
+            }
+        } catch (IOException e) {
+            //Log.i("copyPrivateToDownload--","fail: " + e.getCause());
+        } finally {
+            try {
+                if (ist != null) {
+                    ist.close();
+                }
+                if (ost != null) {
+                    ost.close();
+                }
+            } catch (IOException e) {
+                //Log.i("copyPrivateToDownload--","fail in close: " + e.getCause());
+            }
+        }
+    }
 
 }

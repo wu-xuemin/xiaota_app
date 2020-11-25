@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSONException;
@@ -18,6 +19,7 @@ import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.DxResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.MsgFailResponseDataWrap;
 import com.zhihuta.xiaota.bean.response.UserResponseDataWrap;
+import com.zhihuta.xiaota.common.FileUtility;
 import com.zhihuta.xiaota.ui.XiaotaApp;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -181,14 +183,23 @@ public class Network {
         return true;
     }
 
-    void saveFile(Response response, String fileSaveName) {
+    void saveFile(Response response, String fileSaveName, Context context) {
         InputStream is = null;
         byte[] buf = new byte[2048];
         int len = 0;
         FileOutputStream fos = null;
         final File file;
         String fileName = "/" + fileSaveName + ".xlsx";
-        String directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
+        String directory = null;
+        /**
+         * 如果是Q版本以上，则要先保存到私有目录，然后再根据规则复制到公共目录。
+         */
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+           directory = context.getFilesDir().toString();
+        } else {
+            directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
+        }
+
         file = new File(directory + fileName);
 //        File file = new File(Environment.getExternalStorageDirectory(),"test.apk");
         try {
@@ -209,6 +220,14 @@ public class Network {
             if (is != null) {
                 is.close();
             }
+            /**
+             * 如果是Q版本以上，要复制到公共目录。
+             */
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                FileUtility.copyPrivateToDownload(context, file.getPath(), fileSaveName + ".xlsx");
+            } else {
+                // nothing
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -218,7 +237,8 @@ public class Network {
     public boolean getFile(String url, final HashMap<String, String> values,
                            final Handler handler,
                            final HttpResponseHandler httpResponseHandlerHandler,
-                           String fileSaveName)
+                           String fileSaveName,
+                           Context context)
     {
         final Message msg = handler.obtainMessage();
         if (!isNetworkConnected()) {
@@ -268,7 +288,8 @@ public class Network {
 
                     //同步网络请求
                     response = client.newCall(request).execute();
-                    saveFile(response, fileSaveName);
+
+                    saveFile(response, fileSaveName, context);
 
                 } catch (Exception e) {
 

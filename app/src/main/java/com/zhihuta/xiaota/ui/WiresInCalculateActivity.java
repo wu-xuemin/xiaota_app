@@ -101,7 +101,8 @@ public class WiresInCalculateActivity extends AppCompatActivity {
                 mNetwork.getFile(url, null, new ExportToExcelHandler(),(handler, msg)->{
                     handler.sendMessage(msg);
                 },
-                        mLujing.getName()+"电线清册");
+                        mLujing.getName()+"电线清册",
+                        WiresInCalculateActivity.this);
 
             }
         });
