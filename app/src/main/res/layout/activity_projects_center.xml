@@ -60,7 +60,7 @@
             android:id="@+id/textView_proCreater"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:layout_weight="1.5"
             android:gravity="center"
             android:text="创建人" />
 
@@ -68,15 +68,15 @@
             android:id="@+id/textView_proCreateTime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:gravity="center"
+            android:layout_weight="2"
+            android:gravity="right"
             android:text="创建时间" />
 
         <TextView
             android:id="@+id/textViewProOperate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
+            android:layout_weight="3"
             android:gravity="center"
             android:text="操作" />
 
@@ -114,7 +114,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:fillViewport="false"
+                android:fillViewport="true"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <!--LinearLayout
