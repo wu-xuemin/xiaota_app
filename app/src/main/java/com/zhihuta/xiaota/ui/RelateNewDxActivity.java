@@ -188,7 +188,6 @@ public class RelateNewDxActivity extends AppCompatActivity {
         });
 
         mSearchView = (SearchView) findViewById(R.id.sv_in_relate_new_dx);
-        mSearchView.setQueryHint("查找"); //按名称
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

@@ -34,7 +34,10 @@
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:gravity="center"
-                android:padding="10dp"></SearchView>
+                android:padding="10dp"
+                android:queryHint="输入编号">
+
+            </SearchView>
         </LinearLayout>
         <!--横线-->
         <View

@@ -42,7 +42,8 @@
             <SearchView
                 android:id="@+id/searchLujingByName"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:queryHint="输入路径名"/>
         </LinearLayout>
 <!--        横线-->
         <View

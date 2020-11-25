@@ -1228,7 +1228,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         mComputeScanBt.setOnClickListener(new MyOnclickListenrOnScanBts(Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_CACULATE));
 
         mSearchViewInCalculate = (SearchView) findViewById(R.id.searchViewInCalculate);
-        mSearchViewInCalculate.setQueryHint("查找"); //按名称
         mSearchViewInCalculate.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -1352,7 +1351,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
 
         mSearchView = (SearchView) findViewById(R.id.searchLujingByName);
-        mSearchView.setQueryHint("查找"); //按名称
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
