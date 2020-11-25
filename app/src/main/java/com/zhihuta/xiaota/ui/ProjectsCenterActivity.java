@@ -11,17 +11,21 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -302,9 +306,23 @@ public class ProjectsCenterActivity extends AppCompatActivity {
             switch (v.getId()) {
 
                 case R.id.projectMingChenTextView:
-                    Toast.makeText(ProjectsCenterActivity.this, "你点击了 项目名称" + (position + 1), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ProjectsCenterActivity.this, "你点击了 项目名称" + (position + 1), Toast.LENGTH_SHORT).show();
                     //
+                    final TextView tvPjName = new TextView(ProjectsCenterActivity.this);
+                    tvPjName.setText(mProjectList.get(position).getProjectName());
+                    tvPjName.setTextSize(16);
+                    tvPjName.setGravity(Gravity.CENTER);
+                    //此处相当于布局文件中的Android:layout_gravity属性
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    lp.gravity = Gravity.RIGHT;
+                    tvPjName.setLayoutParams(lp);
+                    tvPjName.setTypeface(Typeface.DEFAULT_BOLD);
 
+                    AlertDialog.Builder alertDialogBuilder2 = new AlertDialog.Builder(ProjectsCenterActivity.this);
+                    alertDialogBuilder2.setTitle("项目名称")
+                            .setView(tvPjName)
+                            .setPositiveButton("关闭",null)
+                            .show();
                     break;
                 case R.id.button_delete_project:
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProjectsCenterActivity.this);

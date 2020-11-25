@@ -346,7 +346,7 @@ public class ProjectMemberManageActivity extends AppCompatActivity {
             switch (v.getId()) {
 
                 case R.id.projectMemberAccountTextView:
-                    Toast.makeText(ProjectMemberManageActivity.this, "你点击了账号名称" + (position + 1), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(ProjectMemberManageActivity.this, "你点击了账号名称" + (position + 1), Toast.LENGTH_SHORT).show();
 
                     break;
                 case R.id.projectMemberAccountDisableBt:
