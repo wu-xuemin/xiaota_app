@@ -59,6 +59,6 @@ public class URL {
     public static final String PUT_PROJECT_MEMBERS_COMPANY = "/project/{id}/invitemember/company";
     public static final String DELETE_PROJECT_MEMBERS_COMPANY = "/project/{id}/removemember/company";
     public static final String GET_PATH_WIRES_EXPORT_TO_EXCEL = "/caculate/{path_id}/wires/raw/export"; //导出清册列表
-    public static final String GET_PATH_WIRES_BY_PARTS_CODE_EXPORT_TO_EXCEL = "/caculate/{path_id}/wires/parts_code/export";//计算中心 按型号导出电线
+    public static final String GET_PATH_WIRES_EXPORT_TO_EXCEL_BY_PARTS_CODE = "/caculate/{path_id}/wires/parts_code/export";//计算中心 按型号导出电线
 
 }

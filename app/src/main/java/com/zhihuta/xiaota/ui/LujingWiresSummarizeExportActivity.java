@@ -14,6 +14,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.zhihuta.xiaota.R;
@@ -39,6 +41,8 @@ public class LujingWiresSummarizeExportActivity extends AppCompatActivity {
     private LujingSummarizeWiresAdapter mWiresSummarizeAdapter;
     private List<PathWiresPartsCodeSum> mDianxianList;
     private RecyclerView mDxRV;
+
+    private Button mExportToExcelBt;
 
     SwipeRefreshLayout mSummarizeWiresRefreshLayout;
 
@@ -93,9 +97,71 @@ public class LujingWiresSummarizeExportActivity extends AppCompatActivity {
                 refreshPage();
             }
         });
+        mExportToExcelBt = (Button)findViewById(R.id.buttonExportByModel);
+        mExportToExcelBt.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
 
+                String url = Constant.getPathWiresExportToExcelByPartsCodeUrl.replace("{path_id}",String.valueOf(mLujing.getId()));
+
+                //返回的直接是文件，没有Msg等
+                mNetwork.getFile(url, null, new  ExportToExcelHandler(),(handler, msg)->{
+                            handler.sendMessage(msg);
+                        },
+                        mLujing.getName()+"按型号导出的电线清册",
+                        LujingWiresSummarizeExportActivity.this);
+
+            }
+        });
     }
 
+    @SuppressLint("HandlerLeak")
+    class ExportToExcelHandler extends Handler {
+
+        private boolean bIsGetting = false;
+
+        public boolean getIsGetting()
+        {
+            return bIsGetting;
+        }
+
+        public void setIsGetting(boolean getting)
+        {
+            bIsGetting = getting;
+        }
+
+        @Override
+        public void handleMessage(final Message msg) {
+//            if(mLoadingProcessDialog != null && mLoadingProcessDialog.isShowing()) {
+//                mLoadingProcessDialog.dismiss();
+//            }
+
+            //////////////////////
+            String errorMsg = "";
+
+            try {
+                errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                if (errorMsg != null)
+                {
+                    Log.d("导出失败:", errorMsg);
+                    Toast.makeText(LujingWiresSummarizeExportActivity.this, "导出失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+
+                    return;
+                }
+
+                Toast.makeText(LujingWiresSummarizeExportActivity.this, "导出成功, 请到下载目录查看！", Toast.LENGTH_SHORT).show();
+
+            }
+            catch (Exception ex)
+            {
+                Log.d("导出失败:", ex.getMessage());
+            }
+            finally {
+                setIsGetting(false);
+            }
+        }//handle message
+
+    }
     //根据路径查询该路径的导出数据（按电线型号）
     private void refreshPage(){
 
