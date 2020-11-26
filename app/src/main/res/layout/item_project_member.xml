@@ -28,7 +28,7 @@
             <Button
                 android:id="@+id/projectMemberAccountDisableBt"
                 style="@style/horizontalButtonSpare"
-                android:text="{cmd_delete}" />
+                android:text="{cmd_account_minus}" />
     </LinearLayout>
 
 </LinearLayout>

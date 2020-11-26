@@ -35,7 +35,7 @@
             <Button
                 android:id="@+id/removeAllCompanyMemberBt"
                 style="@style/horizontalButtonSpare"
-                android:text="{cmd_account_multiple_remove}" />
+                android:text="{cmd_account_multiple_minus}" />
 
         </LinearLayout>
 

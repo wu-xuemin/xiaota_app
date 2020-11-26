@@ -56,7 +56,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.ItemViewMe
     public void onBindViewHolder(@NonNull ItemViewMemberViewHolder holder, int position) {
 
         MemberData data = dataList.get(position);
-        holder.memberAccountTv.setText(data.getName());
+        holder.memberAccountTv.setText(data.getAccount());
         holder.MemberAccountDisableTv.setTag(position);
 
         holder.memberAccountTv.setTag(position);
