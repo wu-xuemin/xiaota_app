@@ -76,6 +76,7 @@
             android:id="@+id/dx_tobe_select_dingbu_biaoji"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:gravity="center"
             app:layout_constraintBottom_toTopOf="@id/dividerDxTobeSelect22"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -85,57 +86,63 @@
                 android:id="@+id/textView_distanceNumberTobeSelect"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:gravity="center"
                 android:text="编号" />
 
             <TextView
                 android:id="@+id/textView_distanceStartTobeSelect"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="3"
+                android:gravity="center"
                 android:text="起点" />
 
             <TextView
                 android:id="@+id/textView_distanceEndTobeSelect"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_gravity="center"
+                android:layout_weight="4"
+                android:gravity="center"
                 android:text="终点" />
 
-<!--            <TextView-->
-<!--                android:id="@+id/textView_distanceModelTobeSelect"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="3"-->
-<!--                android:text="型号" />-->
+            <!--            <TextView-->
+            <!--                android:id="@+id/textView_distanceModelTobeSelect"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_weight="3"-->
+            <!--                android:text="型号" />-->
 
-<!--            <TextView-->
-<!--                android:id="@+id/textView_xinshuJiemianTobeSelect"-->
-<!--                android:layout_width="15dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="3"-->
-<!--                android:text="芯数截面" />-->
+            <!--            <TextView-->
+            <!--                android:id="@+id/textView_xinshuJiemianTobeSelect"-->
+            <!--                android:layout_width="15dp"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_weight="3"-->
+            <!--                android:text="芯数截面" />-->
 
-<!--            <TextView-->
-<!--                android:id="@+id/textView_distanceValueTobeSelect"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="2"-->
-<!--                android:text="长度" />-->
+            <!--            <TextView-->
+            <!--                android:id="@+id/textView_distanceValueTobeSelect"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_weight="2"-->
+            <!--                android:text="长度" />-->
 
-<!--            <TextView-->
-<!--                android:id="@+id/textView_SteelHoseRedundancyTobeSelect"-->
-<!--                android:layout_width="15dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="3"-->
-<!--                android:text="钢冗皮冗" />-->
+            <!--            <TextView-->
+            <!--                android:id="@+id/textView_SteelHoseRedundancyTobeSelect"-->
+            <!--                android:layout_width="15dp"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_weight="3"-->
+            <!--                android:text="钢冗皮冗" />-->
 
-<!--            <TextView-->
-<!--                android:id="@+id/textView_operateTobeSelect"-->
-<!--                android:layout_width="10dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="2"-->
-<!--                android:text="选中" />-->
+            <!--            <TextView-->
+            <!--                android:id="@+id/textView_operateTobeSelect"-->
+            <!--                android:layout_width="10dp"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_weight="2"-->
+            <!--                android:text="选中" />-->
 
         </LinearLayout>
 

@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center">
 
     <TextView
         android:id="@+id/textView_distanceName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="4"
+        android:gravity="center"
         android:text="TextView" />
 
     <TextView
         android:id="@+id/textView_distanceNumber"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="4"
         android:gravity="center"
         android:text="ID号" />
@@ -21,22 +26,29 @@
     <Button
         android:id="@+id/button_distance_up"
         style="@style/horizontalButtonCompact"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:text="{cmd_arrow_up_bold}" />
 
     <Button
         android:id="@+id/button_distance_down"
         style="@style/horizontalButtonCompact"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:text="{cmd_arrow_down_bold}" />
 
     <Button
         android:id="@+id/button_distance_delete"
         style="@style/horizontalButtonCompact"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:text="{cmd_delete}" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="2"
         android:gravity="center"
         android:text="长度" />
