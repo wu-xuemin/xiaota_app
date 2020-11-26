@@ -2,6 +2,7 @@ package com.zhihuta.xiaota.ui;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.LayoutInflaterCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.LujingSummarizeWiresAdapter;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
@@ -48,6 +50,8 @@ public class LujingWiresSummarizeExportActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wires_export);
 

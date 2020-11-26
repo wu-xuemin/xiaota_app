@@ -2,6 +2,7 @@ package com.zhihuta.xiaota.ui;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.LayoutInflaterCompat;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
@@ -36,6 +38,8 @@ public class AddDxQingCeByHandActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_dx_qing_ce_by_hand);
         //返回前页按钮

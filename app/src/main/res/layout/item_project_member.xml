@@ -27,7 +27,7 @@
         android:layout_marginRight="@dimen/size_level1">
             <Button
                 android:id="@+id/projectMemberAccountDisableBt"
-                style="@style/lineSingleButton"
+                style="@style/horizontalButtonSpare"
                 android:text="{cmd_delete}" />
     </LinearLayout>
 

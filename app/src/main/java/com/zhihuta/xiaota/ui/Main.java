@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.LayoutInflaterCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -41,6 +42,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.internal.LinkedTreeMap;
+import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.adapter.DistanceAdapter;
 import com.zhihuta.xiaota.adapter.LujingAdapter;
@@ -197,6 +199,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     //******method******/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
+
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 

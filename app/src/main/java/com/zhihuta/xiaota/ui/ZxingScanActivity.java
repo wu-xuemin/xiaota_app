@@ -2,6 +2,7 @@ package com.zhihuta.xiaota.ui;
 //红米8A android版本9 xiaota也没有提示要摄像头权限
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.LayoutInflaterCompat;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
@@ -67,6 +69,8 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
     private ArrayList<LujingData> mFilterLujingList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zxing_scan);
 

@@ -48,16 +48,16 @@
         <Button
             android:id="@+id/button_open_project"
             android:text="{cmd_folder_open}"
-            style="@style/lineArrayButton"/>
+            style="@style/horizontalButtonCompact"/>
 
         <Button
             android:id="@+id/button_delete_project"
-            style="@style/lineArrayButton"
+            style="@style/horizontalButtonCompact"
             android:text="{cmd_delete}" />
 
         <Button
             android:id="@+id/button_member_manager"
-            style="@style/lineArrayButton"
+            style="@style/horizontalButtonCompact"
             android:text="{cmd_account_group}" />
     </LinearLayout>>
 

@@ -20,24 +20,22 @@
 
     <Button
         android:id="@+id/button_distance_up"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="2"
-        android:text="上移" />
+        style="@style/horizontalButtonCompact"
+        android:text="{cmd_arrow_up_bold}" />
 
     <Button
         android:id="@+id/button_distance_down"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:text="下移" />
+        android:text="{cmd_arrow_down_bold}" />
 
     <Button
         android:id="@+id/button_distance_delete"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:text="删除" />
+        android:text="{cmd_delete}" />
 
     <TextView
         android:id="@+id/textView2"

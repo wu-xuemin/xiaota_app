@@ -24,7 +24,7 @@
             <Button
                 android:id="@+id/createNewProjectBt"
                 android:text="{cmd_plus_box}"
-                style="@style/lineSingleButton"/>
+                style="@style/horizontalButtonSpare"/>
         </LinearLayout>
 
     </LinearLayout>

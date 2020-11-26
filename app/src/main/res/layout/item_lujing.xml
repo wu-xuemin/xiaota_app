@@ -35,25 +35,19 @@
 
     <Button
         android:id="@+id/button_modify_lujing"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:text="修改"
-        tools:layout_weight="3" />
+        android:text="{cmd_file_edit}"
+        style="@style/horizontalButtonCompact"
+         />
 
     <Button
         android:id="@+id/button_create_lujing_base_exist"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:text="扩展" />
+        style="@style/horizontalButtonCompact"
+        android:text="{cmd_google_circles_extended}" />
 
     <Button
         android:id="@+id/button_delete_lujing"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:text="删除" />
+        style="@style/horizontalButtonCompact"
+        android:text="{cmd_delete}" />
 
 <!--    <Button-->
 <!--        android:id="@+id/calculateWireLengthBt"-->
@@ -64,17 +58,13 @@
 
     <Button
         android:id="@+id/wiresListBt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:text="清单" />
+        style="@style/horizontalButtonCompact"
+        android:text="{cmd_format_list_numbered}" />
 
     <Button
         android:id="@+id/exportAccordModelBt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:text="汇总" />
+        style="@style/horizontalButtonCompact"
+        android:text="{cmd_format_list_text}" />
 
 
 </LinearLayout>

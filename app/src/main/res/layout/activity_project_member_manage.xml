@@ -24,17 +24,17 @@
 
             <Button
                 android:id="@+id/createNewMemberBt"
-                style="@style/lineSingleButton"
+                style="@style/horizontalButtonSpare"
                 android:text="{cmd_account_plus}"  />
 
             <Button
                 android:id="@+id/inviteAllCompanyMemberBt"
-                style="@style/lineSingleButton"
+                style="@style/horizontalButtonSpare"
                 android:text="{cmd_account_multiple_plus}" />
 
             <Button
                 android:id="@+id/removeAllCompanyMemberBt"
-                style="@style/lineSingleButton"
+                style="@style/horizontalButtonSpare"
                 android:text="{cmd_account_multiple_remove}" />
 
         </LinearLayout>

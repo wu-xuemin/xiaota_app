@@ -135,8 +135,8 @@ dependencies {
     }
 
     /////////////
-    implementation "com.mikepenz:iconics-core:3.0.1@aar"
-    implementation "androidx.appcompat:appcompat"//这里要注意一下版本，如果发现图标有问题需要找到正常版本
+    implementation "com.mikepenz:iconics-core:5.1.0@aar"
+//    implementation "androidx.appcompat:appcompat"//这里要注意一下版本，如果发现图标有问题需要找到正常版本
     implementation "com.mikepenz:iconics-views:5.1.0"//optional
 
 
