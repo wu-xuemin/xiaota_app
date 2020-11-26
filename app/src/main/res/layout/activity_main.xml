@@ -24,7 +24,7 @@
             <Button
                 android:id="@+id/button_reset_dxQingCe"
                 style="@style/horizontalButtonSpare"
-                android:text="{cmd_magnify_remove_outline}" />
+                android:text="{cmd_magnify_close}" />
 
             <SearchView
                 android:id="@+id/sv_dxQingce"
@@ -68,7 +68,7 @@
                 <Button
                     android:id="@+id/button_show_import_history"
                     style="@style/horizontalButtonSpare"
-                    android:text="{cmd_format_list_numbered}" />
+                    android:text="{cmd_history}" />
             </LinearLayout>
 
             <!--横线-->

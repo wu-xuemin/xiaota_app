@@ -33,7 +33,7 @@
             <Button
                 android:id="@+id/button_reset_lujing"
                 style="@style/horizontalButtonSpare"
-                android:text="{cmd_magnify_remove_outline}" /> <!-- android:layout_weight="1" -->
+                android:text="{cmd_magnify_close}" />
 
             <SearchView
                 android:id="@+id/searchLujingByName"

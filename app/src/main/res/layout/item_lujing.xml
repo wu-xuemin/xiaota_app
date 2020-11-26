@@ -35,7 +35,7 @@
 
     <Button
         android:id="@+id/button_modify_lujing"
-        android:text="{cmd_file_edit}"
+        android:text="{cmd_file_document_edit}"
         style="@style/horizontalButtonCompact"
          />
 
@@ -64,7 +64,7 @@
     <Button
         android:id="@+id/exportAccordModelBt"
         style="@style/horizontalButtonCompact"
-        android:text="{cmd_format_list_text}" />
+        android:text="{cmd_view_list}" />
 
 
 </LinearLayout>
