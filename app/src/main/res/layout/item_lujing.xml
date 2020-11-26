@@ -2,16 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
     android:clickable="true"
     android:focusable="true"
-    android:layout_height="wrap_content">
+    android:gravity="center">
 
     <TextView
         android:id="@+id/lujingMingChenTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="4"
         android:ellipsize="marquee"
+        android:gravity="center"
         android:singleLine="true"
         android:text="路径名称" />
 
@@ -19,8 +23,10 @@
         android:id="@+id/lujingCreaterTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="3"
         android:ellipsize="marquee"
+        android:gravity="center"
         android:singleLine="true"
         android:text="创建人" />
 
@@ -28,42 +34,53 @@
         android:id="@+id/lujingCreateDateTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="3"
         android:ellipsize="marquee"
+        android:gravity="center"
         android:singleLine="true"
         android:text="日期" />
 
     <Button
         android:id="@+id/button_modify_lujing"
-        android:text="{cmd_file_document_edit}"
         style="@style/horizontalButtonCompact"
-         />
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="{cmd_file_document_edit}" />
 
     <Button
         android:id="@+id/button_create_lujing_base_exist"
         style="@style/horizontalButtonCompact"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:text="{cmd_google_circles_extended}" />
 
     <Button
         android:id="@+id/button_delete_lujing"
         style="@style/horizontalButtonCompact"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:text="{cmd_delete}" />
 
-<!--    <Button-->
-<!--        android:id="@+id/calculateWireLengthBt"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_weight="3"-->
-<!--        android:text="电线长度" />-->
+    <!--    <Button-->
+    <!--        android:id="@+id/calculateWireLengthBt"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_weight="3"-->
+    <!--        android:text="电线长度" />-->
 
     <Button
         android:id="@+id/wiresListBt"
         style="@style/horizontalButtonCompact"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:text="{cmd_format_list_numbered}" />
 
     <Button
         android:id="@+id/exportAccordModelBt"
         style="@style/horizontalButtonCompact"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:text="{cmd_view_list}" />
 
 
