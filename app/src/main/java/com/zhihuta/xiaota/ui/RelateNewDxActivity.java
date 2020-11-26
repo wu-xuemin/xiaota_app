@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -207,11 +208,14 @@ public class RelateNewDxActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-//                if (TextUtils.isEmpty(newText))
-//                    lv.clearTextFilter();
-//                else
-//                    lv.setFilterText(newText);
-                return true;
+                if (TextUtils.isEmpty(newText))
+                {
+                    mDxQingCeGetParameters.clear();
+                    mDxQingCeGetParameters.put("project_id",Main.project_id);
+
+                    refreshLayout( );
+                }
+                return false;
             }
         });
 
@@ -224,17 +228,17 @@ public class RelateNewDxActivity extends AppCompatActivity {
             }
         });
 
-        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                mDxQingCeGetParameters.clear();
-                mDxQingCeGetParameters.put("project_id",Main.project_id);
-
-                refreshLayout();
-
-                return false;
-            }
-        });
+//        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+//            @Override
+//            public boolean onClose() {
+//                mDxQingCeGetParameters.clear();
+//                mDxQingCeGetParameters.put("project_id",Main.project_id);
+//
+//                refreshLayout();
+//
+//                return false;
+//            }
+//        });
     }
 
     @SuppressLint("HandlerLeak")

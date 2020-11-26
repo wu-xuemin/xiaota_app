@@ -24,6 +24,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -904,7 +905,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return true;
+                if (TextUtils.isEmpty(newText))
+                {
+                    mDxQingCeGetParameters.clear();
+                    mDxQingCeGetParameters.put("project_id",Main.project_id);
+
+                    refreshPage(true);
+                }
+                return false;
             }
         });
         //监听整个控件
@@ -916,18 +924,18 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             }
         });
 
-        mSearchViewDxQingce.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-
-                mDxQingCeGetParameters.clear();
-                mDxQingCeGetParameters.put("project_id", Main.project_id);
-
-                refreshPage(true);
-
-                return false;
-            }
-        });
+//        mSearchViewDxQingce.setOnCloseListener(new SearchView.OnCloseListener() {
+//            @Override
+//            public boolean onClose() {
+//
+//                mDxQingCeGetParameters.clear();
+//                mDxQingCeGetParameters.put("project_id", Main.project_id);
+//
+//                refreshPage(true);
+//
+//                return false;
+//            }
+//        });
 
         mComputeDxBt = (Button) findViewById(R.id.button_compute_dx);
         mComputeDxBt.setOnClickListener(new View.OnClickListener() {
@@ -1269,11 +1277,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
             @Override
             public boolean onQueryTextChange(String newText) {
-//                if (TextUtils.isEmpty(newText))
-//                    lv.clearTextFilter();
-//                else
-//                    lv.setFilterText(newText);
-                return true;
+                if (TextUtils.isEmpty(newText))
+                {
+                    mLujingCaculateGetParameters.clear();
+                    mLujingCaculateGetParameters.put("project_id",Main.project_id);
+
+                    refreshPage(true);
+                }
+                return false;
             }
         });
 
@@ -1286,17 +1297,17 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             }
         });
 
-        mSearchViewInCalculate.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                mLujingCaculateGetParameters.clear();
-                mLujingCaculateGetParameters.put("project_id",Main.project_id);
-
-                refreshPage(true);
-
-                return false;
-            }
-        });
+//        mSearchViewInCalculate.setOnCloseListener(new SearchView.OnCloseListener() {
+//            @Override
+//            public boolean onClose() {
+//                mLujingCaculateGetParameters.clear();
+//                mLujingCaculateGetParameters.put("project_id",Main.project_id);
+//
+//                refreshPage(true);
+//
+//                return false;
+//            }
+//        });
 
         mResetInCaculateBt = (Button) findViewById(R.id.button_reset_in_calculate);
         mResetInCaculateBt.setOnClickListener(new View.OnClickListener() {
@@ -1411,11 +1422,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
             @Override
             public boolean onQueryTextChange(String newText) {
-//                if (TextUtils.isEmpty(newText))
-//                    lv.clearTextFilter();
-//                else
-//                    lv.setFilterText(newText);
-                return true;
+                if (TextUtils.isEmpty(newText))
+                {
+                    mLujingGetParameters.clear();
+                    mLujingGetParameters.put("project_id",Main.project_id);
+
+                    refreshPage(true);
+                }
+                return false;
             }
         });
 
@@ -1428,18 +1442,18 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             }
         });
 
-        mLujingSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-
-                mLujingGetParameters.clear();
-                mLujingGetParameters.put("project_id",Main.project_id);
-
-                refreshPage(true);
-
-                return false;
-            }
-        });
+//        mLujingSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+//            @Override
+//            public boolean onClose() {
+//
+//                mLujingGetParameters.clear();
+//                mLujingGetParameters.put("project_id",Main.project_id);
+//
+//                refreshPage(true);
+//
+//                return false;
+//            }
+//        });
 
     }
 
