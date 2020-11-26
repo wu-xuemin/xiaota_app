@@ -73,6 +73,7 @@ public class ProjectsCenterActivity extends AppCompatActivity {
 //        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));//加入该语句
 
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_projects_center);
         //返回前页按钮
         ActionBar actionBar = getSupportActionBar();
