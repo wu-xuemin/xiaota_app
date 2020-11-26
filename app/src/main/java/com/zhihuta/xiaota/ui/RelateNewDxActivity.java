@@ -223,6 +223,18 @@ public class RelateNewDxActivity extends AppCompatActivity {
                 mSearchView.setIconified(false);
             }
         });
+
+        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                mDxQingCeGetParameters.clear();
+                mDxQingCeGetParameters.put("project_id",Main.project_id);
+
+                refreshLayout();
+
+                return false;
+            }
+        });
     }
 
     @SuppressLint("HandlerLeak")

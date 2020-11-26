@@ -132,7 +132,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     private Button mLujingScanBt; //路径主界面的扫码按钮，用于 筛选出需要查看或者编辑的路径, 扫的越多码筛选出的路径越精确.
     private Button mComputeScanBt; //计算中心主界面的扫码按钮
     private Button mLujingResetBt; //路径主界面的重置按钮
-    private SearchView mSearchView;
+    private SearchView mLujingSearchView;
 
     private DianXianQingceAdapter mDxQingceAdapter;
     private ArrayList<DianxianQingCeData> mDianxianQingCeList = new ArrayList<>();
@@ -698,9 +698,10 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 //删除后真实刷新列表
                 //remove the one and use the filter to get the lujing list again.
 
-                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler( tabFlag ),(handler, msg2)->{
-                    handler.sendMessage(msg2);
-                });
+                refreshPage(true);
+//                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler( tabFlag ),(handler, msg2)->{
+//                    handler.sendMessage(msg2);
+//                });
 
             } else {
                 String errorMsg = (String) msg.obj;
@@ -876,10 +877,12 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             public void onClick(View v) {
                 mDxQingCeGetParameters.clear();  //重置查询条件
                 mDxQingCeGetParameters.put("project_id",Main.project_id);
-                String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg)->{
-                    handler.sendMessage(msg);
-                });
+//                String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+//                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg)->{
+//                    handler.sendMessage(msg);
+//                });
+
+                refreshPage(true);
             }
         });
 
@@ -890,10 +893,12 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 mDxQingCeGetParameters.clear();
                 mDxQingCeGetParameters.put("sn", query);
                 mDxQingCeGetParameters.put("project_id", Main.project_id);
-                String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg)->{
-                    handler.sendMessage(msg);
-                });
+
+                refreshPage(true);
+//                String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+//                mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg)->{
+//                    handler.sendMessage(msg);
+//                });
                 return false;
             }
 
@@ -908,6 +913,19 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             public void onClick(View v) {
                 // while a false will expand it.
                 mSearchViewDxQingce.setIconified(false);
+            }
+        });
+
+        mSearchViewDxQingce.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+
+                mDxQingCeGetParameters.clear();
+                mDxQingCeGetParameters.put("project_id", Main.project_id);
+
+                refreshPage(true);
+
+                return false;
             }
         });
 
@@ -1240,9 +1258,11 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 mLujingCaculateGetParameters.clear();
                 mLujingCaculateGetParameters.put("name", query);
                 mLujingCaculateGetParameters.put("project_id",Main.project_id);
-                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
-                    handler.sendMessage(msg);
-                });
+
+                refreshPage(true);
+//                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
+//                    handler.sendMessage(msg);
+//                });
 
                 return false;
             }
@@ -1265,6 +1285,19 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 mSearchViewInCalculate.setIconified(false);
             }
         });
+
+        mSearchViewInCalculate.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                mLujingCaculateGetParameters.clear();
+                mLujingCaculateGetParameters.put("project_id",Main.project_id);
+
+                refreshPage(true);
+
+                return false;
+            }
+        });
+
         mResetInCaculateBt = (Button) findViewById(R.id.button_reset_in_calculate);
         mResetInCaculateBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1273,9 +1306,10 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 mLujingCaculateGetParameters.clear();
                 mLujingCaculateGetParameters.put("project_id",Main.project_id);
 
-                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
-                    handler.sendMessage(msg);
-                });
+                refreshPage(true);
+//                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingCaculateGetParameters, new GetLujingListHandler(tabFlag), (handler, msg) -> {
+//                    handler.sendMessage(msg);
+//                });
             }
         });
 
@@ -1347,16 +1381,18 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 //clear the filters and get all the lujing list
                 mLujingGetParameters.clear();
                 mLujingGetParameters.put("project_id",Main.project_id);
-                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),
-                        (handler, msg) -> {
-                            handler.sendMessage(msg);
-                        });
+
+                refreshPage(true);
+//                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),
+//                        (handler, msg) -> {
+//                            handler.sendMessage(msg);
+//                        });
             }
         });
 
 
-        mSearchView = (SearchView) findViewById(R.id.searchLujingByName);
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        mLujingSearchView = (SearchView) findViewById(R.id.searchLujingByName);
+        mLujingSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
 
@@ -1364,10 +1400,11 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 mLujingGetParameters.put("name",query);
                 mLujingGetParameters.put("project_id",Main.project_id);
 
-                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),
-                        (handler, msg) -> {
-                            handler.sendMessage(msg);
-                        });
+                refreshPage(true);
+//                mNetwork.get(RequestUrlUtility.build(URL.GET_LUJING_LIST), mLujingGetParameters, new GetLujingListHandler(tabFlag),
+//                        (handler, msg) -> {
+//                            handler.sendMessage(msg);
+//                        });
 
                 return false;
             }
@@ -1383,11 +1420,24 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
         });
 
         //监听整个控件
-        mSearchView.setOnClickListener(new View.OnClickListener() {
+        mLujingSearchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // while a false will expand it.
-                mSearchView.setIconified(false);
+                mLujingSearchView.setIconified(false);
+            }
+        });
+
+        mLujingSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+
+                mLujingGetParameters.clear();
+                mLujingGetParameters.put("project_id",Main.project_id);
+
+                refreshPage(true);
+
+                return false;
             }
         });
 
@@ -1535,10 +1585,12 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
                                             Toast.makeText(Main.this, "删除电线成功！", Toast.LENGTH_SHORT).show();
 
-                                            String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
-                                            mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg2)->{
-                                                handler.sendMessage(msg2);
-                                            });
+                                            refreshPage(true);
+
+//                                            String url = RequestUrlUtility.build(URL.GET_DIANXIAN_QINGCE_LIST);
+//                                            mNetwork.get(url, mDxQingCeGetParameters, new GetDxListHandler(Constant.REQUEST_CODE_DIANXIANQINCE_WIRES),(handler, msg2)->{
+//                                                handler.sendMessage(msg2);
+//                                            });
                                         }
                                     } ,(hanlder, msg)->{
                                         hanlder.sendMessage(msg);

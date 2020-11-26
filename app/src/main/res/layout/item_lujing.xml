@@ -53,8 +53,8 @@
         style="@style/horizontalButtonCompact"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="{cmd_google_circles_extended}" />
-
+        android:text="{cmd_source_branch}" />
+        <!--android:text="{cmd_google_circles_extended}" -->
     <Button
         android:id="@+id/button_delete_lujing"
         style="@style/horizontalButtonCompact"
