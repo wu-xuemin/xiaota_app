@@ -25,16 +25,12 @@
 
     <Button
         android:id="@+id/button_distance_down"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="2"
+        style="@style/horizontalButtonCompact"
         android:text="{cmd_arrow_down_bold}" />
 
     <Button
         android:id="@+id/button_distance_delete"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="2"
+        style="@style/horizontalButtonCompact"
         android:text="{cmd_delete}" />
 
     <TextView

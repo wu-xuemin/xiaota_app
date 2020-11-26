@@ -51,7 +51,7 @@ public class AddDxQingCeFromFileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
+//        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_dx_qing_ce_from_file);

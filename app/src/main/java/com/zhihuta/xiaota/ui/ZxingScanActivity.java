@@ -70,7 +70,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
-        
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zxing_scan);
 

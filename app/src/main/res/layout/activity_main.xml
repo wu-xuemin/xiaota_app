@@ -23,10 +23,8 @@
 
             <Button
                 android:id="@+id/button_reset_dxQingCe"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="重置" />
+                style="@style/horizontalButtonSpare"
+                android:text="{cmd_magnify_remove_outline}" />
 
             <SearchView
                 android:id="@+id/sv_dxQingce"
@@ -59,24 +57,18 @@
 
                 <Button
                     android:id="@+id/button_add_dx_by_hand"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="手工添加" />
+                    style="@style/horizontalButtonSpare"
+                    android:text="{cmd_plus_box}" />
 
                 <Button
                     android:id="@+id/button_add_dx_from_file"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="文件导入" />
+                    style="@style/horizontalButtonSpare"
+                    android:text="{cmd_file_import}" />
 
                 <Button
                     android:id="@+id/button_show_import_history"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="查看记录" />
+                    style="@style/horizontalButtonSpare"
+                    android:text="{cmd_format_list_numbered}" />
             </LinearLayout>
 
             <!--横线-->

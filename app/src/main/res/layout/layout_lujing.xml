@@ -21,23 +21,19 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/button_add_new_lujing"
+                style="@style/horizontalButtonSpare"
+                android:text="{cmd_plus_box}" />
+
+            <Button
                 android:id="@+id/button_scan_lujing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="扫码筛选" />
+                style="@style/horizontalButtonSpare"
+                android:text="{cmd_qrcode_scan}" />
 
             <Button
                 android:id="@+id/button_reset_lujing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="重置" /> <!-- android:layout_weight="1" -->
-
-
-            <Button
-                android:id="@+id/button_add_new_lujing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="建全新路径" />
+                style="@style/horizontalButtonSpare"
+                android:text="{cmd_magnify_remove_outline}" /> <!-- android:layout_weight="1" -->
 
             <SearchView
                 android:id="@+id/searchLujingByName"

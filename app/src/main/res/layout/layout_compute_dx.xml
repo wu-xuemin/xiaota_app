@@ -19,15 +19,13 @@
 
         <Button
             android:id="@+id/button_compute_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="扫码筛选" />
+            style="@style/horizontalButtonSpare"
+            android:text="{cmd_qrcode_scan}" />
 
         <Button
             android:id="@+id/button_reset_in_calculate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="重置" />
+            style="@style/horizontalButtonSpare"
+            android:text="{cmd_magnify_remove_outline}" />
 
         <SearchView
             android:id="@+id/searchViewInCalculate"
