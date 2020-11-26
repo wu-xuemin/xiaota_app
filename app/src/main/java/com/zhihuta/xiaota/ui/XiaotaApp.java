@@ -175,7 +175,7 @@ public class XiaotaApp extends Application {
         }
         //}
 
-        this.ip   = readValue(PersistentValueType.SERVICE_IP, "47.114.157.108");
+        this.ip   = readValue(PersistentValueType.SERVICE_IP, "www.lybwww.com");
         if( this.ip.contains(":") )
         {
         	this.ip =  this.ip.split(":")[0];
