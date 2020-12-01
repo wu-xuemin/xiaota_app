@@ -31,9 +31,10 @@ public class Constant {
 
     //关于兴建路径request code 定义，防止误定义重复了
     public static final int REQUEST_CODE_SCAN_TO_ADD_NEW_QR = 1000;                                   //路径编辑添加新QR节点信息
-    public static final int REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH = REQUEST_CODE_SCAN_TO_ADD_NEW_QR+1;                                   //路径中心，新建分支路径扫码去获取一个 QR信息
+    public static final int REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH = REQUEST_CODE_SCAN_TO_ADD_NEW_QR+1;   //路径中心，新建分支路径扫码去获取一个 QR信息
     public static final int REQUEST_CODE_SCAN_TO_SUB_ON_PATH = REQUEST_CODE_SCAN_TO_BRANCH_ON_PATH+1;   //路径中心，新建子路径路径扫码去获取一个 QR信息
     public static final int REQUEST_CODE_SCAN_TO_COPY_ON_PATH = REQUEST_CODE_SCAN_TO_SUB_ON_PATH+1;     //路径中心，新建分支路径扫码去获取一个 QR信息
+    public static final int REQUEST_CODE_SCAN_TO_CACULATE_DISTANCE = REQUEST_CODE_SCAN_TO_COPY_ON_PATH+1;     //计算中心，扫码计算两点距离
 
     public static final int REQUEST_CODE_DIANXIANQINCE_WIRES = 2;  //电线清册，电线清单
     public static final int REQUEST_CODE_LUJING_RELATED_WIRES = 3;  //路径模型，已选电线清单

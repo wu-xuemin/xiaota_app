@@ -333,9 +333,8 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
     private  void startScan()
     {
         mQRCodeView.startCamera();
-        mQRCodeView.showScanRect();
         Log.d(TAG, "onStart: startCamera");
-        mQRCodeView.startSpot(); ///开启扫描  --要重新开启扫描，否则扫描不出下一个新的二维码
+        mQRCodeView.startSpotAndShowRect(); ///开启扫描  --要重新开启扫描，否则扫描不出下一个新的二维码
 
         mDisplayScanResultTv.setText("请对准二维码");
     }
