@@ -431,7 +431,13 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                 Log.d("获取间距信息失败", "编号为0");
                 Toast.makeText(ZxingScanActivity.this, "获取间距信息失败！" +"编号为0", Toast.LENGTH_SHORT).show();
 
-                mQRCodeView.startSpot();
+                //，重新开始扫描
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mQRCodeView.startSpotAndShowRect();
+                    }
+                }, 1000);
             }
         }
         else
@@ -439,7 +445,13 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             Log.d("识别二维码间距信息失败","");
             Toast.makeText(ZxingScanActivity.this, "识别二维码间距信息失败！" + result, Toast.LENGTH_SHORT).show();
 
-            mQRCodeView.startSpot();
+            //，重新开始扫描
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mQRCodeView.startSpotAndShowRect();
+                }
+            }, 1000);
         }
 
     }

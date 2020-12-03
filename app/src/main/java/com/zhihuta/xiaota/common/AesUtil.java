@@ -145,6 +145,10 @@ public class AesUtil {
         byte[] bytesBase4Decoded = android.util.Base64.decode(content, Base64.DEFAULT);
 
         byte[] b = decrypt(bytesBase4Decoded, keyBytes);
+        if (b ==null)
+        {
+            return null;
+        }
         return new String(b);
     }
 
