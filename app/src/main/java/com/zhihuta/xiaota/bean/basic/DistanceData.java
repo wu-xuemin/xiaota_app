@@ -10,6 +10,7 @@ public class DistanceData implements Serializable {
     private Integer qr_sequence; ///二维码的顺序  path distance qr表
     private String flag; ///
     private String type; // 二维码类型,0固定码，1通用码
+    private String preset_name; // 间距名称
 
     public String getType() {
         return type;
@@ -66,4 +67,13 @@ public class DistanceData implements Serializable {
     public void setSerial_number(String serial_number) {
         this.serial_number = serial_number;
     }
+
+    public String getPreset_name() {
+        return preset_name;
+    }
+
+    public void setPreset_name(String preset_name) {
+        this.preset_name = preset_name;
+    }
+
 }

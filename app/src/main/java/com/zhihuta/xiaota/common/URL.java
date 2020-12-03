@@ -32,7 +32,7 @@ public class URL {
     public static final String POST_ADD_NEW_LUJING_SUB_ON_OLD = "/paths/{id}/sub";// 分叉模式新建路径
     public static final String PUT_MODIFY_LUJING_NAME = "/paths/{id}/name"; //  修改路径的名称， "name": "南京上海"
 
-    public static final String PUT_LUJING_DISTANCE_QR = "/paths/lujingID/distance_qrs";   // E.g: paths/1/distance_qrs "qr_id":1, 数据库里 间距二维码的id
+    public static final String PUT_LUJING_DISTANCE_QR = "/paths/{lujingID}/distance_qrs";   // E.g: paths/1/distance_qrs "qr_id":1, 数据库里 间距二维码的id
     public static final String GET_LUJING_DISTANCE_QR_EXIST = "/paths/{lujingID}/exsit";   // E.g:  /paths/1/exsit?qr_ids={1,2} "qr_id":1, 数据库里 间距二维码的id
     public static final String DEL_LUJING_DISTANCE_QR = "/paths/{lujingID}/distance_qrs/{qr_id}";   // E.g: paths/1/distance_qrs/1
     public static final String PUT_LUJING_DISTANCE_QR_SEQUENCE = "/paths/{lujingID}/distance_qrs/sequence";   // E.g: paths/1/distance_qrs/1
@@ -49,6 +49,7 @@ public class URL {
 
 
     public static final String PUT_QR_DISTANCE = "/distance/qr/{qr_id}/{distance}/changeDistance";//设置二维码距离
+    public static final String GET_QR_DISTANCE_INFOR = "/distance/qr/{qr_id}";//获取二维码间距信息
 
     //project
     public static final String GET_ALL_PROJIECT_LIST = "/project/order_by=create_time&offset=0&limit=0";//获取所有加入过的项目列表

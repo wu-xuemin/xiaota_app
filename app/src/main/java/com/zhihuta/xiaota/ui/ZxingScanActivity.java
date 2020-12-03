@@ -19,14 +19,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
+import com.zhihuta.xiaota.bean.basic.DistanceQrEx;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.Result;
+import com.zhihuta.xiaota.bean.response.GetDistanceQrInfoResponse;
 import com.zhihuta.xiaota.bean.response.PathGetObject;
 import com.zhihuta.xiaota.bean.response.PathsResponse;
 import com.zhihuta.xiaota.bean.response.pathContainsQRResponse;
@@ -343,7 +346,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
     private void stopScan()
     {
-        mQRCodeView.stopSpot();
+        mQRCodeView.stopSpotAndHiddenRect();
         mQRCodeView.stopCamera();
 
         mDisplayScanResultTv.setText("扫码已停止");
@@ -415,6 +418,99 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
         DistanceData distanceData = gson.fromJson(result, DistanceData.class);
 
+        if ( distanceData != null)
+        {
+            if (distanceData.getQr_id() != 0)
+            {
+                stopScan();
+
+                getLatestQRInfo(distanceData.getQr_id());
+            }
+            else {
+
+                Log.d("获取间距信息失败", "编号为0");
+                Toast.makeText(ZxingScanActivity.this, "获取间距信息失败！" +"编号为0", Toast.LENGTH_SHORT).show();
+
+                mQRCodeView.startSpot();
+            }
+        }
+        else
+        {
+            Log.d("识别二维码间距信息失败","");
+            Toast.makeText(ZxingScanActivity.this, "识别二维码间距信息失败！" + result, Toast.LENGTH_SHORT).show();
+
+            mQRCodeView.startSpot();
+        }
+
+    }
+
+    private void getLatestQRInfo(int qrId)
+    {
+        if (qrId != 0)
+        {
+            String theUrl = RequestUrlUtility.build(URL.GET_QR_DISTANCE_INFOR.replace("{qr_id}", String.valueOf(qrId)));
+            mNetwork.get(theUrl, null, new Handler(){
+                @Override
+                public void handleMessage(Message msg) {
+
+                    super.handleMessage(msg);
+
+                    ////////////////
+
+                    String errorMsg = "";
+                    errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+
+                    if (errorMsg != null)
+                    {
+                        Log.d("间距信息失败", errorMsg);
+                        Toast.makeText(ZxingScanActivity.this, "间距信息失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Result result= (Result)(msg.obj);
+
+                    GetDistanceQrInfoResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetDistanceQrInfoResponse.class);
+                    handleQRInfor( responseData.qr_infor);
+
+                    ////////////////
+                }
+
+            },(handler,msg)->{
+                handler.sendMessage(msg);
+            });
+        }
+     }
+
+    private void handleQRInfor(DistanceQrEx distanceQrEx)
+    {
+        DistanceData  distanceData = new DistanceData();
+        distanceData.setDistance(Double.toString( distanceQrEx.distance));
+        distanceData.setName(distanceQrEx.qrName);
+        distanceData.setPreset_name(distanceQrEx.presetName);
+        distanceData.setQr_id(distanceQrEx.qrId);
+        distanceData.setSerial_number(distanceQrEx.serialNumber);
+        distanceData.setType(Integer.toString(distanceQrEx.type));
+
+
+        String result = JSON.toJSONString(distanceQrEx);
+
+        String rst = result.replace("distance","长度");
+        //rst = rst.replace("preset_name","展现名称");
+        rst = rst.replace("qr_id","Id号");
+        rst = rst.replace("qr_name","名称");
+        rst = rst.replace("serial_number","序列号");
+        rst = rst.replace("type","类型");
+
+        if(distanceData.getType().equals("0")){
+            rst = rst.replace("类型\":0","类型\": 固定码");
+        } else if(distanceData.getType().equals("1")){
+            rst = rst.replace("类型\":1","类型: 通用码");
+        } else {
+            //不动
+        }
+        mDisplayScanResultTv.setText(rst);
+
+
         if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_LUJING ||
                 mRequestCodeFroPrev==Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_CACULATE) {
             /**
@@ -422,7 +518,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
              */
             boolean bFind = false;
             for (DistanceData data : mScanResultDistanceList) {
-                if (data.getQr_id() == distanceData.getQr_id())
+                if (data.getQr_id() == distanceQrEx.qrId)
                     bFind = true;
             }
 
@@ -471,25 +567,12 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
              */
             LinkedHashMap<String, String> mPostValue = new LinkedHashMap<>();
             mPostValue.put("qr_id", new Gson().toJson(distanceData.getQr_id()));
-            String url = Constant.putLujingDistanceUrl.replace("lujingID", String.valueOf(mLujing.getId()));
-            mNetwork.putLujingDistance(url, mPostValue, new PutLujingDistanceHandler());
-        }
+            String url = RequestUrlUtility.build( URL.PUT_LUJING_DISTANCE_QR.replace("{lujingID}", String.valueOf(mLujing.getId()) ));
 
-        String rst = result.replace("distance","长度");
-        rst = rst.replace("preset_name","展现名称");
-        rst = rst.replace("qr_id","Id号");
-        rst = rst.replace("qr_name","名称");
-        rst = rst.replace("serial_number","序列号");
-        rst = rst.replace("type","类型");
-
-        if(distanceData.getType().equals("0")){
-            rst = rst.replace("类型\":0","类型\": 固定码");
-        } else if(distanceData.getType().equals("1")){
-            rst = rst.replace("类型\":1","类型: 通用码");
-        } else {
-            //不动
+            mNetwork.put(url, mPostValue, new PutLujingDistanceHandler(),(handler,msg)->{
+                handler.sendMessage(msg);
+            });
         }
-        mDisplayScanResultTv.setText(rst);
     }
 
     @SuppressLint("HandlerLeak")
@@ -497,21 +580,23 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (msg.what == Network.OK) {
-                ShowMessage.showToast(ZxingScanActivity.this,"添加间距成功！",ShowMessage.MessageDuring.SHORT);
 
-//                startScan();
+            ////////////////
 
-            }else {
+            String errorMsg = "";
+            errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
 
-                if( msg.obj != null){
-                    if( msg.obj.toString().equals("PATH_QRCODE_EXIST")){
-                        ShowMessage.showDialog(ZxingScanActivity.this,"异常！该路径已包含了该二维码" ); //
-                    } else {
-                        ShowMessage.showDialog(ZxingScanActivity.this,"出错！" ); //
-                    }
-                }
+            if (errorMsg != null)
+            {
+                Log.d("添加间距失败 NG:", errorMsg);
+                Toast.makeText(ZxingScanActivity.this, "添加间距失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            Result result= (Result)(msg.obj);
+
+            ShowMessage.showToast(ZxingScanActivity.this,"添加间距成功！",ShowMessage.MessageDuring.SHORT);
+            ////////////////
         }
     }
     @SuppressLint("HandlerLeak")
@@ -534,6 +619,14 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             {
                 Log.d("路径获取 NG:", errorMsg);
                 Toast.makeText(ZxingScanActivity.this, "筛选路径出错！" + errorMsg, Toast.LENGTH_SHORT).show();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                }, 1000);
+
                 return;
             }
 
@@ -558,6 +651,13 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
             if (mFilterLujingList.size() == 0) {
                 Toast.makeText(ZxingScanActivity.this, "筛选得到路径数量为0！", Toast.LENGTH_SHORT).show();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                }, 1000);
 
                 return;
             }
@@ -603,7 +703,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
 
                 //startScanTimer();
 
-                startScan();
+                //startScan();
 
                 Log.d("路径获取 NG:", errorMsg);
                 Toast.makeText(ZxingScanActivity.this, "查找路径出错！", Toast.LENGTH_SHORT).show();
