@@ -954,7 +954,12 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 mLayoutComputeDistance.setVisibility(View.VISIBLE);
                 mLayoutComputeDx.setVisibility(View.GONE);
 
-                startScan();
+                //运行时权限
+                if (ContextCompat.checkSelfPermission(Main.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(Main.this,new String[]{Manifest.permission.CAMERA},Constant.REQUEST_CODE_SCAN_TO_CACULATE_DISTANCE);
+                }else {
+                    startScan();
+                }
             }
         });
 
@@ -2009,6 +2014,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                     break;
                 case Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_CACULATE:
                     startActivityForResult(scanIntent, requestCode );
+                    break;
+                case Constant.REQUEST_CODE_SCAN_TO_CACULATE_DISTANCE:
+                    startScan();
                     break;
                 default:
             }

@@ -48,7 +48,7 @@ public class XiaotaApp extends Application {
     private String fullname; //用户姓名
     private String password; //用户密码
     private String roles[]; //用户角色
-    private String ip="47.114.157.108";
+    private String ip="www.lybwww.com";
     private String port="8083";
     private int appUserId;
     private int groupId;
@@ -192,8 +192,8 @@ public class XiaotaApp extends Application {
 //        this.ip = "10.0.2.2:8080";
 //模拟器
 //        this.ip = "10.0.2.2:8004";
-        this.ip = "172.20.10.3";
-///        this.ip = "47.114.157.108:8083";
+          this.ip = "192.168.50.134";
+//          this.ip = "47.114.157.108";
         }
         String appUserIdStr = readValue(PersistentValueType.USER_ID, "0");
         if ("".equals(appUserIdStr)){

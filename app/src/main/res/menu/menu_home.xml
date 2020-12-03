@@ -4,5 +4,6 @@
     tools:context=".ui.activity.LoginActivity">
     <item
         android:id="@+id/ip_settings"
-        android:title="IP设置"/>
+        android:title="IP设置"
+        android:visible="false"/>
 </menu>
