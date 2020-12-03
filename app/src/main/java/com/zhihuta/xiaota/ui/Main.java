@@ -63,11 +63,14 @@ import com.zhihuta.xiaota.bean.response.NewPathDistanceQRsResponse;
 import com.zhihuta.xiaota.bean.response.PathGetDistanceQr;
 import com.zhihuta.xiaota.bean.response.PathGetObject;
 import com.zhihuta.xiaota.bean.response.PathsResponse;
+import com.zhihuta.xiaota.common.AesUtil;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
+
+import org.apache.poi.util.StringUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -376,7 +379,21 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
 
             // 解析数据，并填入
             try {
-                currentDistanceData = JSONObject.parseObject(result, DistanceData.class);
+                currentDistanceData = null;
+
+                if (result!= null && !result.isEmpty())
+                {
+                    if (true)
+                    {//for release, set as true,
+                        result = AesUtil.decode(result, AesUtil.KEY);
+                    }
+
+                    currentDistanceData = JSONObject.parseObject(result, DistanceData.class);
+                }
+                else {
+                    result="";
+                }
+
                 if(currentDistanceData == null){
                     Log.i(TAG, "二维码格式不正确");
                     Toast.makeText(Main.this, "二维码格式不正确：" + result, Toast.LENGTH_SHORT).show();

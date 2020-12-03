@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.zhihuta.xiaota.R;
@@ -29,6 +30,7 @@ import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.PathGetObject;
 import com.zhihuta.xiaota.bean.response.PathsResponse;
 import com.zhihuta.xiaota.bean.response.pathContainsQRResponse;
+import com.zhihuta.xiaota.common.AesUtil;
 import com.zhihuta.xiaota.common.Constant;
 import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
@@ -393,13 +395,24 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
     }
 
     @Override
-    public void onScanQRCodeSuccess(final String result) {
+    public void onScanQRCodeSuccess(final String resultin) {
 //        showDialog(result);
 
         vibrate();
 
         // 解析数据，并填入
         Gson gson = new Gson();
+
+        String result = resultin;
+
+        if (result!= null && !result.isEmpty())
+        {
+            if (true)
+            {//for release, set as true,
+                result = AesUtil.decode(resultin, AesUtil.KEY);
+            }
+        }
+
         DistanceData distanceData = gson.fromJson(result, DistanceData.class);
 
         if (mRequestCodeFroPrev == Constant.REQUEST_CODE_SCAN_TO_FILTER_LUJING_LUJING ||
