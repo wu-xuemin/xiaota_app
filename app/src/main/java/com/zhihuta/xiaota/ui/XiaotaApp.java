@@ -26,7 +26,7 @@ import okhttp3.OkHttpClient;
 
 public class XiaotaApp extends Application {
 
-    private static final boolean DEBUG_LOG = true;
+    private static final boolean DEBUG_LOG = false;
     private static final String TAG = "XiaotaApp";
 
     /**
@@ -125,7 +125,7 @@ public class XiaotaApp extends Application {
 
         mApp = this;
         //start log
-        LogUtils.logInit(true);
+        LogUtils.logInit(DEBUG_LOG);
 
         Utils.init(this);
         mCache = CacheUtils.getInstance(this.getCacheDir());
