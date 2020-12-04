@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.zhihuta.xiaota.R;
@@ -51,11 +52,13 @@ import com.zhihuta.xiaota.adapter.DianXianQingceAdapter;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.DianxianQingCeData;
 import com.zhihuta.xiaota.bean.basic.DistanceData;
+import com.zhihuta.xiaota.bean.basic.DistanceQrEx;
 import com.zhihuta.xiaota.bean.basic.LujingData;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.basic.Wires;
 
 import com.zhihuta.xiaota.bean.response.BaseResponse;
+import com.zhihuta.xiaota.bean.response.GetDistanceQrInfoResponse;
 import com.zhihuta.xiaota.bean.response.GetDistanceResponse;
 import com.zhihuta.xiaota.bean.response.GetWiresResponse;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
@@ -174,7 +177,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
      */
     private ZXingView mQRCodeView;
 
-    private Button mContinueScanBt;
     private TextView mDisplayScanResultTv;
     private Button mResetInCaculateBt;          //计算中心-重置按钮 （重置清零查询路径的结果）
     private SearchView mSearchViewInCalculate;  //计算中心-按名称查找按钮
@@ -184,6 +186,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
     private ArrayList<DistanceData> mDistanceList = new ArrayList<>();           //计算两点距离时，扫码所得的间距
     private ArrayList<DistanceData> mScanResultDistanceList = new ArrayList<>(); //路径中心，筛选路径所用
     private TextView textViewShowSumOfDistances; // 总长
+    private Button mContinueScanBt;
     private Button mResetScanResultInCaculateBt;          //计算中心-计算两点距离-重新扫码  （重置清零扫码的结果）
     private Button mSetDistanceLengthInCaculateBt;          //计算中心-计算两点距离-设置值
     private DistanceData currentDistanceData;               //扫码得到的当前二维码，最新扫到的。
@@ -349,27 +352,34 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             @Override
             public void onClick(View view) {
                 textViewShowSumOfDistances.setText("0");
-                mDisplayScanResultTv.setText("");
+                mDisplayScanResultTv.setText("请对准二维码");
                 mDistanceList.clear();
                 mScanResultDistanceList.clear();
                 mDistanceAdapter.notifyDataSetChanged();
 
                 startScan();
-                mSetDistanceLengthInCaculateBt.setEnabled(false);
             }
+        });
+
+        mContinueScanBt = (Button) findViewById(R.id.button_continue_scan_in_calculate);
+        mContinueScanBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                startScan();
+             }
         });
 
         textViewShowSumOfDistances = (TextView)findViewById(R.id.textView11);
     }
 
     @Override
-    public void onScanQRCodeSuccess(String result) {
+    public void onScanQRCodeSuccess(String resultin) {
 
         boolean bNeedReTry = true;
 
         try {
-
-            mSetDistanceLengthInCaculateBt.setEnabled(true);
+            currentDistanceData = null;
 
             //扫描得到结果震动一下表示
             Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -377,109 +387,175 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
                 vibrator.vibrate(200);
             }
 
-            // 解析数据，并填入
-            try {
-                currentDistanceData = null;
+            ///////////
+            String result = resultin;
+            if (result!= null && !result.isEmpty())
+            {
+                if (true)
+                {//for release, set as true,
+                    result = AesUtil.decode(resultin, AesUtil.KEY);
+                }
+            }
+            else
+            {
+                result = null;
+            }
 
-                if (result!= null && !result.isEmpty())
+            DistanceData distanceData = JSONObject.parseObject(result, DistanceData.class);
+
+            if ( distanceData != null)
+            {
+                if (distanceData.getQr_id() != 0)
                 {
-                    if (true)
-                    {//for release, set as true,
-                        result = AesUtil.decode(result, AesUtil.KEY);
-                    }
+                    stopScan();
 
-                    currentDistanceData = JSONObject.parseObject(result, DistanceData.class);
+                    getLatestQRInfo(distanceData.getQr_id());
                 }
                 else {
-                    result="";
-                }
 
-                if(currentDistanceData == null){
-                    Log.i(TAG, "二维码格式不正确");
-                    Toast.makeText(Main.this, "二维码格式不正确：" + result, Toast.LENGTH_SHORT).show();
+                    Log.d("获取间距信息失败", "编号为0");
+                    Toast.makeText(Main.this, "获取间距信息失败！" +"编号为0", Toast.LENGTH_SHORT).show();
 
-                    return;
+                    //，重新开始扫描
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mQRCodeView.startSpotAndShowRect();
+                        }
+                    }, 1000);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Log.i(TAG, "二维码解析异常");
-                Toast.makeText(Main.this, "二维码解析异常：" + result, Toast.LENGTH_SHORT).show();
+                Log.d("识别二维码间距信息失败","");
+                Toast.makeText(Main.this, "识别二维码间距信息失败！" + result, Toast.LENGTH_SHORT).show();
 
-                return;
-            }
-
-            /**
-             * 把二维码 累积起来，用于退出时筛选路径
-             */
-            for (DistanceData distanceData1 : mScanResultDistanceList) {
-                if(distanceData1.getSerial_number().equals( currentDistanceData.getSerial_number())){
-                    Toast.makeText(Main.this, "扫到码重复了,忽略", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }
-
-
-            String rst = result.replace("distance","长度");
-            rst = rst.replace("preset_name","展现名称");
-            rst = rst.replace("qr_id","Id号");
-            rst = rst.replace("qr_name","名称");
-            rst = rst.replace("serial_number","序列号");
-            rst = rst.replace("type","类型");
-
-            if(currentDistanceData.getType().equals("0")){
-                rst = rst.replace("类型\":0","类型\": 固定码");
-            } else if(currentDistanceData.getType().equals("1")){
-                rst = rst.replace("类型\":1","类型: 通用码");
-            } else {
-                //不动
-                Toast.makeText(Main.this, "扫到不支持的码" + result, Toast.LENGTH_SHORT).show();
-
-                return;
-            }
-            mDisplayScanResultTv.setText(rst);
-
-            mScanResultDistanceList.add(currentDistanceData);
-            if(mScanResultDistanceList.size() >1){
-                //扫到第二个码时,程序自动将两个码之间所有的码自动添加进列表, 方便查看
-
-                bNeedReTry = false;
-                stopScan();
-
-                Log.i(TAG,"扫到第二个码" + mScanResultDistanceList.get(0).getName() +"," + mScanResultDistanceList.get(1).getName());
-
-                String url = RequestUrlUtility.build(URL.GET_DISTANCE_LIST_BY_TWO_DISTANCE
-                        .replace("qrId1",String.valueOf( mScanResultDistanceList.get(0).getQr_id()))
-                        .replace("qrId2",String.valueOf( mScanResultDistanceList.get(1).getQr_id()))
-                        .replace("{project_id}",Main.project_id)
-                );
-                mNetwork.get(url,null,getDistanceListHandler,
-                        (handler, msg)->{
-                            getDistanceListHandler.sendMessage(msg);
-                        });
-
-
-            }
-        }
-        catch (Exception ex)
-        {
-
-        }
-        finally {
-
-            if (bNeedReTry)
-            {
-                //获取结果后三秒后，重新开始扫描
+                //，重新开始扫描
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mQRCodeView.startSpotAndShowRect();
                     }
-                }, 3000);
+                }, 1000);
             }
+            /////////////
+
+        }
+        catch (Exception ex)
+        {
+            Toast.makeText(Main.this, "识别二维码间距信息发送异常！", Toast.LENGTH_SHORT).show();
+
+            //，重新开始扫描
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mQRCodeView.startSpotAndShowRect();
+                }
+            }, 1000);
+        }
+        finally {
+
+
         }
     }
 
+    private void getLatestQRInfo(int qrId)
+    {
+        if (qrId != 0)
+        {
+            String theUrl = RequestUrlUtility.build(URL.GET_QR_DISTANCE_INFOR.replace("{qr_id}", String.valueOf(qrId)));
+            mNetwork.get(theUrl, null, new Handler(){
+                @Override
+                public void handleMessage(Message msg) {
+
+                    super.handleMessage(msg);
+
+                    ////////////////
+
+                    String errorMsg = "";
+                    errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+
+                    if (errorMsg != null)
+                    {
+                        Log.d("间距信息失败", errorMsg);
+                        Toast.makeText(Main.this, "间距信息失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Result result= (Result)(msg.obj);
+
+                    GetDistanceQrInfoResponse responseData = CommonUtility.objectToJavaObject(result.getData(), GetDistanceQrInfoResponse.class);
+                    handleQRInfor( responseData.qr_infor);
+
+                    ////////////////
+                }
+
+            },(handler,msg)->{
+                handler.sendMessage(msg);
+            });
+        }
+    }
+
+    private void handleQRInfor(DistanceQrEx distanceQrEx)
+    {
+        DistanceData  distanceData = new DistanceData();
+        distanceData.setDistance(Double.toString( distanceQrEx.distance));
+        distanceData.setName(distanceQrEx.qrName);
+        distanceData.setPreset_name(distanceQrEx.presetName);
+        distanceData.setQr_id(distanceQrEx.qrId);
+        distanceData.setSerial_number(distanceQrEx.serialNumber);
+        distanceData.setType(Integer.toString(distanceQrEx.type));
+
+        currentDistanceData = distanceData;
+
+        String result = JSON.toJSONString(distanceQrEx);
+
+        String rst = result.replace("distance","长度");
+        //rst = rst.replace("preset_name","展现名称");
+        rst = rst.replace("qr_id","Id号");
+        rst = rst.replace("qr_name","名称");
+        rst = rst.replace("serial_number","序列号");
+        rst = rst.replace("type","类型");
+
+        if(distanceData.getType().equals("0")){
+            rst = rst.replace("类型\":0","类型\": 固定码");
+        } else if(distanceData.getType().equals("1")){
+            rst = rst.replace("类型\":1","类型: 通用码");
+        } else {
+            //不动
+        }
+
+        mDisplayScanResultTv.setText(rst);
+        mSetDistanceLengthInCaculateBt.setEnabled(true);
+
+        /**
+         * 把二维码 累积起来，用于退出时筛选路径
+         */
+        for (DistanceData distanceData1 : mScanResultDistanceList) {
+            if(distanceData1.getSerial_number().equals( currentDistanceData.getSerial_number())){
+                Toast.makeText(Main.this, "扫到码重复了,忽略", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        mScanResultDistanceList.add(currentDistanceData);
+        if(mScanResultDistanceList.size() >1){
+            //扫到第二个码时,程序自动将两个码之间所有的码自动添加进列表, 方便查看
+
+            Log.i(TAG,"扫到第二个码" + mScanResultDistanceList.get(0).getName() +"," + mScanResultDistanceList.get(1).getName());
+
+            String url = RequestUrlUtility.build(URL.GET_DISTANCE_LIST_BY_TWO_DISTANCE
+                    .replace("qrId1",String.valueOf( mScanResultDistanceList.get(0).getQr_id()))
+                    .replace("qrId2",String.valueOf( mScanResultDistanceList.get(1).getQr_id()))
+                    .replace("{project_id}",Main.project_id)
+            );
+            mNetwork.get(url,null,getDistanceListHandler,
+                    (handler, msg)->{
+                        getDistanceListHandler.sendMessage(msg);
+                    });
+        }
+
+    }
     @Override
     public void onScanQRCodeOpenCameraError() {
 
@@ -1319,18 +1395,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             }
         });
 
-//        mSearchViewInCalculate.setOnCloseListener(new SearchView.OnCloseListener() {
-//            @Override
-//            public boolean onClose() {
-//                mLujingCaculateGetParameters.clear();
-//                mLujingCaculateGetParameters.put("project_id",Main.project_id);
-//
-//                refreshPage(true);
-//
-//                return false;
-//            }
-//        });
-
         mResetInCaculateBt = (Button) findViewById(R.id.button_reset_in_calculate);
         mResetInCaculateBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1805,6 +1869,8 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             mQRCodeView.startSpotAndShowRect();
             Log.d(TAG, "onStart: startCamera");
         }
+
+        mSetDistanceLengthInCaculateBt.setEnabled(false);
     }
 
     private void stopScan(){
@@ -1812,7 +1878,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener, BGA
             mQRCodeView.stopSpotAndHiddenRect();
             mQRCodeView.stopCamera();
         }
-        mSetDistanceLengthInCaculateBt.setEnabled(false);
     }
     //将3个的Fragment隐藏
     private void hideFragments(FragmentTransaction transaction) {

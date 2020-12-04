@@ -79,11 +79,11 @@
                 android:layout_height="wrap_content"
                 android:text="设置间距" />
 
-            <!--Button
+            <Button
                 android:id="@+id/button_continue_scan_in_calculate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="继续扫码" /-->
+                android:text="继续扫码"/>
 
             <Button
                 android:id="@+id/button_scan_again"

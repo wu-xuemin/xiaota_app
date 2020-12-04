@@ -415,8 +415,11 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
                 result = AesUtil.decode(resultin, AesUtil.KEY);
             }
         }
+        else {
+            result = null;
+        }
 
-        DistanceData distanceData = gson.fromJson(result, DistanceData.class);
+        DistanceData distanceData = JSONObject.parseObject(result, DistanceData.class);
 
         if ( distanceData != null)
         {
@@ -519,6 +522,7 @@ import cn.bingoogolapple.qrcode.zxing.ZXingView;
             rst = rst.replace("类型\":1","类型: 通用码");
         } else {
             //不动
+            Toast.makeText(ZxingScanActivity.this, "扫到不支持的码类型" + result, Toast.LENGTH_SHORT).show();
         }
         mDisplayScanResultTv.setText(rst);
 
