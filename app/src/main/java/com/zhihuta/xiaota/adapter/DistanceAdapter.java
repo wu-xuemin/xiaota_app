@@ -51,7 +51,8 @@ public class DistanceAdapter extends RecyclerView.Adapter<DistanceAdapter.ItemVi
 
         DistanceData data = dataList.get(position);
         holder.distanceNameTv.setText(data.getName());
-        holder.distanceNumberTv.setText(data.getSerial_number());// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
+//        holder.distanceNumberTv.setText(data.getSerial_number());// sf3.format(mLujingAdapter.get(position).getLujingCreatedDate())
+        holder.distanceNumberTv.setText( Integer.toString(data.getQr_id()));
         holder.distanceUpBt.setTag(position);
         holder.distanceDownBt.setTag(position);
         holder.deleteDistanceBt.setTag(position);
