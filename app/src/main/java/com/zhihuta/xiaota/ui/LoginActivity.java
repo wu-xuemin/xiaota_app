@@ -2,10 +2,12 @@ package com.zhihuta.xiaota.ui;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -64,6 +66,8 @@ public class LoginActivity extends AppCompatActivity {
     private XiaotaApp mApp;
     private AlertDialog mIPSettngDialog = null;
 
+    //服务器上的版本号
+    private String mVersionNameOnServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +161,65 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+
+        CheckNewVersion();
+    }
+
+    private void CheckNewVersion(){
+
+        //todo 从服务器获取真实版本
+        mVersionNameOnServer = "0.55";
+        String currentVersionName = getAppVersionName(this);
+        if(Double.valueOf(mVersionNameOnServer) > Double.valueOf(currentVersionName)){
+            Log.w(TAG,  "有版本要更新： 当前版本为" + currentVersionName + "，服务器版本为" + mVersionNameOnServer);
+            AlertDialog alertDialogAppUpgrade;
+            android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(LoginActivity.this);
+            alertDialogBuilder.setTitle("有新版本APP可更新")
+                    .setNegativeButton("以后再说", null)
+                    .setPositiveButton("下载新版本", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    })
+                    .show();
+        }
+    }
+
+    /**
+     * 获取当前app version code
+     */
+    public static long getAppVersionCode(Context context) {
+        long appVersionCode = 0;
+        try {
+            PackageInfo packageInfo = context.getApplicationContext()
+                    .getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                appVersionCode = packageInfo.getLongVersionCode();
+            } else {
+                appVersionCode = packageInfo.versionCode;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("", e.getMessage());
+        }
+        return appVersionCode;
+    }
+
+    /**
+     * 获取当前app version name
+     */
+    public static String getAppVersionName(Context context) {
+        String appVersionName = "";
+        try {
+            PackageInfo packageInfo = context.getApplicationContext()
+                    .getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            appVersionName = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("", e.getMessage());
+        }
+        return appVersionName;
     }
 
     private void ConfirmSendEmail(String userEmail,final String account )
