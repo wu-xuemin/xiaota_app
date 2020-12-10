@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,15 +36,19 @@ import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.BaseResponse;
 import com.zhihuta.xiaota.bean.response.UserResponse;
 import com.zhihuta.xiaota.common.Constant;
+import com.zhihuta.xiaota.common.DownloadUtility;
 import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
+import okhttp3.Request;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -179,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
                     .setPositiveButton("下载新版本", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-
+                            downloadApk();
                         }
                     })
                     .show();
@@ -187,9 +192,40 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
+     * 为防止下载文件NG，不如直接下载,不再检查本地是否已经有下载过。
+     */
+    private void downloadApk(){
+        DownloadUtility downloadUtility = new DownloadUtility();
+        //todo: 这里更新为正式的地址
+        String urlDownload = "http://47.114.157.108//release/v3.3.apk";
+        ///data/data/com.my.app/files
+        String saveDir = this.getFilesDir().getPath();
+        downloadUtility.download(urlDownload, saveDir, new DownloadUtility.OnDownloadListener() {
+            @Override
+            public void onDownloadSuccess() {
+                Log.i(TAG, "下载成功" + urlDownload);
+                //todo 下载成功，下载次数加一
+            }
+
+            @Override
+            public void onDownloading(int progress) {
+                Log.i(TAG, "下载进行中" + urlDownload);
+            }
+
+            @Override
+            public void onDownloadFailed() {
+
+                Log.i(TAG, "下载失败" + urlDownload);
+            }
+
+        });
+
+    }
+
+    /**
      * 获取当前app version code
      */
-    public static long getAppVersionCode(Context context) {
+    private static long getAppVersionCode(Context context) {
         long appVersionCode = 0;
         try {
             PackageInfo packageInfo = context.getApplicationContext()
@@ -209,7 +245,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * 获取当前app version name
      */
-    public static String getAppVersionName(Context context) {
+    private static String getAppVersionName(Context context) {
         String appVersionName = "";
         try {
             PackageInfo packageInfo = context.getApplicationContext()
