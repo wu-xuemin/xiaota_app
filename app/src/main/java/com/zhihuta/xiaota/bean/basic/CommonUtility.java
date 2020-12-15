@@ -50,7 +50,11 @@ public class CommonUtility {
     public static boolean isPhone(String string) {
         if (string == null)
             return false;
-        String regEx1 = "^[1]([3][0-9]{1}|59|58|88|89)[0-9]{8}$";
+//        String regEx1 = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\\\d{8}$";
+//        String regEx1 =    "^[1]([3][0-9]{1}|59|58|88|89)[0-9]{8}$";
+//        String regEx1 = "^[1][0-9][0-9]{8}$";
+        // 11位，且以1开头
+        String regEx1 =    "^1[0-9]{10}$";
         Pattern p;
         Matcher m;
         p = Pattern.compile(regEx1);

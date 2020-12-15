@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +24,7 @@ import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.net.Network;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 /**
  * Created by littlecurl 2018/6/24
  */
@@ -51,10 +53,13 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
     private EditText mEtTel;
     private EditText mEtAdress;
 
+    private Button mBtGetSms;
 //    private ImageView mIvRegisteractivityShowcode;
 //    private RelativeLayout mRlRegisteractivityBottom;
 
     private Network mNetwork;
+    //短信验证码是否正确，匹配正确了，才可以点击 注册按钮
+    private boolean isCheckingCodeCorrect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +67,7 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        isCheckingCodeCorrect = false;
         initView();
 
         //将验证码用图片的形式显示出来
@@ -71,7 +77,7 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
         mNetwork = Network.Instance(getApplication());
     }
 
-    private void initView(){
+    private void initView() {
         mBtRegisteractivityRegister = findViewById(R.id.bt_registeractivity_register);
 //        mRlRegisteractivityTop = findViewById(R.id.rl_registeractivity_top);
         mBtRegisteractivityBack = findViewById(R.id.iv_registeractivity_back);
@@ -87,7 +93,7 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
         mEtDepartment = findViewById(R.id.et_registeractivity_department);
         mEtTitle = findViewById(R.id.et_registeractivity_title);
         mEtTel = findViewById(R.id.et_registeractivity_tel);
-        mEtAdress= findViewById(R.id.et_registeractivity_address);
+        mEtAdress = findViewById(R.id.et_registeractivity_address);
 
 
         /**
@@ -106,9 +112,13 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
         mBtRegisteractivityRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if( checkValid() )
-                {
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( RegisterActivity.this);
+
+                if (checkValid()) {
+                    if(isCheckingCodeCorrect == false){
+                        Toast.makeText(RegisterActivity.this, "请通过短信验证之后再注册", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegisterActivity.this);
                     alertDialogBuilder.setTitle("确定要提交注册信息？")
                             .setNegativeButton("否", new DialogInterface.OnClickListener() {
                                 @Override
@@ -129,21 +139,21 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
                                 public void onClick(DialogInterface dialogInterface, int i) {
 
                                     HashMap<String, String> newUserInfoParameters = new HashMap<>();
-                                    newUserInfoParameters.put("account",  mEtAccount.getText().toString());
-                                    newUserInfoParameters.put("name",  mEtUserName.getText().toString());
-                                    newUserInfoParameters.put("password",  mEtPassword1.getText().toString());
-                                    newUserInfoParameters.put("email",  mEtEmail.getText().toString());
-                                    newUserInfoParameters.put("title",  mEtTitle.getText().toString());
-                                    newUserInfoParameters.put("phone",  mEtTel.getText().toString());
-                                    newUserInfoParameters.put("company",  mEtCompany.getText().toString());
-                                    newUserInfoParameters.put("department",  mEtDepartment.getText().toString());
-                                    newUserInfoParameters.put("address",  mEtAdress.getText().toString());
+                                    newUserInfoParameters.put("account", mEtAccount.getText().toString());
+                                    newUserInfoParameters.put("name", mEtUserName.getText().toString());
+                                    newUserInfoParameters.put("password", mEtPassword1.getText().toString());
+                                    newUserInfoParameters.put("email", mEtEmail.getText().toString());
+                                    newUserInfoParameters.put("title", mEtTitle.getText().toString());
+                                    newUserInfoParameters.put("phone", mEtTel.getText().toString());
+                                    newUserInfoParameters.put("company", mEtCompany.getText().toString());
+                                    newUserInfoParameters.put("department", mEtDepartment.getText().toString());
+                                    newUserInfoParameters.put("address", mEtAdress.getText().toString());
                                     //newUserInfoParameters.put("roles",  strNewPathName);//[2,4]..
 
                                     String registerUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.USER_REGISTER.replace("{type}",
                                             "3");
 
-                                    mNetwork.post(registerUrl,newUserInfoParameters, new Handler(){
+                                    mNetwork.post(registerUrl, newUserInfoParameters, new Handler() {
 
                                         @Override
                                         public void handleMessage(final Message msg) {
@@ -163,14 +173,13 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
                                             String errorMsg = "";
 
                                             errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
-                                            if (errorMsg != null)
-                                            {
+                                            if (errorMsg != null) {
                                                 Toast.makeText(RegisterActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
 
                                                 return;
                                             }
 
-                                            Result result= (Result)(msg.obj);
+                                            Result result = (Result) (msg.obj);
 
                                             AddUsersResponse addUsersResponse = CommonUtility.objectToJavaObject(result.getData(), AddUsersResponse.class);
                                             //
@@ -179,9 +188,9 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
                                             finish();
 
                                         }
-                                    },(handler, msg)->{
+                                    }, (handler, msg) -> {
                                         handler.sendMessage(msg);
-                                    } );
+                                    });
                                 }
 
                             })
@@ -189,7 +198,69 @@ public class RegisterActivity extends AppCompatActivity/* implements View.OnClic
                 }
             }
         });
+
+        mBtGetSms = findViewById(R.id.button_get_sms);
+        mBtGetSms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String phone = mEtTel.getText().toString().trim();
+                if(  !CommonUtility.isPhone(phone))
+                {
+                    Toast.makeText(RegisterActivity.this, "手机号格式不正确", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String random = (int)((Math.random()*9+1)*100000)+"";
+
+                String theUrl = RequestUrlUtility.build(URL.GET_SMM_CODE.replace("{phone_number}",phone).replace("{checking_code}", random));
+                mNetwork.get(theUrl, null, new Handler(){
+                    @Override
+                    public void handleMessage(Message msg) {
+
+                        super.handleMessage(msg);
+                    }
+
+                },(handler,msg)->{
+                    handler.sendMessage(msg);
+                });
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegisterActivity.this);
+                final EditText et = new EditText(RegisterActivity.this);
+                alertDialogBuilder.setTitle("请输入短信验证码")
+                        .setView(et)
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                LinkedHashMap<String, String> newPathParameters = new LinkedHashMap<>();
+                                String strSmsCode = et.getText().toString();
+                                if (strSmsCode == null || strSmsCode.isEmpty()) { //不允许验证码为空
+                                    Toast.makeText(RegisterActivity.this, "验证码不能为空", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    newPathParameters.put("name", strSmsCode);
+                                    if(strSmsCode.equals(random)){
+                                        Log.e("RegisterActivity", phone + ", 验证码 OK");
+                                        Toast.makeText(RegisterActivity.this, "验证码 OK", Toast.LENGTH_LONG).show();
+                                        isCheckingCodeCorrect = true;
+                                    } else {
+                                        Log.e("RegisterActivity", phone + ", 验证码不匹配");
+                                        Toast.makeText(RegisterActivity.this, "验证码不匹配", Toast.LENGTH_SHORT).show();
+                                        isCheckingCodeCorrect = false;
+                                    }
+
+                                }
+                            }
+                        })
+                        .show();
+            }
+
+        });
     }
+
+
     private boolean checkValid()
     {
         if( mEtAccount.getText().toString().trim().equals("") )

@@ -1,15 +1,21 @@
 package com.zhihuta.xiaota.ui;
 
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -36,7 +42,9 @@ import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.BaseResponse;
 import com.zhihuta.xiaota.bean.response.UserResponse;
 import com.zhihuta.xiaota.common.Constant;
+//import com.zhihuta.xiaota.common.DownloadReceiver;
 import com.zhihuta.xiaota.common.DownloadUtility;
+import com.zhihuta.xiaota.common.NotificationClickReceiver;
 import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
@@ -44,11 +52,19 @@ import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
+import okio.BufferedSink;
+import okio.Okio;
+import okio.Sink;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -73,6 +89,12 @@ public class LoginActivity extends AppCompatActivity {
 
     //服务器上的版本号
     private String mVersionNameOnServer;
+    private DownloadReceiver downloaderReceiver;
+    private NotificationClickReceiver notificationClickReceiver;
+
+    private IntentFilter intentFilter;
+    private IntentFilter intentFilterDownloadRv;
+    private NetworkChangeReceiver networkChangeReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +130,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 login();
+//
+//                CheckNewVersion();
             }
         });
 
@@ -171,9 +195,47 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void CheckNewVersion(){
+        /**
+         * 下载完成广播
+         * 点击下载通知栏广播
+         */
+//        downloaderReceiver = new DownloadReceiver();
+        notificationClickReceiver = new NotificationClickReceiver();
+        getApplicationContext().registerReceiver(downloaderReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        getApplicationContext().registerReceiver(notificationClickReceiver, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
+
+
+        //test
+        //注册“网络变化”的广播接收器
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        networkChangeReceiver = new NetworkChangeReceiver();
+        registerReceiver(networkChangeReceiver, intentFilter);
+
+        intentFilterDownloadRv = new IntentFilter();
+        intentFilterDownloadRv.addAction("android.net.conn.ACTION_DOWNLOAD_COMPLETE");
+        intentFilterDownloadRv.addAction("android.intent.action.DOWNLOAD_COMPLETE");
+        downloaderReceiver = new DownloadReceiver();
+        registerReceiver(downloaderReceiver, intentFilterDownloadRv);
+
+        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE	);
+        BroadcastReceiver receiver = new BroadcastReceiver(){
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID,-1);
+//                if(reference == myreference){
+//                    //对下载的文件进行一些操作
+//                }
+                Log.i("DownloadReceiver0000", "DownloadReceiver===========");
+            }
+
+        };
+        registerReceiver(receiver, filter);
+
 
         //todo 从服务器获取真实版本
-        mVersionNameOnServer = "0.55";
+        mVersionNameOnServer = "0.01";
         String currentVersionName = getAppVersionName(this);
         if(Double.valueOf(mVersionNameOnServer) > Double.valueOf(currentVersionName)){
             Log.w(TAG,  "有版本要更新： 当前版本为" + currentVersionName + "，服务器版本为" + mVersionNameOnServer);
@@ -184,20 +246,52 @@ public class LoginActivity extends AppCompatActivity {
                     .setPositiveButton("下载新版本", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            downloadApk();
+//                            downloadApk();
+//                            downloadFile();
+                            downloadFile2();
                         }
                     })
                     .show();
         }
     }
 
+    private class DownloadReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i("DownloadReceiver", "DownloadReceiver===========");
+            Log.i(TAG, intent.getAction());
+            if(intent.getAction().equals("android.intent.action.DOWNLOAD_COMPLETE")){
+                Log.i(TAG, "下载完成");
+            }
+        }
+    }
+
+    /**
+     * “网络变化”的广播接收器
+     */
+    private class NetworkChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager manager=(ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo=manager.getActiveNetworkInfo();
+            if(networkInfo!=null&&networkInfo.isAvailable()){
+                Toast.makeText(context,"网络可用",Toast.LENGTH_SHORT).show();
+                Log.e("AAA","网络可用");
+            }else{
+                Log.e("AAA","网络不可用");
+                Toast.makeText(context,"网络不可用",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
     /**
      * 为防止下载文件NG，不如直接下载,不再检查本地是否已经有下载过。
      */
     private void downloadApk(){
         DownloadUtility downloadUtility = new DownloadUtility();
         //todo: 这里更新为正式的地址
-        String urlDownload = "http://47.114.157.108//release/v3.3.apk";
+//        String urlDownload = "http://47.114.157.108//release/v3.3.apk";
+        String urlDownload = "http://15.231.6.43:88/release/test.txt";
+
         ///data/data/com.my.app/files
         String saveDir = this.getFilesDir().getPath();
         downloadUtility.download(urlDownload, saveDir, new DownloadUtility.OnDownloadListener() {
@@ -222,6 +316,62 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private void downloadFile() {
+        //下载路径，如果路径无效了，可换成你的下载路径
+//            final String url = "http://c.qijingonline.com/test.mkv";
+        String url = "http://15.231.6.43:88/release/test.txt";
+        final long startTime = System.currentTimeMillis();
+        Log.i("DOWNLOAD", "startTime=" + startTime);
+
+        Request request = new Request.Builder().url(url).build();
+        new OkHttpClient().newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // 下载失败
+                e.printStackTrace();
+                Log.i("DOWNLOAD", "download failed");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Sink sink = null;
+                BufferedSink bufferedSink = null;
+                try {
+                    String mSDCardPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                    File dest = new File(mSDCardPath, url.substring(url.lastIndexOf("/") + 1));
+                    sink = Okio.sink(dest);
+                    bufferedSink = Okio.buffer(sink);
+                    bufferedSink.writeAll(response.body().source());
+
+                    bufferedSink.close();
+                    Log.i("DOWNLOAD", "download success");
+                    Log.i("DOWNLOAD", "totalTime=" + (System.currentTimeMillis() - startTime));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.i("DOWNLOAD", "download failed");
+                } finally {
+                    if (bufferedSink != null) {
+                        bufferedSink.close();
+                    }
+
+                }
+            }
+        });
+    }
+
+    private void downloadFile2(){
+        //下载路径，如果路径无效了，可换成你的下载路径
+//        String url = "http://c.qijingonline.com/test.mkv";
+        String url = "http://15.231.6.43:88/release/v3.3.apk";
+        //创建下载任务,downloadUrl就是下载链接
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        //指定下载路径和下载文件名
+        request.setDestinationInExternalPublicDir("", url.substring(url.lastIndexOf("/") + 1));
+        //获取下载管理器
+        DownloadManager downloadManager= (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        //将下载任务加入下载队列，否则不会进行下载
+        downloadManager.enqueue(request);
+    }
     /**
      * 获取当前app version code
      */
@@ -531,5 +681,8 @@ public class LoginActivity extends AppCompatActivity {
         if(mIPSettngDialog != null) {
             mIPSettngDialog.dismiss();
         }
+        unregisterReceiver(downloaderReceiver);
+//        unregisterReceiver(notificationClickReceiver);
+
     }
 }
