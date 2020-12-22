@@ -37,17 +37,22 @@ import com.blankj.utilcode.util.ToastUtils;
 
 //import com.google.gson.JsonObject;
 import com.zhihuta.xiaota.R;
+import com.zhihuta.xiaota.bean.basic.AppVersionInfoBean;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.Result;
 import com.zhihuta.xiaota.bean.response.BaseResponse;
 import com.zhihuta.xiaota.bean.response.UserResponse;
+import com.zhihuta.xiaota.common.AppUpdater;
+import com.zhihuta.xiaota.common.AppUtils;
 import com.zhihuta.xiaota.common.Constant;
 //import com.zhihuta.xiaota.common.DownloadReceiver;
 import com.zhihuta.xiaota.common.DownloadUtility;
+import com.zhihuta.xiaota.common.INetCallback;
 import com.zhihuta.xiaota.common.NotificationClickReceiver;
 import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
+import com.zhihuta.xiaota.common.UpdateVersionShowDialog;
 import com.zhihuta.xiaota.net.Network;
 import com.zhihuta.xiaota.util.ShowMessage;
 
@@ -72,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private TextView mRegister;
     private TextView mResetpassword;
+    private TextView mCheckVersion;
 
     private TextView mSystemVersionTv;
     private EditText mAccountText;
@@ -189,12 +195,79 @@ public class LoginActivity extends AppCompatActivity {
 
 
             }
+
         });
 
-        CheckNewVersion();
+        mCheckVersion = (TextView) findViewById(R.id.tv_checkVersion);
+        mCheckVersion.setOnClickListener(new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View v) {
+//                String url = "http://115.231.6.43:88/release/test.txt";
+                //todo 这个要后端提供api返回JSON
+//                String urlAPI = "http://www.lybwww.com/api/io/xiaotaApk-API-TODO";
+                String urlAPI = "http://115.231.6.43:88/release/test.txt";
+                String urlAppDonwload = "http://www.lybwww.com/api/io/xiaotaApk";
+                AppUpdater.getInstance().getINetManager().get(urlAPI, new INetCallback() {
+                    @Override //为啥这个response要好几分钟才返回，因为这个response字符串， count为11,522,102 即整个文件返回。
+                    public void onSuccess(String response) {
+                        //TODO 分析结果，看是否要更新
+
+                        //1、解析json
+                        //2、做版本适配
+                        //如果需要更新
+                        //3、弹窗
+                        //4、点击下载
+
+                        boolean debug = true;
+
+                        AppVersionInfoBean appVersionInfoBean = null;
+                        if(debug){
+
+                            appVersionInfoBean =  new AppVersionInfoBean("版本title111",
+                                    "内容content111",
+                                    urlAppDonwload,
+                                    "md5-111", "versionCode111");
+                        } else {
+
+                            appVersionInfoBean = AppVersionInfoBean.parse(response);
+                            if (appVersionInfoBean == null) {
+                                Toast.makeText(LoginActivity.this, "版本检测接口返回数据异常", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+
+                            // TODO 检测是否需要更新
+                            try {
+                                long versionCode = Long.parseLong(appVersionInfoBean.getVersionCode());
+                                if (versionCode <= AppUtils.getVersionCode(LoginActivity.this)) {
+                                    Toast.makeText(LoginActivity.this, "已经是最新版本，无需更新", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                                Toast.makeText(LoginActivity.this, "版本检测接口返回版本号异常", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
+                        // TODO 弹出更新窗口
+                        UpdateVersionShowDialog.show(LoginActivity.this,appVersionInfoBean);
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        throwable.printStackTrace();
+                        Toast.makeText(LoginActivity.this, "版本更新接口请求失败", Toast.LENGTH_SHORT).show();
+                    }
+                },LoginActivity.this);
+            }
+
+        });
+//        CheckNewVersion();
     }
 
-    private void CheckNewVersion(){
+    private void CheckNewVersion() {
         /**
          * 下载完成广播
          * 点击下载通知栏广播

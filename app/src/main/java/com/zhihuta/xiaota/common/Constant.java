@@ -3,6 +3,9 @@ package com.zhihuta.xiaota.common;
 import com.zhihuta.xiaota.ui.XiaotaApp;
 
 public class Constant {
+
+    public static boolean debug = true;
+    public static boolean md5CheckForDownloadAPK = false;
     /**
      * 用于标记不同的场合
      * 不同的场合 显示不同的图标/按钮等
