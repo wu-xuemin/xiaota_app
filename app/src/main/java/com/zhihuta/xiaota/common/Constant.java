@@ -93,4 +93,6 @@ public class Constant {
 
     public static final String getPathWiresExportToExcelUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_PATH_WIRES_EXPORT_TO_EXCEL;//
     public static final String getPathWiresExportToExcelByPartsCodeUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_PATH_WIRES_EXPORT_TO_EXCEL_BY_PARTS_CODE;//
+
+    public static final String getApkVersionInfoUrl = URL.HTTP_HEAD + XiaotaApp.getApp().getServerIPAndPort() + URL.GET_APK_VERSION_INFO;
 }

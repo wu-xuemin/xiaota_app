@@ -42,6 +42,10 @@ android {
 //        minSdkVersion 15  Fragment只有在android5 sdk 21 之后才有。
         minSdkVersion 21
         targetSdkVersion 28
+
+        /*
+         *  更新版本方法：依据是在服务器设置apk_version_info表的apk_version。 apk_name, apk_upgrade_log这两项则回展示。
+         */
         versionCode 33
         versionName "0.52"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

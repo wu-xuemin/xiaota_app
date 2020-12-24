@@ -65,4 +65,8 @@ public class URL {
     public static final String GET_PATH_WIRES_EXPORT_TO_EXCEL_BY_PARTS_CODE = "/caculate/{path_id}/wires/parts_code/export";//计算中心 按型号导出电线
 
     public static final String GET_SMM_CODE = "/sendSms?phoneNumber={phone_number}&checkingCode={checking_code}";//获取短信验证码
+
+    public static final String GET_APK_VERSION_INFO = "/apk/version/info/latest";
+
+    public static final String APP_DOWNLOAD_URL = "http://www.lybwww.com/api/io/xiaotaApk";
 }

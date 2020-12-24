@@ -1,14 +1,13 @@
 package com.zhihuta.xiaota.common;
 
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,12 +52,13 @@ public class UpdateVersionShowDialog extends DialogFragment {
     private void bindView(View view) {
         TextView tvTitle = view.findViewById(R.id.tv_title_update);
         TextView tvContent = view.findViewById(R.id.tv_content_update);
-        final TextView tvUpdate = view.findViewById(R.id.tv_update);
+        final Button btUpdate = view.findViewById(R.id.bt_download_apk);
+        final Button btCancel = view.findViewById(R.id.bt_apk_dld_cancel);
 
         tvTitle.setText(appVersionInfoBean.getTitle());
         tvContent.setText(appVersionInfoBean.getContent());
 
-        tvUpdate.setOnClickListener(new View.OnClickListener() {
+        btUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 v.setEnabled(false);
@@ -102,7 +102,7 @@ public class UpdateVersionShowDialog extends DialogFragment {
                         Log.d(TAG, "progress = " + progress);
 
 //                        tvUpdate.setText(progress + "%");
-                        tvUpdate.setText("下载中");
+                        btUpdate.setText("下载中");
                     }
 
                     @Override
@@ -115,6 +115,14 @@ public class UpdateVersionShowDialog extends DialogFragment {
                 }, UpdateVersionShowDialog.this);
             }
         });
+
+        btCancel.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                UpdateVersionShowDialog.this.dismiss();
+            }
+        });
     }
 
     @Override
@@ -122,7 +130,7 @@ public class UpdateVersionShowDialog extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
     @Override

@@ -31,11 +31,12 @@ public class AppVersionInfoBean implements Serializable {
     public static AppVersionInfoBean parse(String response) {
         try {
             JSONObject responseJson = new JSONObject(response);
-            String title = responseJson.optString("title");
-            String content = responseJson.optString("content");
+            String title = responseJson.optString("apkName");
+            String content = responseJson.optString("apkUpgradeLog");
             String url = responseJson.optString("url");
             String md5 = responseJson.optString("md5");
-            String versionCode = responseJson.optString("versionCode");
+//            String versionCode = responseJson.optString("versionCode");
+            String versionCode = responseJson.optString("apkVersion");
 
             //TODO 是否需要对获取到的值进行检验
             // 不应该在这里检测，检测属于使用这个bean，不适合在这里处理

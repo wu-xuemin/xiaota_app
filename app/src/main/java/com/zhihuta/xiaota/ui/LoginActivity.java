@@ -7,9 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -40,15 +40,13 @@ import com.zhihuta.xiaota.R;
 import com.zhihuta.xiaota.bean.basic.AppVersionInfoBean;
 import com.zhihuta.xiaota.bean.basic.CommonUtility;
 import com.zhihuta.xiaota.bean.basic.Result;
+import com.zhihuta.xiaota.bean.response.ApkVersionInfoResponse;
 import com.zhihuta.xiaota.bean.response.BaseResponse;
 import com.zhihuta.xiaota.bean.response.UserResponse;
-import com.zhihuta.xiaota.common.AppUpdater;
 import com.zhihuta.xiaota.common.AppUtils;
 import com.zhihuta.xiaota.common.Constant;
-//import com.zhihuta.xiaota.common.DownloadReceiver;
 import com.zhihuta.xiaota.common.DownloadUtility;
 import com.zhihuta.xiaota.common.INetCallback;
-import com.zhihuta.xiaota.common.NotificationClickReceiver;
 import com.zhihuta.xiaota.common.RequestUrlUtility;
 import com.zhihuta.xiaota.common.URL;
 import com.zhihuta.xiaota.bean.response.LoginResponseData;
@@ -71,12 +69,14 @@ import okio.BufferedSink;
 import okio.Okio;
 import okio.Sink;
 
+
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "nlgLoginActivity";
 
     private TextView mRegister;
     private TextView mResetpassword;
+    private AppVersionInfoBean appVersionInfoBean = null;
     private TextView mCheckVersion;
 
     private TextView mSystemVersionTv;
@@ -93,15 +93,6 @@ public class LoginActivity extends AppCompatActivity {
     private XiaotaApp mApp;
     private AlertDialog mIPSettngDialog = null;
 
-    //服务器上的版本号
-    private String mVersionNameOnServer;
-    private DownloadReceiver downloaderReceiver;
-    private NotificationClickReceiver notificationClickReceiver;
-
-    private IntentFilter intentFilter;
-    private IntentFilter intentFilterDownloadRv;
-    private NetworkChangeReceiver networkChangeReceiver;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,18 +103,20 @@ public class LoginActivity extends AppCompatActivity {
         mNetwork = Network.Instance(getApplication());
         mLoginHandler = new LoginHandler();
 
+        CheckNewVersion();
+
         mLoginButton = (Button) findViewById(R.id.btn_login);
         mPasswordText = (EditText) findViewById(R.id.input_password);
         mAccountText = (EditText) findViewById(R.id.input_account);
 
         //show the default account and password in login UI.
-        if(XiaotaApp.getApp().getAccount() != null && !"".equals(XiaotaApp.getApp().getAccount())) {
+        if (XiaotaApp.getApp().getAccount() != null && !"".equals(XiaotaApp.getApp().getAccount())) {
             mAccountText.setText(XiaotaApp.getApp().getAccount());
         }
-        if(XiaotaApp.getApp().getPassword() != null && !"".equals(XiaotaApp.getApp().getPassword())) {
+        if (XiaotaApp.getApp().getPassword() != null && !"".equals(XiaotaApp.getApp().getPassword())) {
             mPasswordText.setText(XiaotaApp.getApp().getPassword());
         }
-        if(XiaotaApp.getApp().getServerIPAndPort() != null && !"".equals(XiaotaApp.getApp().getServerIPAndPort())) {
+        if (XiaotaApp.getApp().getServerIPAndPort() != null && !"".equals(XiaotaApp.getApp().getServerIPAndPort())) {
             mServiceIpAndPort = XiaotaApp.getApp().getServerIPAndPort();
         }
 
@@ -136,8 +129,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 login();
-//
-//                CheckNewVersion();
             }
         });
 
@@ -160,35 +151,31 @@ public class LoginActivity extends AppCompatActivity {
 
                 final String account = mAccountText.getText().toString();
 
-                if (account.trim().equals(""))
-                {
+                if (account.trim().equals("")) {
                     Toast.makeText(LoginActivity.this, "用户名为空！", Toast.LENGTH_SHORT).show();
                     return;
-                }
-                else
-                {
-                    String url = Constant.getAccountExist.replace("{account}",account );
+                } else {
+                    String url = Constant.getAccountExist.replace("{account}", account);
 
-                    mNetwork.get(url, null, new Handler(){
+                    mNetwork.get(url, null, new Handler() {
 
                                 @Override
                                 public void handleMessage(final Message msg) {
 
                                     String errorMsg = "";
                                     errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
-                                    if (errorMsg != null)
-                                    {
+                                    if (errorMsg != null) {
                                         Toast.makeText(LoginActivity.this, "查找用户失败：" + errorMsg, Toast.LENGTH_SHORT).show();
                                         return;
                                     }
 
-                                    Result result= (Result)(msg.obj);
+                                    Result result = (Result) (msg.obj);
 
-                                    UserResponse responseData = CommonUtility.objectToJavaObject(result.getData(),UserResponse.class);
-                                    ConfirmSendEmail(responseData.account_info.getEmail(),account);
+                                    UserResponse responseData = CommonUtility.objectToJavaObject(result.getData(), UserResponse.class);
+                                    ConfirmSendEmail(responseData.account_info.getEmail(), account);
                                 }
                             },
-                            (handler,msg)->{
+                            (handler, msg) -> {
                                 handler.sendMessage(msg);
                             });
                 }
@@ -199,133 +186,74 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         mCheckVersion = (TextView) findViewById(R.id.tv_checkVersion);
+        /**
+         * 一开始是灰色，等获取到有新版本才下载
+         */
+        mCheckVersion.setEnabled(false);
         mCheckVersion.setOnClickListener(new View.OnClickListener() {
-
 
             @Override
             public void onClick(View v) {
-//                String url = "http://115.231.6.43:88/release/test.txt";
-                //todo 这个要后端提供api返回JSON
-//                String urlAPI = "http://www.lybwww.com/api/io/xiaotaApk-API-TODO";
-                String urlAPI = "http://115.231.6.43:88/release/test.txt";
-                String urlAppDonwload = "http://www.lybwww.com/api/io/xiaotaApk";
-                AppUpdater.getInstance().getINetManager().get(urlAPI, new INetCallback() {
-                    @Override //为啥这个response要好几分钟才返回，因为这个response字符串， count为11,522,102 即整个文件返回。
-                    public void onSuccess(String response) {
-                        //TODO 分析结果，看是否要更新
-
-                        //1、解析json
-                        //2、做版本适配
-                        //如果需要更新
-                        //3、弹窗
-                        //4、点击下载
-
-                        boolean debug = true;
-
-                        AppVersionInfoBean appVersionInfoBean = null;
-                        if(debug){
-
-                            appVersionInfoBean =  new AppVersionInfoBean("版本title111",
-                                    "内容content111",
-                                    urlAppDonwload,
-                                    "md5-111", "versionCode111");
-                        } else {
-
-                            appVersionInfoBean = AppVersionInfoBean.parse(response);
-                            if (appVersionInfoBean == null) {
-                                Toast.makeText(LoginActivity.this, "版本检测接口返回数据异常", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-
-                            // TODO 检测是否需要更新
-                            try {
-                                long versionCode = Long.parseLong(appVersionInfoBean.getVersionCode());
-                                if (versionCode <= AppUtils.getVersionCode(LoginActivity.this)) {
-                                    Toast.makeText(LoginActivity.this, "已经是最新版本，无需更新", Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-                            } catch (NumberFormatException e) {
-                                e.printStackTrace();
-                                Toast.makeText(LoginActivity.this, "版本检测接口返回版本号异常", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                        }
-                        // TODO 弹出更新窗口
-                        UpdateVersionShowDialog.show(LoginActivity.this,appVersionInfoBean);
-                    }
-
-                    @Override
-                    public void onFailed(Throwable throwable) {
-                        throwable.printStackTrace();
-                        Toast.makeText(LoginActivity.this, "版本更新接口请求失败", Toast.LENGTH_SHORT).show();
-                    }
-                },LoginActivity.this);
+                if (appVersionInfoBean != null) {
+                    UpdateVersionShowDialog.show(LoginActivity.this, appVersionInfoBean);
+                }
             }
 
         });
-//        CheckNewVersion();
     }
 
     private void CheckNewVersion() {
-        /**
-         * 下载完成广播
-         * 点击下载通知栏广播
-         */
-//        downloaderReceiver = new DownloadReceiver();
-        notificationClickReceiver = new NotificationClickReceiver();
-        getApplicationContext().registerReceiver(downloaderReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-        getApplicationContext().registerReceiver(notificationClickReceiver, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
 
+        String url = Constant.getApkVersionInfoUrl;
 
-        //test
-        //注册“网络变化”的广播接收器
-        intentFilter = new IntentFilter();
-        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        networkChangeReceiver = new NetworkChangeReceiver();
-        registerReceiver(networkChangeReceiver, intentFilter);
+        mNetwork.get(url, null, new Handler() {
 
-        intentFilterDownloadRv = new IntentFilter();
-        intentFilterDownloadRv.addAction("android.net.conn.ACTION_DOWNLOAD_COMPLETE");
-        intentFilterDownloadRv.addAction("android.intent.action.DOWNLOAD_COMPLETE");
-        downloaderReceiver = new DownloadReceiver();
-        registerReceiver(downloaderReceiver, intentFilterDownloadRv);
+                    @Override
+                    public void handleMessage(final Message msg) {
 
-        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE	);
-        BroadcastReceiver receiver = new BroadcastReceiver(){
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                long reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID,-1);
-//                if(reference == myreference){
-//                    //对下载的文件进行一些操作
-//                }
-                Log.i("DownloadReceiver0000", "DownloadReceiver===========");
-            }
-
-        };
-        registerReceiver(receiver, filter);
-
-
-        //todo 从服务器获取真实版本
-        mVersionNameOnServer = "0.01";
-        String currentVersionName = getAppVersionName(this);
-        if(Double.valueOf(mVersionNameOnServer) > Double.valueOf(currentVersionName)){
-            Log.w(TAG,  "有版本要更新： 当前版本为" + currentVersionName + "，服务器版本为" + mVersionNameOnServer);
-            AlertDialog alertDialogAppUpgrade;
-            android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(LoginActivity.this);
-            alertDialogBuilder.setTitle("有新版本APP可更新")
-                    .setNegativeButton("以后再说", null)
-                    .setPositiveButton("下载新版本", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-//                            downloadApk();
-//                            downloadFile();
-                            downloadFile2();
+                        String errorMsg = "";
+                        errorMsg = RequestUrlUtility.getResponseErrMsg(msg);
+                        if (errorMsg != null) {
+                            Toast.makeText(LoginActivity.this, "从服务器获取版本失败：" + errorMsg, Toast.LENGTH_SHORT).show();
+                            return;
                         }
-                    })
-                    .show();
-        }
+
+                        Result result = (Result) (msg.obj);
+
+                        ApkVersionInfoResponse responseData = CommonUtility.objectToJavaObject(result.getData(), ApkVersionInfoResponse.class);
+                        if (responseData.errorCode == 0) {
+
+                            appVersionInfoBean = new AppVersionInfoBean(responseData.apkVersionInfo.getApkName(),
+                                    responseData.apkVersionInfo.getApkUpgradeLog(),
+                                    URL.APP_DOWNLOAD_URL,
+                                    "md5-no-used",
+                                    responseData.apkVersionInfo.getApkVersion());
+                            double versionCode = 0;
+                            try {
+                                versionCode = Double.parseDouble(appVersionInfoBean.getVersionCode());
+                            } finally {
+                                Log.e(TAG, "appVersionInfoBean.getVersionCode() IS " + appVersionInfoBean.getVersionCode());
+                            }
+                            if (versionCode <= AppUtils.getVersionCode(LoginActivity.this)) {
+                                Log.w(TAG, "已经是最新版本，无需更新");
+                                mCheckVersion.setEnabled(false);
+                                mCheckVersion.setText("当前版本已经最新");
+                                return;
+                            } else {
+                                Log.w(TAG, "有新版本可用");
+                                mCheckVersion.setEnabled(true);
+                                mCheckVersion.setText("有新版本可用");
+                                mCheckVersion.setTextColor(Color.rgb(255,0,0));
+                            }
+                        } else {
+                            Toast.makeText(LoginActivity.this, "从服务器获取版本失败：" + errorMsg, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                },
+                (handler, msg) -> {
+                    handler.sendMessage(msg);
+                });
     }
 
     private class DownloadReceiver extends BroadcastReceiver {
@@ -754,8 +682,6 @@ public class LoginActivity extends AppCompatActivity {
         if(mIPSettngDialog != null) {
             mIPSettngDialog.dismiss();
         }
-        unregisterReceiver(downloaderReceiver);
-//        unregisterReceiver(notificationClickReceiver);
 
     }
 }
