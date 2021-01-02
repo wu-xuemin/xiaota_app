@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--    008577-->
-    <color name="colorPrimary">#BEBEBE</color>
+<!--    008577 BEBEBE -->
+    <color name="colorPrimary">#66B1FF</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="color_minefragment_top">#20B2AA</color>
