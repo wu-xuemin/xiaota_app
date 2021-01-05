@@ -46,8 +46,8 @@ android {
         /*
          *  更新版本方法：依据是在服务器设置apk_version_info表的apk_version。 apk_name, apk_upgrade_log这两项则回展示。
          */
-        versionCode 33
-        versionName "0.52"
+        versionCode 54
+        versionName "0.54"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -61,12 +61,13 @@ android {
         variant ->
             variant.outputs.all {
                 //在这里修改apk文件名
-                outputFileName = "XiaoTa-${variant.name}-v${variant.versionName}.apk"
+                outputFileName = "xiaota-${variant.name}-v${variant.versionCode}.apk"
             }
     }
     packagingOptions {
         exclude  'META-INF/proguard/coroutines.pro'
         exclude 'META-INF/DEPENDENCIES'
+        exclude 'classes.dex'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
