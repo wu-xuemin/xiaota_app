@@ -17,7 +17,8 @@
         <item name="android:minWidth">0sp</item>
         <item name="android:minHeight">0sp</item>
         <item name="android:textSize">@dimen/textSize_24</item>
-        <item name="android:textColor">@color/dimgray</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
     <style name="horizontalButtonSpare">
@@ -29,7 +30,8 @@
         <item name="android:minWidth">0sp</item>
         <item name="android:minHeight">0sp</item>
         <item name="android:textSize">@dimen/size_level8</item>
-        <item name="android:textColor">@color/dimgray</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
 </resources>
